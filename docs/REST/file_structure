@@ -1,0 +1,305 @@
+backend/
+│
+├── package.json
+├── tsconfig.json
+├── tsconfig.build.json
+├── jest.config.ts
+├── .eslintrc.js
+├── .env.example
+├── nodemon.json
+│
+├── dist/
+│
+└── src/
+    │
+    ├── main.ts
+    ├── app.ts
+    │
+    ├── config/
+    │   ├── index.ts
+    │   ├── env.ts
+    │   ├── database.ts
+    │   ├── cors.ts
+    │   ├── helmet.ts
+    │   ├── stripe.ts
+    │   ├── cloudinary.ts
+    │   ├── mail.ts
+    │   └── constants.ts
+    │
+    ├── middleware/
+    │   ├── index.ts
+    │   ├── authenticate.ts
+    │   ├── authorize.ts
+    │   ├── rateLimiter.ts
+    │   ├── requestLogger.ts
+    │   ├── validateRequest.ts
+    │   ├── errorHandler.ts
+    │   ├── notFound.ts
+    │   └── upload.ts
+    │
+    ├── modules/
+    │   │
+    │   ├── health/
+    │   │   ├── index.ts
+    │   │   ├── health.routes.ts
+    │   │   └── health.controller.ts
+    │   │
+    │   ├── auth/
+    │   │   ├── index.ts
+    │   │   ├── auth.routes.ts
+    │   │   ├── auth.controller.ts
+    │   │   ├── auth.service.ts
+    │   │   ├── auth.repository.ts
+    │   │   ├── auth.validators.ts
+    │   │   ├── auth.types.ts
+    │   │   ├── auth.errors.ts
+    │   │   └── __tests__/
+    │   │       ├── auth.service.test.ts
+    │   │       └── auth.routes.test.ts
+    │   │
+    │   ├── user/
+    │   │   ├── index.ts
+    │   │   ├── user.routes.ts
+    │   │   ├── user.controller.ts
+    │   │   ├── user.service.ts
+    │   │   ├── user.repository.ts
+    │   │   ├── user.model.ts
+    │   │   ├── user.types.ts
+    │   │   ├── user.validators.ts
+    │   │   └── __tests__/
+    │   │       └── user.service.test.ts
+    │   │
+    │   ├── provider/
+    │   │   ├── index.ts
+    │   │   ├── provider.routes.ts
+    │   │   ├── provider.controller.ts
+    │   │   ├── provider.service.ts
+    │   │   ├── provider.repository.ts
+    │   │   ├── provider.model.ts
+    │   │   ├── provider.types.ts
+    │   │   ├── provider.validators.ts
+    │   │   ├── provider.errors.ts
+    │   │   └── __tests__/
+    │   │       └── provider.service.test.ts
+    │   │
+    │   ├── service/
+    │   │   ├── index.ts
+    │   │   ├── service.routes.ts
+    │   │   ├── service.controller.ts
+    │   │   ├── service.service.ts
+    │   │   ├── service.repository.ts
+    │   │   ├── service.model.ts
+    │   │   ├── service.types.ts
+    │   │   ├── service.validators.ts
+    │   │   ├── service.errors.ts
+    │   │   └── __tests__/
+    │   │       └── service.service.test.ts
+    │   │
+    │   ├── workingHours/
+    │   │   ├── index.ts
+    │   │   ├── workingHours.routes.ts
+    │   │   ├── workingHours.controller.ts
+    │   │   ├── workingHours.service.ts
+    │   │   ├── workingHours.repository.ts
+    │   │   ├── workingHours.model.ts
+    │   │   ├── workingHours.types.ts
+    │   │   ├── workingHours.validators.ts
+    │   │   ├── slot.generator.ts
+    │   │   └── __tests__/
+    │   │       ├── workingHours.service.test.ts
+    │   │       └── slot.generator.test.ts
+    │   │
+    │   ├── availability/
+    │   │   ├── index.ts
+    │   │   ├── availability.routes.ts
+    │   │   ├── availability.controller.ts
+    │   │   ├── availability.service.ts
+    │   │   ├── availability.types.ts
+    │   │   └── availability.validators.ts
+    │   │
+    │   ├── appointment/
+    │   │   ├── index.ts
+    │   │   ├── appointment.routes.ts
+    │   │   ├── appointment.controller.ts
+    │   │   ├── appointment.service.ts
+    │   │   ├── appointment.repository.ts
+    │   │   ├── appointment.model.ts
+    │   │   ├── appointment.types.ts
+    │   │   ├── appointment.validators.ts
+    │   │   ├── appointment.policies.ts
+    │   │   ├── appointment.errors.ts
+    │   │   └── __tests__/
+    │   │       └── appointment.service.test.ts
+    │   │
+    │   ├── payment/
+    │   │   ├── index.ts
+    │   │   ├── payment.routes.ts
+    │   │   ├── payment.controller.ts
+    │   │   ├── payment.service.ts
+    │   │   ├── payment.repository.ts
+    │   │   ├── payment.model.ts
+    │   │   ├── payment.types.ts
+    │   │   ├── payment.validators.ts
+    │   │   ├── payment.errors.ts
+    │   │   ├── refund.policy.ts
+    │   │   └── __tests__/
+    │   │       └── payment.service.test.ts
+    │   │
+    │   ├── webhook/
+    │   │   ├── index.ts
+    │   │   ├── webhook.routes.ts
+    │   │   ├── stripeWebhook.controller.ts
+    │   │   └── stripeWebhook.service.ts
+    │   │
+    │   ├── review/
+    │   │   ├── index.ts
+    │   │   ├── review.routes.ts
+    │   │   ├── review.controller.ts
+    │   │   ├── review.service.ts
+    │   │   ├── review.repository.ts
+    │   │   ├── review.model.ts
+    │   │   ├── review.types.ts
+    │   │   ├── review.validators.ts
+    │   │   ├── review.errors.ts
+    │   │   └── __tests__/
+    │   │       └── review.service.test.ts
+    │   │
+    │   ├── notification/
+    │   │   ├── index.ts
+    │   │   ├── notification.routes.ts
+    │   │   ├── notification.controller.ts
+    │   │   ├── notification.service.ts
+    │   │   ├── notification.repository.ts
+    │   │   ├── notification.model.ts
+    │   │   ├── notification.types.ts
+    │   │   ├── templates/
+    │   │   │   ├── index.ts
+    │   │   │   ├── booking-confirmation.hbs
+    │   │   │   ├── new-booking-alert.hbs
+    │   │   │   ├── reminder.hbs
+    │   │   │   ├── cancellation.hbs
+    │   │   │   ├── review-request.hbs
+    │   │   │   ├── payment-failed.hbs
+    │   │   │   ├── refund-issued.hbs
+    │   │   │   ├── email-verification.hbs
+    │   │   │   └── password-reset.hbs
+    │   │   └── __tests__/
+    │   │       └── notification.service.test.ts
+    │   │
+    │   ├── dashboard/
+    │   │   ├── index.ts
+    │   │   ├── dashboard.routes.ts
+    │   │   ├── dashboard.controller.ts
+    │   │   ├── dashboard.service.ts
+    │   │   ├── dashboard.types.ts
+    │   │   └── __tests__/
+    │   │       └── dashboard.service.test.ts
+    │   │
+    │   └── admin/
+    │       ├── index.ts
+    │       ├── admin.routes.ts
+    │       ├── admin.controller.ts
+    │       ├── admin.service.ts
+    │       ├── admin.types.ts
+    │       └── __tests__/
+    │           └── admin.service.test.ts
+    │
+    ├── integrations/
+    │   ├── index.ts
+    │   │
+    │   ├── stripe/
+    │   │   ├── index.ts
+    │   │   ├── stripe.adapter.ts
+    │   │   ├── stripe.client.ts
+    │   │   ├── stripe.types.ts
+    │   │   ├── stripe.errors.ts
+    │   │   └── __tests__/
+    │   │       └── stripe.adapter.test.ts
+    │   │
+    │   ├── googleCalendar/
+    │   │   ├── index.ts
+    │   │   ├── googleCalendar.adapter.ts
+    │   │   ├── googleCalendar.client.ts
+    │   │   ├── googleCalendar.types.ts
+    │   │   ├── googleCalendar.errors.ts
+    │   │   └── __tests__/
+    │   │       └── googleCalendar.adapter.test.ts
+    │   │
+    │   ├── cloudinary/
+    │   │   ├── index.ts
+    │   │   ├── cloudinary.adapter.ts
+    │   │   ├── cloudinary.client.ts
+    │   │   ├── cloudinary.types.ts
+    │   │   ├── cloudinary.errors.ts
+    │   │   └── __tests__/
+    │   │       └── cloudinary.adapter.test.ts
+    │   │
+    │   └── mail/
+    │       ├── index.ts
+    │       ├── mail.adapter.ts
+    │       ├── mail.client.ts
+    │       ├── mail.types.ts
+    │       ├── mail.errors.ts
+    │       └── __tests__/
+    │           └── mail.adapter.test.ts
+    │
+    ├── scheduler/
+    │   ├── index.ts
+    │   ├── scheduler.bootstrap.ts
+    │   ├── scheduler.types.ts
+    │   └── jobs/
+    │       ├── reminder.job.ts
+    │       ├── statusTransition.job.ts
+    │       ├── slotRelease.job.ts
+    │       ├── reviewRequest.job.ts
+    │       └── __tests__/
+    │           ├── reminder.job.test.ts
+    │           ├── statusTransition.job.test.ts
+    │           └── slotRelease.job.test.ts
+    │
+    ├── shared/
+    │   ├── index.ts
+    │   ├── base.repository.ts
+    │   ├── pagination.types.ts
+    │   ├── filter.types.ts
+    │   ├── errors/
+    │   │   ├── index.ts
+    │   │   ├── app.error.ts
+    │   │   ├── not-found.error.ts
+    │   │   ├── forbidden.error.ts
+    │   │   ├── conflict.error.ts
+    │   │   ├── validation.error.ts
+    │   │   ├── unauthenticated.error.ts
+    │   │   └── internal.error.ts
+    │   └── guards/
+    │       ├── isOwner.guard.ts
+    │       └── isRole.guard.ts
+    │
+    ├── utils/
+    │   ├── index.ts
+    │   ├── jwt.util.ts
+    │   ├── hash.util.ts
+    │   ├── token.util.ts
+    │   ├── date.util.ts
+    │   ├── pagination.util.ts
+    │   ├── objectId.util.ts
+    │   ├── response.util.ts
+    │   └── logger.ts
+    │
+    └── tests/
+        ├── setup.ts
+        ├── teardown.ts
+        ├── helpers/
+        │   ├── api.client.ts
+        │   ├── seed.ts
+        │   └── factories/
+        │       ├── user.factory.ts
+        │       ├── provider.factory.ts
+        │       ├── appointment.factory.ts
+        │       └── payment.factory.ts
+        └── integration/
+            ├── auth.integration.test.ts
+            ├── booking.integration.test.ts
+            ├── payment.integration.test.ts
+            ├── review.integration.test.ts
+            └── dashboard.integration.test.ts
