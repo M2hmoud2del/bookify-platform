@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -50,6 +51,12 @@ const userSchema = new mongoose.Schema(
     strict: true
   }
 );
+
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  console.log("REQUEST PASSWORD:", candidatePassword);
+  console.log("DB PASSWORD:", this.password);
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 
 const User = mongoose.model("User", userSchema);
 
