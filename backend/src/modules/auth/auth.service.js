@@ -3,13 +3,19 @@ import bcrypt from "bcrypt";
 import User from "../../models/User.js";
 import {generateToken} from "../../utils/jwt.util.js";
 
+const createError = (message, statusCode) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
 export const register = async (userData) => {
   const { name, email, password, role, phone } = userData;
 
   const existingUser = await User.findOne({ email });
 
   if (existingUser) {
-    throw new Error("User already exists");
+    throw createError("User already exists", 409);
   }
 
   const hashedPassword = await bcrypt.hash(
@@ -33,13 +39,13 @@ export const login = async (userData) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw createError("Invalid email or password", 401);
   }
 
   const isMatch = await user.comparePassword(password);
 
   if (!isMatch) {
-    throw new Error("Invalid email or password");
+    throw createError("Invalid email or password", 401);
   }
 
   return buildAuthResponse(user);

@@ -1,11 +1,17 @@
+const createError = (message, statusCode) => {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+};
+
 const requireJsonMiddleware = (req, res, next) => {
 
   if (!req.is("application/json")) {
-    return next(new Error("Content-Type must be application/json"));
+    return next(createError("Content-Type must be application/json", 415));
   }
 
   if (!req.body || Object.keys(req.body).length === 0) {
-    return next(new Error("Request body is required"));
+    return next(createError("Request body is required", 400));
   }
 
   next();
