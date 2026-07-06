@@ -2,6 +2,8 @@ import mongoose from "mongoose";
 
 import ProviderProfile from "../../models/ProviderProfile.js";
 import Service from "../../models/Service.js";
+import { upsertWorkingHours } from "../workingHours/workingHours.repository.js";
+import { daysOfWeek } from "../workingHours/workingHours.validators.js";
 
 const createError = (message, statusCode = 400) => {
   const error = new Error(message);
@@ -28,6 +30,19 @@ const normalizeProfileImage = (profileData) => {
   }
 
   return profileData;
+};
+
+const createDefaultClosedWorkingHours = async (providerId) => {
+  const closedWeek = daysOfWeek.map((dayOfWeek) => ({
+    dayOfWeek,
+    startTime: null,
+    endTime: null,
+    isClosed: true,
+    slotIntervalMinutes: 30,
+    breaks: []
+  }));
+
+  await upsertWorkingHours(providerId, closedWeek);
 };
 
 export const getProfile = async (userId) => {
@@ -68,6 +83,10 @@ export const updateProfile = async (userId, profileData) => {
       setDefaultsOnInsert: true
     }
   ).populate("user", "name email phone avatar role");
+
+  if (!existingProfile) {
+    await createDefaultClosedWorkingHours(userId);
+  }
 
   return {
     success: true,

@@ -10,6 +10,8 @@ import providerRoutes from "./modules/provider/provider.routes.js";
 import providersRoutes from "./modules/provider/providers.routes.js";
 import serviceRoutes from "./modules/service/service.routes.js";
 import uploadRoutes from "./modules/upload/upload.routes.js";
+import workingHoursRoutes from "./modules/workingHours/workingHours.routes.js";
+import availabilityRoutes from "./modules/availability/availability.routes.js";
 
 const app = express();
 
@@ -31,6 +33,8 @@ app.use("/api/v1/provider", providerRoutes);
 app.use("/api/v1/providers", providersRoutes);
 app.use("/api/v1/services", serviceRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/working-hours", workingHoursRoutes);
+app.use("/api/availability", availabilityRoutes);
 
 // 404 Handler
 app.use((req, res) => {
