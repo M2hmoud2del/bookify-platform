@@ -218,6 +218,109 @@ Availability hardening notes:
 - New provider profiles create seven default closed working-hour records idempotently.
 - TODO: add MongoDB integration tests for repository/index behavior when the project has a Mongo memory test setup.
 
+## Appointment Management
+
+### Create Appointment
+
+```http
+POST /api/appointments
+```
+
+Postman setup:
+
+- Authorization: Bearer token for a customer user
+- Headers: `Content-Type: application/json`
+- Body:
+
+```json
+{
+  "providerId": "provider-user-id",
+  "serviceId": "service-id",
+  "date": "2026-07-20",
+  "startTime": "09:00",
+  "notes": "Optional notes"
+}
+```
+
+The backend re-checks working hours, breaks, booking window, service ownership, service status, and blocking appointments before creating the appointment.
+
+### List Customer Appointments
+
+```http
+GET /api/appointments/my
+```
+
+Requires a customer Bearer token.
+
+### List Provider Appointments
+
+```http
+GET /api/appointments/provider
+GET /api/appointments/provider?status=pending_payment
+GET /api/appointments/provider?date=2026-07-20
+GET /api/appointments/provider?from=2026-07-01&to=2026-07-31
+```
+
+Requires a provider Bearer token.
+
+### Get Appointment By Id
+
+```http
+GET /api/appointments/:id
+```
+
+Customers and providers can only view appointments they are involved in. Admin users can view appointment details.
+
+### Cancel Appointment
+
+```http
+PATCH /api/appointments/:id/cancel
+```
+
+Body:
+
+```json
+{
+  "reason": "Optional cancellation reason"
+}
+```
+
+Customers can cancel their own appointments. Providers can cancel appointments assigned to them. Completed or already-cancelled appointments cannot be cancelled.
+
+### Reject Appointment
+
+```http
+PATCH /api/appointments/:id/reject
+```
+
+Provider-only body:
+
+```json
+{
+  "reason": "Optional rejection reason"
+}
+```
+
+### Complete Appointment
+
+```http
+PATCH /api/appointments/:id/complete
+```
+
+Provider-only. The appointment must be `confirmed`, must belong to the provider, and its end time must already have passed.
+
+### Accept Appointment
+
+```http
+PATCH /api/appointments/:id/accept
+```
+
+This currently returns a clear validation response because payment confirmation is reserved for Phase 6.
+
+### Double Booking Rejection
+
+Appointments with `pending_payment` or `confirmed` status block overlapping provider slots. `cancelled`, `rejected`, and `completed` appointments do not block future booking.
+
 ## Current Status
 
 Phase 1 is ready as a backend foundation. The database connection, Express server, health route, centralized error handler, and initial Mongoose data models are in place.

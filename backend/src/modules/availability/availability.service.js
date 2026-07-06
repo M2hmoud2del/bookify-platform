@@ -30,7 +30,7 @@ export const getDayOfWeekFromDate = (date) => {
   return daysOfWeek[parsedDate.getUTCDay()];
 };
 
-const getProviderTodayDate = (timeZone, now = new Date()) => {
+export const getProviderTodayDate = (timeZone, now = new Date()) => {
   const formatter = new Intl.DateTimeFormat("en-US", {
     timeZone,
     year: "numeric",
@@ -50,7 +50,7 @@ const dateStringToUtcMidnight = (date) => {
   return new Date(Date.UTC(year, month - 1, day));
 };
 
-const getDateDifferenceInDays = (fromDate, toDate) => {
+export const getDateDifferenceInDays = (fromDate, toDate) => {
   const oneDayMs = 24 * 60 * 60 * 1000;
 
   return Math.round(
@@ -97,7 +97,7 @@ const getTimeZoneOffsetMs = (timeZone, date) => {
   return asUtc - date.getTime();
 };
 
-const providerLocalDateTimeToUtc = (date, time, timeZone) => {
+export const providerLocalDateTimeToUtc = (date, time, timeZone) => {
   const [year, month, day] = date.split("-").map(Number);
   const [hour, minute] = time.split(":").map(Number);
   let utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute));
