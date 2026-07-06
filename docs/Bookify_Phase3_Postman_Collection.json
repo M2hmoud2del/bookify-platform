@@ -1,0 +1,353 @@
+﻿{
+  "info": {
+    "_postman_id": "7c96b365-2a5f-4c4d-94df-bookify-phase3",
+    "name": "Bookify Phase 3 - Provider & Services",
+    "description": "Postman collection for the implemented Phase 3 APIs in this project. The actual routes use /api/v1, for example /api/v1/providers and /api/v1/services.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "providerEmail", "value": "provider1@example.com" },
+    { "key": "providerPassword", "value": "password123" },
+    { "key": "providerToken", "value": "" },
+    { "key": "providerId", "value": "" },
+    { "key": "serviceId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Setup Auth",
+      "item": [
+        {
+          "name": "Register Provider",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Provider\",\n  \"email\": \"{{providerEmail}}\",\n  \"password\": \"{{providerPassword}}\",\n  \"role\": \"provider\",\n  \"phone\": \"01000000000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Run once to create a provider user. If the user already exists, use Login Provider instead."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('providerToken', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Provider",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{providerEmail}}\",\n  \"password\": \"{{providerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Gets a JWT and saves it as providerToken for protected provider/service requests."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('providerToken', json.token);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Provider Profile Management",
+      "item": [
+        {
+          "name": "Create or Update Provider Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"businessName\": \"Cairo Wellness Studio\",\n  \"bio\": \"Professional wellness and consultation services.\",\n  \"category\": \"Wellness\",\n  \"address\": \"123 Nile Street\",\n  \"city\": \"Cairo\",\n  \"profileImage\": \"https://example.com/provider.jpg\",\n  \"timezone\": \"Africa/Cairo\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provider/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "provider", "profile"]
+            },
+            "description": "Creates the profile on first request, then updates it on later requests. businessName is required only for first creation."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.profile && json.profile._id) pm.collectionVariables.set('providerId', json.profile._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Provider Profile",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/provider/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "provider", "profile"]
+            },
+            "description": "Protected route for the logged-in provider's own profile."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.profile && json.profile._id) pm.collectionVariables.set('providerId', json.profile._id);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public Provider Browsing",
+      "item": [
+        {
+          "name": "Search Providers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers?search=wellness&city=Cairo&category=Wellness",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "providers"],
+              "query": [
+                { "key": "search", "value": "wellness" },
+                { "key": "city", "value": "Cairo" },
+                { "key": "category", "value": "Wellness" }
+              ]
+            },
+            "description": "Public provider search. Supported filters: search, city, category."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (!pm.collectionVariables.get('providerId') && json.providers && json.providers[0]) {",
+                  "  pm.collectionVariables.set('providerId', json.providers[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Public Provider Profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/{{providerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "providers", "{{providerId}}"]
+            },
+            "description": "Public provider profile by provider profile id, not user id."
+          }
+        },
+        {
+          "name": "View Provider Services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/providers/{{providerId}}/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "providers", "{{providerId}}", "services"]
+            },
+            "description": "Public list of active services for a provider profile id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Service Management",
+      "item": [
+        {
+          "name": "Create Service",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Initial Consultation\",\n  \"description\": \"A 60-minute introductory consultation.\",\n  \"category\": \"Wellness\",\n  \"price\": 250,\n  \"durationMinutes\": 60,\n  \"images\": [\n    \"https://example.com/service.jpg\"\n  ],\n  \"isActive\": true\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services"]
+            },
+            "description": "Protected provider-only route. Saves returned service._id as serviceId."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.service && json.service._id) pm.collectionVariables.set('serviceId', json.service._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Update Service",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Consultation\",\n  \"description\": \"Updated consultation details.\",\n  \"category\": \"Consulting\",\n  \"price\": 300,\n  \"durationMinutes\": 45,\n  \"images\": [\n    \"https://example.com/updated-service.jpg\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services", "{{serviceId}}"]
+            },
+            "description": "Protected provider-only route. You can send any one or more editable service fields."
+          }
+        },
+        {
+          "name": "Disable Service",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services", "{{serviceId}}", "status"]
+            },
+            "description": "Protected provider-only route. Disabled services will not show in public GET service routes."
+          }
+        },
+        {
+          "name": "Enable Service",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"isActive\": true\n}" },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services", "{{serviceId}}", "status"]
+            },
+            "description": "Protected provider-only route. Run this before testing public Get Service By Id if you disabled it."
+          }
+        },
+        {
+          "name": "Delete Service",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services", "{{serviceId}}"]
+            },
+            "description": "Protected provider-only route. This soft-deletes the service and sets isActive false. Run it last."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Public Services Browsing",
+      "item": [
+        {
+          "name": "Get Services",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services?search=consultation&category=Wellness&minPrice=100&maxPrice=500",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services"],
+              "query": [
+                { "key": "search", "value": "consultation" },
+                { "key": "category", "value": "Wellness" },
+                { "key": "minPrice", "value": "100" },
+                { "key": "maxPrice", "value": "500" }
+              ]
+            },
+            "description": "Public active-service search. Supported filters: search, category, minPrice, maxPrice."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (!pm.collectionVariables.get('serviceId') && json.services && json.services[0]) {",
+                  "  pm.collectionVariables.set('serviceId', json.services[0]._id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Service By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "services", "{{serviceId}}"]
+            },
+            "description": "Public service details by active service id."
+          }
+        }
+      ]
+    }
+  ]
+}
