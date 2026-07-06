@@ -33,8 +33,41 @@ const serviceSchema = new mongoose.Schema(
     },
     images: [
       {
-        type: String,
-        trim: true
+        url: {
+          type: String,
+          trim: true,
+          required: true
+        },
+        publicId: {
+          type: String,
+          trim: true,
+          required: true
+        },
+        width: {
+          type: Number,
+          min: 0,
+          default: 0
+        },
+        height: {
+          type: Number,
+          min: 0,
+          default: 0
+        },
+        format: {
+          type: String,
+          trim: true,
+          default: ""
+        },
+        bytes: {
+          type: Number,
+          min: 0,
+          default: 0
+        },
+        moderationStatus: {
+          type: String,
+          enum: ["pending_review", "approved", "rejected"],
+          default: "pending_review"
+        }
       }
     ],
     isActive: {

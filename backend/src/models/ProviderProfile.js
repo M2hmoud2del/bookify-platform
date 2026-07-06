@@ -30,8 +30,41 @@ const providerProfileSchema = new mongoose.Schema(
       trim: true
     },
     profileImage: {
-      type: String,
-      trim: true
+      url: {
+        type: String,
+        trim: true,
+        default: ""
+      },
+      publicId: {
+        type: String,
+        trim: true,
+        default: ""
+      },
+      width: {
+        type: Number,
+        min: 0,
+        default: 0
+      },
+      height: {
+        type: Number,
+        min: 0,
+        default: 0
+      },
+      format: {
+        type: String,
+        trim: true,
+        default: ""
+      },
+      bytes: {
+        type: Number,
+        min: 0,
+        default: 0
+      },
+      moderationStatus: {
+        type: String,
+        enum: ["pending_review", "approved", "rejected"],
+        default: "pending_review"
+      }
     },
     timezone: {
       type: String,

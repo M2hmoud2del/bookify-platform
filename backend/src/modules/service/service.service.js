@@ -30,9 +30,32 @@ const getProviderService = async (serviceId, providerId) => {
   return service;
 };
 
-export const createService = async (providerId, serviceData) => {
-  const service = await Service.create({
+const normalizeImages = (serviceData) => {
+  if (!Array.isArray(serviceData.images)) {
+    return serviceData;
+  }
+
+  return {
     ...serviceData,
+    images: serviceData.images.map((image) => {
+      if (typeof image === "string") {
+        return {
+          url: image,
+          publicId: "",
+          moderationStatus: "approved"
+        };
+      }
+
+      return image;
+    })
+  };
+};
+
+export const createService = async (providerId, serviceData) => {
+  const normalizedServiceData = normalizeImages(serviceData);
+
+  const service = await Service.create({
+    ...normalizedServiceData,
     provider: providerId
   });
 
@@ -117,8 +140,9 @@ export const getServiceById = async (id) => {
 
 export const updateService = async (serviceId, providerId, serviceData) => {
   const service = await getProviderService(serviceId, providerId);
+  const normalizedServiceData = normalizeImages(serviceData);
 
-  Object.assign(service, serviceData);
+  Object.assign(service, normalizedServiceData);
   await service.save();
 
   return {

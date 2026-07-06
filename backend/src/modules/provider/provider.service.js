@@ -15,6 +15,21 @@ const validateObjectId = (id, message = "Invalid id") => {
   }
 };
 
+const normalizeProfileImage = (profileData) => {
+  if (typeof profileData.profileImage === "string") {
+    return {
+      ...profileData,
+      profileImage: {
+        url: profileData.profileImage,
+        publicId: "",
+        moderationStatus: "approved"
+      }
+    };
+  }
+
+  return profileData;
+};
+
 export const getProfile = async (userId) => {
   const profile = await ProviderProfile.findOne({
     user: userId,
@@ -32,16 +47,17 @@ export const getProfile = async (userId) => {
 };
 
 export const updateProfile = async (userId, profileData) => {
+  const normalizedProfileData = normalizeProfileImage(profileData);
   const existingProfile = await ProviderProfile.findOne({ user: userId });
 
-  if (!existingProfile && !profileData.businessName) {
+  if (!existingProfile && !normalizedProfileData.businessName) {
     throw createError("Business name is required to create provider profile", 400);
   }
 
   const profile = await ProviderProfile.findOneAndUpdate(
     { user: userId },
     {
-      ...profileData,
+      ...normalizedProfileData,
       user: userId,
       deletedAt: null
     },
