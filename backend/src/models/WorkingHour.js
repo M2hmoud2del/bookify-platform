@@ -7,7 +7,8 @@ const workingHourSchema = new mongoose.Schema(
     provider: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
+      index: true
     },
     dayOfWeek: {
       type: String,
@@ -33,7 +34,24 @@ const workingHourSchema = new mongoose.Schema(
     isClosed: {
       type: Boolean,
       default: false
-    }
+    },
+    slotIntervalMinutes: {
+      type: Number,
+      enum: [15, 30, 45, 60],
+      default: 30
+    },
+    breaks: [
+      {
+        startTime: {
+          type: String,
+          match: [timeRegex, "Break start time must use HH:mm format"]
+        },
+        endTime: {
+          type: String,
+          match: [timeRegex, "Break end time must use HH:mm format"]
+        }
+      }
+    ]
   },
   {
     timestamps: true,

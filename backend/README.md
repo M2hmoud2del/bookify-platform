@@ -81,6 +81,7 @@ CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 CLOUDINARY_FOLDER=bookify
+MAX_BOOKING_DAYS_AHEAD=60
 ```
 
 Allowed image types:
@@ -152,6 +153,70 @@ Postman setup:
   "publicId": "cloudinary/public-id"
 }
 ```
+
+## Working Hours & Availability
+
+### Provider Working Hours
+
+```http
+GET /api/working-hours/my
+PUT /api/working-hours/my
+GET /api/working-hours/provider/:providerId
+```
+
+Provider-only update body:
+
+```json
+{
+  "workingHours": [
+    {
+      "dayOfWeek": "sunday",
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isClosed": false,
+      "slotIntervalMinutes": 30,
+      "breaks": [
+        {
+          "startTime": "13:00",
+          "endTime": "14:00"
+        }
+      ]
+    },
+    {
+      "dayOfWeek": "friday",
+      "isClosed": true
+    }
+  ]
+}
+```
+
+Validation rules:
+
+- Times use `HH:mm`.
+- `startTime` must be before `endTime`.
+- Breaks must be inside working hours.
+- Break `startTime` must be before break `endTime`.
+- `slotIntervalMinutes` can be `15`, `30`, `45`, or `60`.
+- One working hour document is stored per provider per day.
+
+### Availability
+
+```http
+GET /api/availability?providerId=...&serviceId=...&date=YYYY-MM-DD
+```
+
+Availability is calculated from provider working hours, selected service duration, breaks, and existing appointments with `pending_payment` or `confirmed` status. Cancelled, rejected, and completed appointments do not block slots.
+
+Availability hardening notes:
+
+- Dates are accepted as provider-local `YYYY-MM-DD` values.
+- "Today" and current time are calculated with the provider profile timezone.
+- Appointment reads still use UTC `Date` ranges derived from the provider-local day until final booking normalization.
+- Availability rejects past dates and dates more than `MAX_BOOKING_DAYS_AHEAD` days ahead.
+- Overlapping breaks are rejected; adjacent breaks are allowed.
+- Public provider working-hours lookup returns `404` for non-existing providers.
+- New provider profiles create seven default closed working-hour records idempotently.
+- TODO: add MongoDB integration tests for repository/index behavior when the project has a Mongo memory test setup.
 
 ## Current Status
 

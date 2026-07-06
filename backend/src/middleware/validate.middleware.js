@@ -7,10 +7,23 @@ const createError = (message, statusCode) => {
 const validateMiddleware = (schema) => {
 
     return (req, res, next) => {
-        const { error } = schema.validate(req.body);
+        const { error } = schema.validate(req.body, {
+            abortEarly: false,
+            errors: {
+                wrap: {
+                    label: false
+                }
+            }
+        });
 
         if (error) {
-            return next(createError("Sorry Your request is invalid you have missing or invalid fields", 400));
+            const validationError = createError("Validation failed", 400);
+            validationError.errors = error.details.map((detail) => ({
+                field: detail.path.join("."),
+                message: detail.message
+            }));
+
+            return next(validationError);
         }
 
         next();
