@@ -9,6 +9,7 @@ import authRoutes from "./modules/auth/auth.routes.js";
 import providerRoutes from "./modules/provider/provider.routes.js";
 import providersRoutes from "./modules/provider/providers.routes.js";
 import serviceRoutes from "./modules/service/service.routes.js";
+import uploadRoutes from "./modules/upload/upload.routes.js";
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/provider", providerRoutes);
 app.use("/api/v1/providers", providersRoutes);
 app.use("/api/v1/services", serviceRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 // 404 Handler
 app.use((req, res) => {
