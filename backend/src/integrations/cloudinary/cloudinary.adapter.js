@@ -3,6 +3,14 @@ import streamifier from "streamifier";
 import cloudinary from "./cloudinary.client.js";
 import { CloudinaryDeleteError, CloudinaryUploadError } from "./cloudinary.errors.js";
 
+export const buildOptimizedImageUrl = (publicId, options = {}) => {
+  return cloudinary.url(publicId, {
+    secure: true,
+    resource_type: "image",
+    transformation: options.transformation || options.deliveryTransformation
+  });
+};
+
 export const uploadImageBuffer = (buffer, options = {}) => {
   return new Promise((resolve, reject) => {
     const uploadStream = cloudinary.uploader.upload_stream(
@@ -16,16 +24,14 @@ export const uploadImageBuffer = (buffer, options = {}) => {
           return reject(new CloudinaryUploadError(error?.message));
         }
 
-        const secureUrl = options.deliveryTransformation
-          ? cloudinary.url(result.public_id, {
-              secure: true,
-              resource_type: "image",
+        const url = options.deliveryTransformation
+          ? buildOptimizedImageUrl(result.public_id, {
               transformation: options.deliveryTransformation
             })
           : result.secure_url;
 
         return resolve({
-          secureUrl,
+          url,
           publicId: result.public_id,
           width: result.width,
           height: result.height,

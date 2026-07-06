@@ -37,7 +37,7 @@ const validateObjectId = (id, message = "Invalid id") => {
 };
 
 const toImageData = (uploadResult) => ({
-  url: uploadResult.secureUrl,
+  url: uploadResult.url,
   publicId: uploadResult.publicId,
   width: uploadResult.width,
   height: uploadResult.height,
