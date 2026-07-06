@@ -20,11 +20,18 @@ const appointmentSchema = new mongoose.Schema(
     service: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Service",
-      required: true
+      required: true,
+      index: true
     },
     date: {
       type: Date,
       required: true
+    },
+    localDate: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true
     },
     startTime: {
       type: String,
@@ -54,6 +61,27 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       default: "UTC",
       trim: true
+    },
+    cancellationReason: {
+      type: String,
+      trim: true
+    },
+    cancelledBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    },
+    cancelledAt: {
+      type: Date
+    },
+    rejectionReason: {
+      type: String,
+      trim: true
+    },
+    rejectedAt: {
+      type: Date
+    },
+    completedAt: {
+      type: Date
     }
   },
   {
@@ -64,6 +92,8 @@ const appointmentSchema = new mongoose.Schema(
 
 appointmentSchema.index({ service: 1, date: 1 });
 appointmentSchema.index({ provider: 1, date: 1, startTime: 1, status: 1 });
+appointmentSchema.index({ provider: 1, localDate: 1, startTime: 1 });
+appointmentSchema.index({ status: 1 });
 
 appointmentSchema.pre("validate", async function preventDoubleBooking() {
   if (
