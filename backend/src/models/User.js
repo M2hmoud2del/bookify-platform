@@ -24,6 +24,17 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
       select: false
     },
+    googleId: {
+      type: String,
+      unique: true,
+      sparse: true,
+      trim: true
+    },
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local"
+    },
     role: {
       type: String,
       enum: ["customer", "provider"],

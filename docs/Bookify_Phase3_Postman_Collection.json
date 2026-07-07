@@ -74,6 +74,63 @@
               }
             }
           ]
+        },
+        {
+          "name": "Google OAuth Start - Customer",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google?role=customer",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "google"],
+              "query": [
+                { "key": "role", "value": "customer" }
+              ]
+            },
+            "description": "Starts Google OAuth for a customer account. Because Google OAuth is browser-based, open this request in a browser/Postman OAuth flow and complete Google login. The callback returns a JWT JSON response."
+          }
+        },
+        {
+          "name": "Google OAuth Start - Provider",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google?role=provider",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "google"],
+              "query": [
+                { "key": "role", "value": "provider" }
+              ]
+            },
+            "description": "Starts Google OAuth for a provider account. New Google users created through this route get role provider; existing users keep their current role."
+          }
+        },
+        {
+          "name": "Google OAuth Callback",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/google/callback",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "google", "callback"]
+            },
+            "description": "Google redirects here after successful login. Do not call this manually unless Google has provided the callback query parameters."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('providerToken', json.token);"
+                ]
+              }
+            }
+          ]
         }
       ]
     },

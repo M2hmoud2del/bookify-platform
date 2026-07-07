@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import passport from "./integrations/OAuth/google/passport.js";
 
 import errorHandler from "./middleware/errorHandler.js";
 import healthRoutes from "./routes/health.routes.js";
@@ -27,9 +28,11 @@ app.use(
 app.use(morgan("dev"));
 
 app.use(express.json({ limit: "10kb" }));
+app.use(passport.initialize());
 
 app.use("/api/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
+app.use("/auth", authRoutes);
 app.use("/api/v1/provider", providerRoutes);
 app.use("/api/v1/providers", providersRoutes);
 app.use("/api/v1/services", serviceRoutes);

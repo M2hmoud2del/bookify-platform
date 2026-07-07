@@ -1,4 +1,8 @@
-import { login as loginService, register as registerService } from "./auth.service.js";
+import {
+  buildAuthResponse,
+  login as loginService,
+  register as registerService
+} from "./auth.service.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -23,6 +27,18 @@ export const getMe = async (req, res, next) => {
     res.status(200).json({
       success: true,
       user: req.user || null
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const googleCallback = async (req, res, next) => {
+  try {
+    res.status(200).json({
+      success: true,
+      message: "Google login successful",
+      ...buildAuthResponse(req.user)
     });
   } catch (err) {
     next(err);
