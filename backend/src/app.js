@@ -14,6 +14,8 @@ import uploadRoutes from "./modules/upload/upload.routes.js";
 import workingHoursRoutes from "./modules/workingHours/workingHours.routes.js";
 import availabilityRoutes from "./modules/availability/availability.routes.js";
 import appointmentRoutes from "./modules/appointment/appointment.routes.js";
+import paymentRoutes from "./modules/payment/payment.routes.js";
+import paymentWebhookRoutes from "./modules/payment/payment.webhook.routes.js";
 
 const app = express();
 
@@ -27,6 +29,7 @@ app.use(
 
 app.use(morgan("dev"));
 
+app.use("/api/webhooks/stripe", express.raw({ type: "application/json" }), paymentWebhookRoutes);
 app.use(express.json({ limit: "10kb" }));
 app.use(passport.initialize());
 
@@ -40,6 +43,7 @@ app.use("/api/uploads", uploadRoutes);
 app.use("/api/working-hours", workingHoursRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // 404 Handler
 app.use((req, res) => {

@@ -9,9 +9,15 @@
     { "key": "baseUrl", "value": "http://localhost:5000" },
     { "key": "providerEmail", "value": "provider1@example.com" },
     { "key": "providerPassword", "value": "password123" },
+    { "key": "customerEmail", "value": "customer1@example.com" },
+    { "key": "customerPassword", "value": "password123" },
     { "key": "providerToken", "value": "" },
+    { "key": "customerToken", "value": "" },
     { "key": "providerId", "value": "" },
-    { "key": "serviceId", "value": "" }
+    { "key": "providerUserId", "value": "" },
+    { "key": "serviceId", "value": "" },
+    { "key": "appointmentId", "value": "" },
+    { "key": "checkoutSessionId", "value": "" }
   ],
   "item": [
     {
@@ -90,6 +96,64 @@
             },
             "description": "Starts Google OAuth for a customer account. Because Google OAuth is browser-based, open this request in a browser/Postman OAuth flow and complete Google login. The callback returns a JWT JSON response."
           }
+        },
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\",\n  \"role\": \"customer\",\n  \"phone\": \"01100000000\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Run once to create a customer user. If the user already exists, use Login Customer instead."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('customerToken', json.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Gets a customer JWT and saves it as customerToken for appointment and payment requests."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.token) pm.collectionVariables.set('customerToken', json.token);"
+                ]
+              }
+            }
+          ]
         },
         {
           "name": "Google OAuth Start - Provider",
@@ -385,6 +449,7 @@
                   "const json = pm.response.json();",
                   "if (!pm.collectionVariables.get('serviceId') && json.services && json.services[0]) {",
                   "  pm.collectionVariables.set('serviceId', json.services[0]._id);",
+                  "  if (json.services[0].provider && json.services[0].provider._id) pm.collectionVariables.set('providerUserId', json.services[0].provider._id);",
                   "}"
                 ]
               }
@@ -402,6 +467,119 @@
               "path": ["api", "v1", "services", "{{serviceId}}"]
             },
             "description": "Public service details by active service id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 6 Payments",
+      "item": [
+        {
+          "name": "Create Appointment For Payment",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": \"{{providerUserId}}\",\n  \"serviceId\": \"{{serviceId}}\",\n  \"date\": \"2026-07-20\",\n  \"startTime\": \"10:00\",\n  \"notes\": \"Payment flow test appointment\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/appointments",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "appointments"]
+            },
+            "description": "Creates a pending_payment appointment as a customer. Run Login Customer and Get Services first so customerToken, providerUserId, and serviceId are set."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data._id) pm.collectionVariables.set('appointmentId', json.data._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Checkout Session",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"successUrl\": \"http://localhost:4200/payments/success?session_id={CHECKOUT_SESSION_ID}\",\n  \"cancelUrl\": \"http://localhost:4200/payments/cancel\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/create-checkout-session",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "create-checkout-session"]
+            },
+            "description": "Creates a Stripe Sandbox Checkout Session. Open data.checkoutUrl in the browser to pay with a Stripe test card."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.sessionId) pm.collectionVariables.set('checkoutSessionId', json.data.sessionId);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Payments - Customer",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "my"]
+            },
+            "description": "Returns payments for the logged-in customer."
+          }
+        },
+        {
+          "name": "Get My Payments - Provider",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/payments/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payments", "my"]
+            },
+            "description": "Returns payments for the logged-in provider."
+          }
+        },
+        {
+          "name": "Stripe Webhook",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Stripe-Signature", "value": "use-stripe-cli-forwarding-for-real-signature" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"evt_test_webhook\",\n  \"type\": \"checkout.session.completed\",\n  \"data\": {\n    \"object\": {\n      \"id\": \"{{checkoutSessionId}}\",\n      \"payment_intent\": \"pi_test\"\n    }\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/webhooks/stripe",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "webhooks", "stripe"]
+            },
+            "description": "Stripe requires a valid signed raw body. For real testing, run: stripe listen --forward-to localhost:5000/api/webhooks/stripe"
           }
         }
       ]
