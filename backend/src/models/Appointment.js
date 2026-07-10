@@ -82,6 +82,12 @@ const appointmentSchema = new mongoose.Schema(
     },
     completedAt: {
       type: Date
+    },
+    reminderSentAt: {
+      type: Date
+    },
+    reviewRequestSentAt: {
+      type: Date
     }
   },
   {
@@ -125,3 +131,4 @@ appointmentSchema.pre("validate", async function preventDoubleBooking() {
 const Appointment = mongoose.model("Appointment", appointmentSchema);
 
 export default Appointment;
+
