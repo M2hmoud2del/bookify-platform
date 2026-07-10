@@ -343,3 +343,85 @@ Phase 1 is ready as a backend foundation. The database connection, Express serve
 - Payment integration
 - Reviews and dashboard analytics
 - REST API expansion and optional GraphQL layer
+
+## Notifications & Background Jobs
+
+### Email Environment Variables
+
+```env
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_USER=
+EMAIL_PASS=
+EMAIL_FROM="Bookify <no-reply@bookify.local>"
+EMAIL_SECURE=false
+```
+
+Use a sandbox SMTP provider such as Mailtrap, Ethereal, or another SMTP test inbox during local development. Keep real SMTP credentials in `.env` only and never commit secrets.
+
+### Scheduler Environment Variables
+
+```env
+ENABLE_SCHEDULER=true
+APPOINTMENT_REMINDER_HOURS=24
+REVIEW_REQUEST_DELAY_HOURS=2
+PENDING_PAYMENT_EXPIRY_MINUTES=15
+```
+
+Disable background jobs locally with:
+
+```env
+ENABLE_SCHEDULER=false
+```
+
+The scheduler also stays disabled automatically when `NODE_ENV=test`.
+
+### Jobs
+
+- `reminder.job`: sends appointment reminder emails before confirmed appointments.
+- `statusTransition.job`: marks past confirmed appointments as completed.
+- `slotRelease.job`: cancels expired unpaid `pending_payment` appointment holds.
+- `reviewRequest.job`: sends review request emails after completed appointments when no review exists.
+
+### Notification Logs
+
+Authenticated users can view their own email notification logs:
+
+```http
+GET /api/notifications/my
+```
+
+Notification sending is best-effort. Failed sends are stored as failed notification records with retry metadata instead of crashing the app.
+
+### SMTP Sandbox Manual Test
+
+Use Mailtrap, Ethereal, or another SMTP sandbox only. Do not use production SMTP credentials for local verification.
+
+1. Set `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_USER`, `EMAIL_PASS`, `EMAIL_FROM`, and `EMAIL_SECURE` in `backend/.env` from the sandbox provider.
+2. Start the backend with `ENABLE_SCHEDULER=false` unless you are intentionally testing jobs.
+3. Trigger a notification path in development or call the mail adapter from a temporary local script.
+4. Confirm the message arrives in the sandbox inbox and that no secrets are logged or committed.
+
+### Production Scheduler Safety
+
+The scheduler only runs when `ENABLE_SCHEDULER=true` and stays disabled when `NODE_ENV=test`. If the app is deployed on multiple servers, only one instance should run the scheduler, or a DB lock / queue worker should be added later to prevent duplicate job execution.
+
+### Phase 8.1 TODO - Notification Flow Integration
+
+Future event triggers should include:
+
+- Successful payment webhook -> `payment_success` notification.
+- Successful payment webhook -> `booking_confirmation` email to customer.
+- Successful payment webhook -> `new_booking_alert` email to provider.
+- Failed payment -> `payment_failed` notification.
+- Refund issued -> `refund_issued` notification.
+- Appointment cancellation -> `appointment_cancelled` notification.
+- Completed appointment -> `review_request` handled by scheduler.
+
+### Later Notification Improvements
+
+- Exponential retry backoff for failed notifications.
+- Notification read/unread inbox support.
+- Richer email templates with layout and CTA buttons.
+- Mongo memory integration tests for scheduler eligibility and retry behavior.
+- DB lock or worker queue for production scheduler safety.
