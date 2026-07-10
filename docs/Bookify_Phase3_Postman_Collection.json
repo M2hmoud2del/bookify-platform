@@ -1,4 +1,4 @@
-﻿{
+{
   "info": {
     "_postman_id": "7c96b365-2a5f-4c4d-94df-bookify-phase3",
     "name": "Bookify Phase 3 - Provider & Services",
@@ -17,7 +17,8 @@
     { "key": "providerUserId", "value": "" },
     { "key": "serviceId", "value": "" },
     { "key": "appointmentId", "value": "" },
-    { "key": "checkoutSessionId", "value": "" }
+    { "key": "checkoutSessionId", "value": "" },
+    { "key": "reviewId", "value": "" }
   ],
   "item": [
     {
@@ -580,6 +581,105 @@
               "path": ["api", "webhooks", "stripe"]
             },
             "description": "Stripe requires a valid signed raw body. For real testing, run: stripe listen --forward-to localhost:5000/api/webhooks/stripe"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 7 Reviews",
+      "item": [
+        {
+          "name": "Create Review",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service, very professional!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Creates a review for a completed appointment. Only the customer who booked the appointment can leave a review. Duplicate reviews are prevented."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data.review && json.data.review._id) pm.collectionVariables.set('reviewId', json.data.review._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Create Review - Duplicate (Should Fail)",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"rating\": 4,\n  \"comment\": \"Trying to leave a second review\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Attempts to create a duplicate review for the same appointment. Should return 409 Conflict."
+          }
+        },
+        {
+          "name": "Get Provider Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/provider/{{providerUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", "provider", "{{providerUserId}}"]
+            },
+            "description": "Public endpoint. Returns all reviews for a provider along with their average rating."
+          }
+        },
+        {
+          "name": "Get My Reviews",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", "my"]
+            },
+            "description": "Returns all reviews written by the logged-in customer."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 7 Dashboard",
+      "item": [
+        {
+          "name": "Get Provider Dashboard",
+          "request": {
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/provider",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "provider"]
+            },
+            "description": "Returns the provider dashboard with: today's appointments, upcoming appointments, monthly revenue, total revenue, average rating, customer statistics, and appointment statistics by status."
           }
         }
       ]

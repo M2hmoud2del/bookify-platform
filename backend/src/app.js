@@ -16,6 +16,8 @@ import availabilityRoutes from "./modules/availability/availability.routes.js";
 import appointmentRoutes from "./modules/appointment/appointment.routes.js";
 import paymentRoutes from "./modules/payment/payment.routes.js";
 import paymentWebhookRoutes from "./modules/payment/payment.webhook.routes.js";
+import reviewRoutes from "./modules/review/review.routes.js";
+import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 
 const app = express();
 
@@ -44,6 +46,8 @@ app.use("/api/working-hours", workingHoursRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // 404 Handler
 app.use((req, res) => {
