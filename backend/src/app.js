@@ -36,20 +36,20 @@ app.use("/api/webhooks/stripe", express.raw({ type: "application/json" }), payme
 app.use(express.json({ limit: "10kb" }));
 app.use(passport.initialize());
 
-app.use("/api/health", healthRoutes);
+app.use("/api/v1/health", healthRoutes);
 app.use("/api/v1/auth", authRoutes);
-app.use("/auth", authRoutes);
+app.use("/auth", authRoutes); // Keep for backwards compatibility / OAuth redirects
 app.use("/api/v1/provider", providerRoutes);
 app.use("/api/v1/providers", providersRoutes);
 app.use("/api/v1/services", serviceRoutes);
-app.use("/api/uploads", uploadRoutes);
-app.use("/api/working-hours", workingHoursRoutes);
-app.use("/api/availability", availabilityRoutes);
-app.use("/api/appointments", appointmentRoutes);
-app.use("/api/payments", paymentRoutes);
-app.use("/api/reviews", reviewRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/notifications", notificationRoutes);
+app.use("/api/v1/uploads", uploadRoutes);
+app.use("/api/v1/working-hours", workingHoursRoutes);
+app.use("/api/v1/availability", availabilityRoutes);
+app.use("/api/v1/appointments", appointmentRoutes);
+app.use("/api/v1/payments", paymentRoutes);
+app.use("/api/v1/reviews", reviewRoutes);
+app.use("/api/v1/dashboard", dashboardRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
 // 404 Handler
 app.use((req, res) => {

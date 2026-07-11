@@ -1,0 +1,21 @@
+{
+  "id": "bookify-env",
+  "name": "Bookify Environment",
+  "values": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000",
+      "enabled": true
+    },
+    {
+      "key": "providerEmail",
+      "value": "prov{{$timestamp}}@test.com",
+      "enabled": true
+    },
+    {
+      "key": "customerEmail",
+      "value": "cust{{$timestamp}}@test.com",
+      "enabled": true
+    }
+  ]
+}

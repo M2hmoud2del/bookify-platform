@@ -1,24 +1,63 @@
 {
   "info": {
-    "_postman_id": "7c96b365-2a5f-4c4d-94df-bookify-phase3",
-    "name": "Bookify Phase 3 - Provider & Services",
-    "description": "Postman collection for the implemented Phase 3 APIs in this project. The actual routes use /api/v1, for example /api/v1/providers and /api/v1/services.",
+    "_postman_id": "bookify-apis",
+    "name": "Bookify APIs",
+    "description": "Postman collection for the implemented APIs in this project. The actual routes use /api/v1, for example /api/v1/providers and /api/v1/services.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5000" },
-    { "key": "providerEmail", "value": "provider1@example.com" },
-    { "key": "providerPassword", "value": "password123" },
-    { "key": "customerEmail", "value": "customer1@example.com" },
-    { "key": "customerPassword", "value": "password123" },
-    { "key": "providerToken", "value": "" },
-    { "key": "customerToken", "value": "" },
-    { "key": "providerId", "value": "" },
-    { "key": "providerUserId", "value": "" },
-    { "key": "serviceId", "value": "" },
-    { "key": "appointmentId", "value": "" },
-    { "key": "checkoutSessionId", "value": "" },
-    { "key": "reviewId", "value": "" }
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "providerEmail",
+      "value": "provider1@example.com"
+    },
+    {
+      "key": "providerPassword",
+      "value": "password123"
+    },
+    {
+      "key": "customerEmail",
+      "value": "customer1@example.com"
+    },
+    {
+      "key": "customerPassword",
+      "value": "password123"
+    },
+    {
+      "key": "providerToken",
+      "value": ""
+    },
+    {
+      "key": "customerToken",
+      "value": ""
+    },
+    {
+      "key": "providerId",
+      "value": ""
+    },
+    {
+      "key": "providerUserId",
+      "value": ""
+    },
+    {
+      "key": "serviceId",
+      "value": ""
+    },
+    {
+      "key": "appointmentId",
+      "value": ""
+    },
+    {
+      "key": "checkoutSessionId",
+      "value": ""
+    },
+    {
+      "key": "reviewId",
+      "value": ""
+    }
   ],
   "item": [
     {
@@ -28,15 +67,27 @@
           "name": "Register Provider",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Test Provider\",\n  \"email\": \"{{providerEmail}}\",\n  \"password\": \"{{providerPassword}}\",\n  \"role\": \"provider\",\n  \"phone\": \"01000000000\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
             },
             "description": "Run once to create a provider user. If the user already exists, use Login Provider instead."
           },
@@ -57,15 +108,27 @@
           "name": "Login Provider",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{providerEmail}}\",\n  \"password\": \"{{providerPassword}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             },
             "description": "Gets a JWT and saves it as providerToken for protected provider/service requests."
           },
@@ -89,10 +152,18 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/google?role=customer",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "google"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ],
               "query": [
-                { "key": "role", "value": "customer" }
+                {
+                  "key": "role",
+                  "value": "customer"
+                }
               ]
             },
             "description": "Starts Google OAuth for a customer account. Because Google OAuth is browser-based, open this request in a browser/Postman OAuth flow and complete Google login. The callback returns a JWT JSON response."
@@ -102,15 +173,27 @@
           "name": "Register Customer",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"name\": \"Test Customer\",\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\",\n  \"role\": \"customer\",\n  \"phone\": \"01100000000\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "register"
+              ]
             },
             "description": "Run once to create a customer user. If the user already exists, use Login Customer instead."
           },
@@ -131,15 +214,27 @@
           "name": "Login Customer",
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"email\": \"{{customerEmail}}\",\n  \"password\": \"{{customerPassword}}\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "auth",
+                "login"
+              ]
             },
             "description": "Gets a customer JWT and saves it as customerToken for appointment and payment requests."
           },
@@ -163,10 +258,18 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/google?role=provider",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "google"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google"
+              ],
               "query": [
-                { "key": "role", "value": "provider" }
+                {
+                  "key": "role",
+                  "value": "provider"
+                }
               ]
             },
             "description": "Starts Google OAuth for a provider account. New Google users created through this route get role provider; existing users keep their current role."
@@ -179,8 +282,14 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/google/callback",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "google", "callback"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "google",
+                "callback"
+              ]
             },
             "description": "Google redirects here after successful login. Do not call this manually unless Google has provided the callback query parameters."
           },
@@ -205,17 +314,38 @@
         {
           "name": "Create or Update Provider Profile",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"businessName\": \"Cairo Wellness Studio\",\n  \"bio\": \"Professional wellness and consultation services.\",\n  \"category\": \"Wellness\",\n  \"address\": \"123 Nile Street\",\n  \"city\": \"Cairo\",\n  \"profileImage\": \"https://example.com/provider.jpg\",\n  \"timezone\": \"Africa/Cairo\"\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/provider/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "provider", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provider",
+                "profile"
+              ]
             },
             "description": "Creates the profile on first request, then updates it on later requests. businessName is required only for first creation."
           },
@@ -235,13 +365,29 @@
         {
           "name": "Get My Provider Profile",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/provider/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "provider", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "provider",
+                "profile"
+              ]
             },
             "description": "Protected route for the logged-in provider's own profile."
           },
@@ -270,12 +416,27 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/providers?search=wellness&city=Cairo&category=Wellness",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "providers"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers"
+              ],
               "query": [
-                { "key": "search", "value": "wellness" },
-                { "key": "city", "value": "Cairo" },
-                { "key": "category", "value": "Wellness" }
+                {
+                  "key": "search",
+                  "value": "wellness"
+                },
+                {
+                  "key": "city",
+                  "value": "Cairo"
+                },
+                {
+                  "key": "category",
+                  "value": "Wellness"
+                }
               ]
             },
             "description": "Public provider search. Supported filters: search, city, category."
@@ -302,8 +463,15 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/providers/{{providerId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "providers", "{{providerId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "{{providerId}}"
+              ]
             },
             "description": "Public provider profile by provider profile id, not user id."
           }
@@ -315,8 +483,16 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/providers/{{providerId}}/services",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "providers", "{{providerId}}", "services"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "providers",
+                "{{providerId}}",
+                "services"
+              ]
             },
             "description": "Public list of active services for a provider profile id."
           }
@@ -329,17 +505,37 @@
         {
           "name": "Create Service",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Initial Consultation\",\n  \"description\": \"A 60-minute introductory consultation.\",\n  \"category\": \"Wellness\",\n  \"price\": 250,\n  \"durationMinutes\": 60,\n  \"images\": [\n    \"https://example.com/service.jpg\"\n  ],\n  \"isActive\": true\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/services",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services"
+              ]
             },
             "description": "Protected provider-only route. Saves returned service._id as serviceId."
           },
@@ -359,17 +555,38 @@
         {
           "name": "Update Service",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"title\": \"Updated Consultation\",\n  \"description\": \"Updated consultation details.\",\n  \"category\": \"Consulting\",\n  \"price\": 300,\n  \"durationMinutes\": 45,\n  \"images\": [\n    \"https://example.com/updated-service.jpg\"\n  ]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services", "{{serviceId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services",
+                "{{serviceId}}"
+              ]
             },
             "description": "Protected provider-only route. You can send any one or more editable service fields."
           }
@@ -377,14 +594,39 @@
         {
           "name": "Disable Service",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"isActive\": false\n}" },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": false\n}"
+            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services", "{{serviceId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services",
+                "{{serviceId}}",
+                "status"
+              ]
             },
             "description": "Protected provider-only route. Disabled services will not show in public GET service routes."
           }
@@ -392,14 +634,39 @@
         {
           "name": "Enable Service",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "PATCH",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"isActive\": true\n}" },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"isActive\": true\n}"
+            },
             "url": {
               "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}/status",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services", "{{serviceId}}", "status"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services",
+                "{{serviceId}}",
+                "status"
+              ]
             },
             "description": "Protected provider-only route. Run this before testing public Get Service By Id if you disabled it."
           }
@@ -407,13 +674,29 @@
         {
           "name": "Delete Service",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "DELETE",
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services", "{{serviceId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services",
+                "{{serviceId}}"
+              ]
             },
             "description": "Protected provider-only route. This soft-deletes the service and sets isActive false. Run it last."
           }
@@ -430,13 +713,31 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/services?search=consultation&category=Wellness&minPrice=100&maxPrice=500",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services"
+              ],
               "query": [
-                { "key": "search", "value": "consultation" },
-                { "key": "category", "value": "Wellness" },
-                { "key": "minPrice", "value": "100" },
-                { "key": "maxPrice", "value": "500" }
+                {
+                  "key": "search",
+                  "value": "consultation"
+                },
+                {
+                  "key": "category",
+                  "value": "Wellness"
+                },
+                {
+                  "key": "minPrice",
+                  "value": "100"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "500"
+                }
               ]
             },
             "description": "Public active-service search. Supported filters: search, category, minPrice, maxPrice."
@@ -464,10 +765,420 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/api/v1/services/{{serviceId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "v1", "services", "{{serviceId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "services",
+                "{{serviceId}}"
+              ]
             },
             "description": "Public service details by active service id."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 4 Working Hours & Availability",
+      "item": [
+        {
+          "name": "Get My Working Hours",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/working-hours/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "working-hours",
+                "my"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update My Working Hours",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"workingHours\": [\n    {\n      \"dayOfWeek\": \"monday\",\n      \"startTime\": \"09:00\",\n      \"endTime\": \"17:00\",\n      \"isClosed\": false,\n      \"slotIntervalMinutes\": 60\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/working-hours/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "working-hours",
+                "my"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Provider Working Hours",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/working-hours/provider/{{providerId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "working-hours",
+                "provider",
+                "{{providerId}}"
+              ]
+            }
+          }
+        },
+        {
+          "name": "Check Availability",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/availability?providerId={{providerUserId}}&serviceId={{serviceId}}&date=2026-07-20",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "availability"
+              ],
+              "query": [
+                {
+                  "key": "providerId",
+                  "value": "{{providerUserId}}"
+                },
+                {
+                  "key": "serviceId",
+                  "value": "{{serviceId}}"
+                },
+                {
+                  "key": "date",
+                  "value": "2026-07-20"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 5 Appointment Management",
+      "item": [
+        {
+          "name": "Create Appointment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": \"{{providerUserId}}\",\n  \"serviceId\": \"{{serviceId}}\",\n  \"date\": \"2026-07-20\",\n  \"startTime\": \"10:00\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.data && json.data._id) pm.collectionVariables.set(\"appointmentId\", json.data._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get My Appointments (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "my"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Provider Appointments",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/provider",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "provider"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Appointment By Id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Accept Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/accept",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "accept"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Reject Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Schedule conflict\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/reject",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "reject"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Changed mind\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/cancel",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "cancel"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Complete Appointment",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/appointments/{{appointmentId}}/complete",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments",
+                "{{appointmentId}}",
+                "complete"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
           }
         }
       ]
@@ -478,17 +1189,37 @@
         {
           "name": "Create Appointment For Payment",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"providerId\": \"{{providerUserId}}\",\n  \"serviceId\": \"{{serviceId}}\",\n  \"date\": \"2026-07-20\",\n  \"startTime\": \"10:00\",\n  \"notes\": \"Payment flow test appointment\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/appointments",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "appointments"]
+              "raw": "{{baseUrl}}/api/v1/appointments",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "appointments"
+              ]
             },
             "description": "Creates a pending_payment appointment as a customer. Run Login Customer and Get Services first so customerToken, providerUserId, and serviceId are set."
           },
@@ -508,17 +1239,38 @@
         {
           "name": "Create Checkout Session",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"successUrl\": \"http://localhost:4200/payments/success?session_id={CHECKOUT_SESSION_ID}\",\n  \"cancelUrl\": \"http://localhost:4200/payments/cancel\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/payments/create-checkout-session",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "payments", "create-checkout-session"]
+              "raw": "{{baseUrl}}/api/v1/payments/create-checkout-session",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "create-checkout-session"
+              ]
             },
             "description": "Creates a Stripe Sandbox Checkout Session. Open data.checkoutUrl in the browser to pay with a Stripe test card."
           },
@@ -538,13 +1290,29 @@
         {
           "name": "Get My Payments - Customer",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/payments/my",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "payments", "my"]
+              "raw": "{{baseUrl}}/api/v1/payments/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "my"
+              ]
             },
             "description": "Returns payments for the logged-in customer."
           }
@@ -552,13 +1320,29 @@
         {
           "name": "Get My Payments - Provider",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/payments/my",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "payments", "my"]
+              "raw": "{{baseUrl}}/api/v1/payments/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "payments",
+                "my"
+              ]
             },
             "description": "Returns payments for the logged-in provider."
           }
@@ -568,8 +1352,14 @@
           "request": {
             "method": "POST",
             "header": [
-              { "key": "Content-Type", "value": "application/json" },
-              { "key": "Stripe-Signature", "value": "use-stripe-cli-forwarding-for-real-signature" }
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Stripe-Signature",
+                "value": "use-stripe-cli-forwarding-for-real-signature"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -577,8 +1367,14 @@
             },
             "url": {
               "raw": "{{baseUrl}}/api/webhooks/stripe",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "webhooks", "stripe"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "webhooks",
+                "stripe"
+              ]
             },
             "description": "Stripe requires a valid signed raw body. For real testing, run: stripe listen --forward-to localhost:5000/api/webhooks/stripe"
           }
@@ -591,17 +1387,37 @@
         {
           "name": "Create Review",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"rating\": 5,\n  \"comment\": \"Excellent service, very professional!\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/reviews",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reviews"]
+              "raw": "{{baseUrl}}/api/v1/reviews",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reviews"
+              ]
             },
             "description": "Creates a review for a completed appointment. Only the customer who booked the appointment can leave a review. Duplicate reviews are prevented."
           },
@@ -621,17 +1437,37 @@
         {
           "name": "Create Review - Duplicate (Should Fail)",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
             "body": {
               "mode": "raw",
               "raw": "{\n  \"appointmentId\": \"{{appointmentId}}\",\n  \"rating\": 4,\n  \"comment\": \"Trying to leave a second review\"\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/api/reviews",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reviews"]
+              "raw": "{{baseUrl}}/api/v1/reviews",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reviews"
+              ]
             },
             "description": "Attempts to create a duplicate review for the same appointment. Should return 409 Conflict."
           }
@@ -642,9 +1478,17 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/reviews/provider/{{providerUserId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reviews", "provider", "{{providerUserId}}"]
+              "raw": "{{baseUrl}}/api/v1/reviews/provider/{{providerUserId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reviews",
+                "provider",
+                "{{providerUserId}}"
+              ]
             },
             "description": "Public endpoint. Returns all reviews for a provider along with their average rating."
           }
@@ -652,13 +1496,29 @@
         {
           "name": "Get My Reviews",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{customerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/reviews/my",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "reviews", "my"]
+              "raw": "{{baseUrl}}/api/v1/reviews/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "reviews",
+                "my"
+              ]
             },
             "description": "Returns all reviews written by the logged-in customer."
           }
@@ -671,15 +1531,186 @@
         {
           "name": "Get Provider Dashboard",
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{providerToken}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/dashboard/provider",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "dashboard", "provider"]
+              "raw": "{{baseUrl}}/api/v1/dashboard/provider",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "dashboard",
+                "provider"
+              ]
             },
             "description": "Returns the provider dashboard with: today's appointments, upcoming appointments, monthly revenue, total revenue, average rating, customer statistics, and appointment statistics by status."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Phase 8 Uploads & Notifications",
+      "item": [
+        {
+          "name": "Upload Profile Image",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uploads/provider/profile-image",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uploads",
+                "provider",
+                "profile-image"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Upload Service Images",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uploads/services/{{serviceId}}/images",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uploads",
+                "services",
+                "{{serviceId}}",
+                "images"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Service Image",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"publicId\": \"example_public_id\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/uploads/services/{{serviceId}}/images",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "uploads",
+                "services",
+                "{{serviceId}}",
+                "images"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{providerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications/my",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "notifications",
+                "my"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{customerToken}}",
+                  "type": "string"
+                }
+              ]
+            }
           }
         }
       ]
