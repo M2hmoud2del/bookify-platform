@@ -4,27 +4,28 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
-import { BadgeComponent } from '../../../shared/components/badge/badge.component';
+import { getProviderById, getServiceById } from '../shared/public.models';
+import { Service } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-public-booking',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, CardComponent, AvatarComponent, BadgeComponent],
+  imports: [CommonModule, ButtonComponent, CardComponent, AvatarComponent],
   template: `
     <div class="public-booking">
       <div class="booking-header">
         <div class="provider-info">
           <app-avatar
-            [name]="provider()?.business_name ?? ''"
+            [name]="provider()?.profile?.businessName ?? ''"
             size="lg"
           />
           <div class="provider-details">
-            <h1 class="provider-name">{{ provider()?.business_name }}</h1>
-            <p class="provider-type">{{ provider()?.business_type }}</p>
+            <h1 class="provider-name">{{ provider()?.profile?.businessName }}</h1>
+            <p class="provider-type">{{ provider()?.profile?.category }}</p>
             <div class="provider-rating">
               <span class="material-icons-outlined">star</span>
-              <span>{{ provider()?.rating }}</span>
-              <span class="review-count">({{ provider()?.total_reviews }} reviews)</span>
+              <span>{{ provider()?.profile?.ratingAverage }}</span>
+              <span class="review-count">({{ provider()?.profile?.ratingCount }} reviews)</span>
             </div>
           </div>
         </div>
@@ -34,26 +35,26 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
         <div class="services-section">
           <h2 class="section-title">Select a Service</h2>
           <div class="services-list">
-            @for (service of services(); track service.id) {
+            @for (service of services(); track service._id) {
               <div
                 class="service-item"
-                [ngClass]="{ 'is-selected': selectedService()?.id === service.id }"
+                [ngClass]="{ 'is-selected': selectedService()?._id === service._id }"
                 (click)="selectedService.set(service)"
               >
                 <div class="service-info">
-                  <h3 class="service-name">{{ service.name }}</h3>
+                  <h3 class="service-name">{{ service.title }}</h3>
                   @if (service.description) {
                     <p class="service-description">{{ service.description }}</p>
                   }
                   <div class="service-meta">
                     <span class="duration">
                       <span class="material-icons-outlined">schedule</span>
-                      {{ service.duration_minutes }} min
+                      {{ service.durationMinutes }} min
                     </span>
                     <span class="price">{{ service.price | currency }}</span>
                   </div>
                 </div>
-                @if (selectedService()?.id === service.id) {
+                @if (selectedService()?._id === service._id) {
                   <span class="check-icon">
                     <span class="material-icons-outlined">check_circle</span>
                   </span>
@@ -135,7 +136,7 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
             <div class="summary">
               <div class="summary-row">
                 <span>Service</span>
-                <span>{{ selectedService()?.name }}</span>
+                <span>{{ selectedService()?.title }}</span>
               </div>
               <div class="summary-row">
                 <span>Date</span>
@@ -147,7 +148,7 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
               </div>
               <div class="summary-row">
                 <span>Duration</span>
-                <span>{{ selectedService()?.duration_minutes }} min</span>
+                <span>{{ selectedService()?.durationMinutes }} min</span>
               </div>
               <div class="summary-divider"></div>
               <div class="summary-total">
@@ -511,24 +512,13 @@ export class PublicBookingComponent {
   today = new Date();
   currentMonth = new Date();
 
-  selectedService = signal<any>(null);
+  selectedService = signal<Service | null>(null);
   selectedDate = signal<Date | null>(null);
   selectedTime = signal<string | null>(null);
 
-  provider = signal({
-    id: '1',
-    business_name: 'Blossom Beauty Salon',
-    business_type: 'Beauty Salon',
-    rating: 4.9,
-    total_reviews: 128,
-  });
+  provider = computed(() => getProviderById('1'));
 
-  services = signal([
-    { id: '1', name: 'Haircut & Styling', description: 'Professional haircut and styling session', duration_minutes: 45, price: 65 },
-    { id: '2', name: 'Hair Coloring', description: 'Full hair coloring service', duration_minutes: 90, price: 120 },
-    { id: '3', name: 'Beard Trim', description: 'Professional beard grooming', duration_minutes: 30, price: 35 },
-    { id: '4', name: 'Facial Treatment', description: 'Rejuvenating facial treatment', duration_minutes: 60, price: 85 },
-  ]);
+  services = computed(() => this.provider()?.services ?? []);
 
   availableTimes = signal(['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM']);
 

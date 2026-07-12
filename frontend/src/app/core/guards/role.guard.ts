@@ -17,15 +17,17 @@ export const roleGuard: CanActivateFn = (route) => {
     // Only create or update user if no user exists OR if role doesn't match
     if (!currentUser || currentUser.role !== role) {
       authService.user.set({
-        id: `dev-${role}-user-123`,
+        _id: `dev-${role}-user-123`,
+        name: role === 'provider' ? 'Provider Demo' : 'Customer Demo',
         email: `${role}@bookify.com`,
-        first_name: role === 'provider' ? 'Provider' : 'Customer',
-        last_name: 'Demo',
         role,
-        avatar_url: undefined,
+        authProvider: 'local',
         phone: undefined,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        avatar: undefined,
+        isActive: true,
+        deletedAt: null,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       });
       authService.session.set({ access_token: 'dev-token' });
     }

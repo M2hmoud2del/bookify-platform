@@ -1,151 +1,168 @@
+// ── User (matches backend Mongoose User schema) ──
 export type UserRole = 'customer' | 'provider';
+export type AuthProvider = 'local' | 'google';
 
 export interface User {
-  id: string;
+  _id: string;
+  name: string;
   email: string;
   role: UserRole;
-  first_name: string;
-  last_name: string;
+  authProvider: AuthProvider;
+  googleId?: string;
   phone?: string;
-  avatar_url?: string;
-  created_at: string;
-  updated_at: string;
+  avatar?: string;
+  isActive: boolean;
+  deletedAt: Date | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── ProviderProfile (matches backend Mongoose ProviderProfile schema) ──
+export type ModerationStatus = 'pending_review' | 'approved' | 'rejected';
+
+export interface ProfileImage {
+  url: string;
+  publicId: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+  moderationStatus: ModerationStatus;
 }
 
 export interface ProviderProfile {
-  id: string;
-  user_id: string;
-  business_name: string;
-  business_type: BusinessType;
-  description?: string;
+  _id: string;
+  user: string; // ObjectId ref → User
+  businessName: string;
+  bio?: string;
+  category?: string;
   address?: string;
   city?: string;
-  country?: string;
-  postal_code?: string;
-  website?: string;
-  rating: number;
-  total_reviews: number;
-  total_appointments: number;
-  monthly_revenue: number;
-  is_verified: boolean;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  profileImage: ProfileImage;
+  timezone: string;
+  ratingAverage: number;
+  ratingCount: number;
+  isVerified: boolean;
+  deletedAt: Date | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type BusinessType =
-  | 'doctor'
-  | 'dentist'
-  | 'photographer'
-  | 'lawyer'
-  | 'personal_trainer'
-  | 'beauty_salon'
-  | 'freelancer'
-  | 'consultant'
-  | 'other';
+// ── Service (matches backend Mongoose Service schema) ──
+export interface ServiceImage {
+  url: string;
+  publicId: string;
+  width: number;
+  height: number;
+  format: string;
+  bytes: number;
+  moderationStatus: ModerationStatus;
+}
 
 export interface Service {
-  id: string;
-  provider_id: string;
-  name: string;
+  _id: string;
+  provider: string; // ObjectId ref → User
+  title: string;
   description?: string;
-  duration_minutes: number;
-  price: number;
   category?: string;
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  price: number;
+  durationMinutes: number;
+  images: ServiceImage[];
+  isActive: boolean;
+  deletedAt: Date | null;
+  createdAt: string;
+  updatedAt: string;
 }
+
+// ── WorkingHour (matches backend Mongoose WorkingHour schema) ──
+export type DayOfWeek =
+  | 'sunday'
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday';
+
+export interface WorkingBreak {
+  startTime: string; // HH:mm
+  endTime: string;   // HH:mm
+}
+
+export interface WorkingHour {
+  _id: string;
+  provider: string; // ObjectId ref → User
+  dayOfWeek: DayOfWeek;
+  startTime?: string; // HH:mm
+  endTime?: string;   // HH:mm
+  isClosed: boolean;
+  slotIntervalMinutes: 15 | 30 | 45 | 60;
+  breaks: WorkingBreak[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ── Appointment (matches backend Mongoose Appointment schema) ──
+export type AppointmentStatus =
+  | 'pending_payment'
+  | 'confirmed'
+  | 'rejected'
+  | 'cancelled'
+  | 'completed';
+
+export type AppointmentPaymentStatus = 'unpaid' | 'paid' | 'refunded';
 
 export interface Appointment {
-  id: string;
-  customer_id: string;
-  provider_id: string;
-  service_id: string;
-  start_time: string;
-  end_time: string;
+  _id: string;
+  customer: string;       // ObjectId ref → User
+  provider: string;       // ObjectId ref → User
+  service: string;        // ObjectId ref → Service
+  date: string;           // ISO date
+  localDate: string;      // YYYY-MM-DD
+  startTime: string;      // HH:mm
+  endTime: string;        // HH:mm
   status: AppointmentStatus;
+  paymentStatus: AppointmentPaymentStatus;
   notes?: string;
-  total_amount: number;
-  payment_status: PaymentStatus;
-  created_at: string;
-  updated_at: string;
-  customer?: User;
-  provider?: ProviderProfile;
-  service?: Service;
+  timezone: string;
+  cancellationReason?: string;
+  cancelledBy?: string;   // ObjectId ref → User
+  cancelledAt?: string;
+  rejectionReason?: string;
+  rejectedAt?: string;
+  completedAt?: string;
+  reminderSentAt?: string;
+  reviewRequestSentAt?: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export type AppointmentStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'in_progress'
-  | 'completed'
-  | 'cancelled'
-  | 'no_show';
-
-export type PaymentStatus =
-  | 'pending'
-  | 'paid'
-  | 'refunded'
-  | 'failed';
-
+// ── Review (matches backend Mongoose Review schema) ──
 export interface Review {
-  id: string;
-  appointment_id: string;
-  customer_id: string;
-  provider_id: string;
-  rating: number;
+  _id: string;
+  appointment: string;  // ObjectId ref → Appointment
+  customer: string;    // ObjectId ref → User
+  provider: string;    // ObjectId ref → User
+  service: string;     // ObjectId ref → Service
+  rating: number;      // 1-5
   comment?: string;
-  response?: string;
-  created_at: string;
-  updated_at: string;
-  customer?: User;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface WorkingHours {
-  id: string;
-  provider_id: string;
-  day_of_week: number; // 0-6 (Sunday-Saturday)
-  start_time: string;
-  end_time: string;
-  is_working: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TimeSlot {
-  start: Date;
-  end: Date;
-  available: boolean;
-}
-
-export interface Notification {
-  id: string;
-  user_id: string;
-  type: NotificationType;
-  title: string;
-  message: string;
-  read: boolean;
-  created_at: string;
-}
-
-export type NotificationType =
-  | 'appointment_confirmed'
-  | 'appointment_cancelled'
-  | 'appointment_reminder'
-  | 'new_review'
-  | 'payment_received'
-  | 'schedule_change';
+// ── Payment (matches backend Mongoose Payment schema) ──
+export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 export interface Payment {
-  id: string;
-  user_id: string;
-  appointment_id: string;
+  _id: string;
+  appointment: string; // ObjectId ref → Appointment
+  customer: string;    // ObjectId ref → User
+  provider: string;    // ObjectId ref → User
   amount: number;
-  currency: string;
+  currency: string;    // 3-letter ISO code, lowercase
+  stripeSessionId?: string;
+  stripePaymentIntentId?: string;
   status: PaymentStatus;
-  payment_method?: string;
-  transaction_id?: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }

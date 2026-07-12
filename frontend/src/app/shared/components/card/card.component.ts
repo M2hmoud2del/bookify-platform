@@ -37,7 +37,7 @@ import { CommonModule } from '@angular/common';
       border: 1px solid var(--border);
       border-radius: var(--radius-xl);
       overflow: hidden;
-      transition: all var(--transition-normal);
+      transition: box-shadow var(--transition-normal), border-color var(--transition-normal), transform var(--transition-normal);
     }
 
     :host-context(.dark) .card {
@@ -46,16 +46,22 @@ import { CommonModule } from '@angular/common';
     }
 
     .card-hoverable:hover {
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--border-hover);
+      transform: translateY(-3px);
     }
 
     .card-clickable {
       cursor: pointer;
     }
 
+    .card-clickable:hover {
+      box-shadow: var(--shadow-md);
+    }
+
     .card-clickable:active {
       transform: translateY(0);
+      box-shadow: var(--shadow-sm);
     }
 
     .card-header {
@@ -65,6 +71,7 @@ import { CommonModule } from '@angular/common';
       align-items: center;
       justify-content: space-between;
       gap: var(--space-3);
+      flex-wrap: wrap;
     }
 
     :host-context(.dark) .card-header {
@@ -76,6 +83,7 @@ import { CommonModule } from '@angular/common';
       font-weight: var(--font-weight-semibold);
       color: var(--text-primary);
       margin: 0;
+      letter-spacing: -0.01em;
     }
 
     .card-body {
@@ -91,6 +99,18 @@ import { CommonModule } from '@angular/common';
     :host-context(.dark) .card-footer {
       border-color: var(--gray-700);
       background: var(--gray-900);
+    }
+
+    @media (max-width: 639px) {
+      .card-header {
+        padding: var(--space-3) var(--space-4);
+      }
+      .card-body {
+        padding: var(--space-4);
+      }
+      .card-footer {
+        padding: var(--space-3) var(--space-4);
+      }
     }
   `],
 })

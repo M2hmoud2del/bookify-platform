@@ -84,7 +84,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     }
 
     .rating-star.is-filled {
-      color: var(--warning500, #f59e0b);
+      color: var(--warning-500);
     }
 
     .rating-readonly .rating-star {

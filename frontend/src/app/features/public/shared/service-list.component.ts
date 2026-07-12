@@ -1,0 +1,223 @@
+import { Component, input, output } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { ButtonComponent } from '../../../shared/components/button/button.component';
+import { Service } from '../../../core/models/user.model';
+
+@Component({
+  selector: 'app-service-list',
+  standalone: true,
+  imports: [CommonModule, RouterLink, ButtonComponent],
+  template: `
+    <div class="service-list">
+      <div class="list-header">
+        <h2 class="list-title">Services</h2>
+        <span class="list-count">{{ services().length }} available</span>
+      </div>
+
+      <div class="list-body">
+        @for (service of services(); track service._id) {
+          <div class="list-item" [routerLink]="['/providers', providerId(), 'services', service._id]">
+            <div class="item-image">
+              <img [src]="service.images[0]?.url" [alt]="service.title" loading="lazy" />
+            </div>
+
+            <div class="item-info">
+              <div class="item-header">
+                <h3 class="item-name">{{ service.title }}</h3>
+                <span class="item-duration">
+                  <span class="material-icons-outlined">schedule</span>
+                  {{ service.durationMinutes }} min
+                </span>
+              </div>
+              <p class="item-desc">{{ service.description }}</p>
+            </div>
+
+            <div class="item-actions">
+              <span class="item-price">$ {{ service.price }}</span>
+              <app-button
+                variant="primary"
+                size="sm"
+                (onClick)="book.emit(service)"
+              >
+                Book
+              </app-button>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-list">
+            <span class="material-icons-outlined">spa</span>
+            <p>No services available</p>
+          </div>
+        }
+      </div>
+    </div>
+  `,
+  styles: [`
+    :host { display: block; }
+
+    .service-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .list-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .list-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .list-count {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      padding: var(--space-1) var(--space-3);
+      background: var(--gray-100);
+      border-radius: var(--radius-full);
+    }
+
+    :host-context(.dark) .list-count {
+      background: var(--gray-700);
+      color: var(--gray-300);
+    }
+
+    .list-body {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .list-item {
+      display: flex;
+      gap: var(--space-4);
+      padding: var(--space-4);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      transition: all var(--transition-fast);
+
+      &:hover {
+        border-color: var(--primary-200);
+        box-shadow: var(--shadow-sm);
+      }
+    }
+
+    :host-context(.dark) .list-item {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+
+      &:hover {
+        border-color: var(--primary-500);
+        box-shadow: var(--shadow-md);
+      }
+    }
+
+    .item-image {
+      width: 100px;
+      height: 100px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    @media (max-width: 639px) {
+      .item-image { width: 72px; height: 72px; }
+    }
+
+    .item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-2);
+      margin-bottom: var(--space-1);
+    }
+
+    .item-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .item-duration {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .item-duration .material-icons-outlined { font-size: 0.875rem; }
+
+    .item-desc {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: 1.5;
+      margin: 0;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .item-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      justify-content: center;
+      gap: var(--space-2);
+      flex-shrink: 0;
+    }
+
+    .item-price {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+    }
+
+    .empty-list {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-12);
+      color: var(--text-secondary);
+    }
+
+    .empty-list .material-icons-outlined {
+      font-size: 2.5rem;
+      color: var(--gray-300);
+    }
+
+    :host-context(.dark) .empty-list .material-icons-outlined {
+      color: var(--gray-600);
+    }
+  `],
+})
+export class ServiceListComponent {
+  services = input.required<Service[]>();
+  providerId = input.required<string>();
+  book = output<Service>();
+}

@@ -79,8 +79,7 @@ export class AuthService {
   async register(
     email: string,
     password: string,
-    firstName: string,
-    lastName: string,
+    name: string,
     role: UserRole
   ): Promise<boolean> {
     this.loading.set(true);
@@ -92,8 +91,7 @@ export class AuthService {
         password,
         options: {
           data: {
-            first_name: firstName,
-            last_name: lastName,
+            name,
             role,
           },
         },
@@ -105,8 +103,7 @@ export class AuthService {
         await supabase.from('user_profiles').insert({
           id: data.user.id,
           email,
-          first_name: firstName,
-          last_name: lastName,
+          name,
           role,
         });
 
@@ -206,7 +203,7 @@ export class AuthService {
       const { error } = await supabase
         .from('user_profiles')
         .update(profile)
-        .eq('id', currentUser.id);
+        .eq('id', currentUser._id);
 
       if (error) throw error;
 

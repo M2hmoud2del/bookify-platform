@@ -81,7 +81,7 @@ export interface SidebarItem {
 
       <div class="sidebar-user">
         <app-avatar
-          [src]="authService.user()?.avatar_url"
+          [src]="authService.user()?.avatar"
           [name]="userDisplayName()"
           size="sm"
         />
@@ -115,8 +115,8 @@ export interface SidebarItem {
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
-      z-index: var(--z-fixed);
-      transition: width var(--transition-normal);
+      z-index: var(--z-sidebar);
+      transition: width var(--transition-normal), transform var(--transition-normal);
     }
 
     :host-context(.dark) .sidebar {
@@ -134,6 +134,7 @@ export interface SidebarItem {
       align-items: center;
       padding: 0 var(--space-4);
       border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
     }
 
     :host-context(.dark) .sidebar-header {
@@ -143,42 +144,50 @@ export interface SidebarItem {
     .sidebar-brand {
       display: flex;
       align-items: center;
-      gap: var(--space-2);
+      gap: var(--space-3);
       color: var(--text-primary);
       text-decoration: none;
+      transition: opacity var(--transition-fast);
+    }
+
+    .sidebar-brand:hover {
+      opacity: 0.85;
     }
 
     .brand-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
-      background: var(--primary-500);
-      border-radius: var(--radius-md);
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+      border-radius: var(--radius-lg);
       color: white;
       flex-shrink: 0;
+      box-shadow: var(--shadow-primary);
     }
 
     .brand-icon .material-icons-outlined {
-      font-size: 1.125rem;
+      font-size: 1.25rem;
     }
 
     .brand-name {
       font-size: var(--font-size-lg);
       font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
     }
 
     .sidebar-nav {
       flex: 1;
-      padding: var(--space-4);
+      padding: var(--space-4) var(--space-3);
       overflow-y: auto;
+      overflow-x: hidden;
     }
 
     .nav-section {
       display: flex;
       flex-direction: column;
-      gap: var(--space-1);
+      gap: 2px;
     }
 
     .nav-item {
@@ -197,6 +206,7 @@ export interface SidebarItem {
       text-align: left;
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
+      position: relative;
     }
 
     .nav-item:hover {
@@ -204,23 +214,40 @@ export interface SidebarItem {
       color: var(--text-primary);
     }
 
-    .is-collapsed .nav-item {
-      justify-content: center;
-      padding: 0.625rem;
+    .nav-item.is-active {
+      background: var(--primary-100);
+      color: var(--primary-600);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    .nav-item.is-active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 60%;
+      background: var(--primary-500);
+      border-radius: var(--radius-full);
     }
 
     :host-context(.dark) .nav-item:hover {
       background: var(--gray-800);
     }
 
-    .nav-item.is-active {
-      background: var(--primary-100);
-      color: var(--primary-500);
-    }
-
     :host-context(.dark) .nav-item.is-active {
       background: rgba(79, 70, 229, 0.2);
       color: var(--primary-400);
+    }
+
+    .is-collapsed .nav-item {
+      justify-content: center;
+      padding: 0.625rem;
+    }
+
+    .is-collapsed .nav-item.is-active::before {
+      display: none;
     }
 
     .nav-icon {
@@ -230,6 +257,11 @@ export interface SidebarItem {
 
     .nav-icon .material-icons-outlined {
       font-size: 1.25rem;
+      transition: transform var(--transition-fast);
+    }
+
+    .nav-item:hover .nav-icon .material-icons-outlined {
+      transform: scale(1.1);
     }
 
     .nav-label {
@@ -244,11 +276,17 @@ export interface SidebarItem {
       background: var(--primary-500);
       color: white;
       border-radius: var(--radius-full);
+      min-width: 20px;
+      text-align: center;
     }
 
     .sidebar-footer {
-      padding: var(--space-3) var(--space-4);
+      padding: var(--space-3) var(--space-3);
       border-top: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
     }
 
     :host-context(.dark) .sidebar-footer {
@@ -261,6 +299,7 @@ export interface SidebarItem {
       gap: var(--space-3);
       padding: var(--space-3) var(--space-4);
       border-top: 1px solid var(--border);
+      flex-shrink: 0;
     }
 
     :host-context(.dark) .sidebar-user {
@@ -313,6 +352,7 @@ export interface SidebarItem {
       cursor: pointer;
       z-index: 1;
       transition: all var(--transition-fast);
+      box-shadow: var(--shadow-sm);
     }
 
     :host-context(.dark) .collapse-toggle {
@@ -321,12 +361,15 @@ export interface SidebarItem {
     }
 
     .collapse-toggle:hover {
-      background: var(--gray-100);
-      color: var(--text-primary);
+      background: var(--primary-50);
+      color: var(--primary-600);
+      border-color: var(--primary-300);
     }
 
     :host-context(.dark) .collapse-toggle:hover {
-      background: var(--gray-700);
+      background: rgba(79, 70, 229, 0.15);
+      color: var(--primary-400);
+      border-color: var(--primary-500);
     }
 
     .collapse-toggle .material-icons-outlined {
@@ -336,10 +379,15 @@ export interface SidebarItem {
     @media (max-width: 1023px) {
       .sidebar {
         transform: translateX(-100%);
+        box-shadow: var(--shadow-2xl);
       }
 
       .sidebar.is-open {
         transform: translateX(0);
+      }
+
+      .collapse-toggle {
+        display: none;
       }
     }
   `],
@@ -355,8 +403,7 @@ export class SidebarComponent {
 
   userDisplayName = computed(() => {
     const user = this.authService.user();
-    if (!user) return 'User';
-    return `${user.first_name} ${user.last_name}`;
+    return user?.name ?? 'User';
   });
 
   navItems = computed(() => {
@@ -375,7 +422,10 @@ export class SidebarComponent {
         { label: 'Working Hours', icon: 'schedule', path: '/provider/working-hours' },
         { label: 'Customers', icon: 'people', path: '/provider/customers' },
         { label: 'Reviews', icon: 'star', path: '/provider/reviews' },
-        { label: 'Payments', icon: 'payments', path: '/provider/payments' }
+        { label: 'Payments', icon: 'payments', path: '/provider/payments' },
+        { label: 'Notifications', icon: 'notifications', path: '/provider/notifications' },
+        { label: 'Profile', icon: 'person', path: '/provider/profile' },
+        { label: 'Upload Images', icon: 'add_a_photo', path: '/provider/upload-images' }
       );
     } else {
       items.push(
@@ -383,7 +433,9 @@ export class SidebarComponent {
         { label: 'Appointments', icon: 'event_note', path: '/customer/appointments' },
         { label: 'History', icon: 'history', path: '/customer/history' },
         { label: 'Payments', icon: 'receipt_long', path: '/customer/payments' },
-        { label: 'Reviews', icon: 'star', path: '/customer/reviews' }
+        { label: 'Reviews', icon: 'star', path: '/customer/reviews' },
+        { label: 'Notifications', icon: 'notifications', path: '/customer/notifications' },
+        { label: 'Profile', icon: 'person', path: '/customer/profile' }
       );
     }
 

@@ -58,16 +58,19 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
       border-radius: var(--radius-full);
       overflow: hidden;
       flex-shrink: 0;
+      box-shadow: var(--shadow-xs);
     }
 
     .avatar-xs {
       width: 24px;
       height: 24px;
+      box-shadow: none;
     }
 
     .avatar-sm {
       width: 32px;
       height: 32px;
+      box-shadow: none;
     }
 
     .avatar-lg {
@@ -78,6 +81,7 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
     .avatar-xl {
       width: 64px;
       height: 64px;
+      box-shadow: var(--shadow-sm);
     }
 
     .avatar-image {
@@ -90,9 +94,14 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-semibold);
       text-transform: uppercase;
+      letter-spacing: 0.02em;
     }
 
     .avatar-xs .avatar-initials {
+      font-size: 10px;
+    }
+
+    .avatar-sm .avatar-initials {
       font-size: var(--font-size-xs);
     }
 
@@ -114,6 +123,10 @@ export type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
       min-height: 8px;
       border-radius: var(--radius-full);
       border: 2px solid var(--surface);
+    }
+
+    :host-context(.dark) .avatar-status {
+      border-color: var(--gray-800);
     }
 
     .status-online {

@@ -1,66 +1,203 @@
-import { Component } from '@angular/core';
+import { Component, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { CardComponent } from '../../../shared/components/card/card.component';
-import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
-import { BadgeComponent } from '../../../shared/components/badge/badge.component';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { AppointmentCardComponent } from '../shared/appointment-card.component';
+import { MOCK_APPOINTMENTS, PopulatedAppointment } from '../shared/customer.models';
+
+type Tab = 'upcoming' | 'past' | 'cancelled';
 
 @Component({
   selector: 'app-customer-appointments',
   standalone: true,
-  imports: [CommonModule, RouterLink, CardComponent, AvatarComponent, BadgeComponent, ButtonComponent, EmptyStateComponent],
+  imports: [CommonModule, RouterLink, ButtonComponent, EmptyStateComponent, AppointmentCardComponent],
   template: `
     <div class="appointments-page">
       <div class="page-header">
-        <h1 class="page-title">Appointments</h1>
-        <p class="page-subtitle">Manage your upcoming and past appointments</p>
-      </div>
-      <app-card>
-        <div class="appointments-list">
-          <div class="appointment-item">
-            <div class="appointment-date">
-              <span class="date-day">02</span>
-              <span class="date-month">Jul</span>
-            </div>
-            <div class="appointment-info">
-              <h3 class="service-name">Haircut & Styling</h3>
-              <div class="provider-info">
-                <app-avatar name="Blossom Beauty" size="sm" />
-                <span>Blossom Beauty Salon</span>
-              </div>
-            </div>
-            <div class="appointment-meta">
-              <span class="time">10:00 AM</span>
-              <app-badge variant="success">Confirmed</app-badge>
-            </div>
-            <div class="appointment-actions">
-              <app-button variant="ghost" size="sm">Reschedule</app-button>
-              <app-button variant="ghost" size="sm">Cancel</app-button>
-            </div>
-          </div>
+        <div>
+          <h1 class="page-title">My Appointments</h1>
+          <p class="page-subtitle">Manage your upcoming and past appointments</p>
         </div>
-      </app-card>
+        <app-button variant="primary" routerLink="/customer/book">
+          <span class="material-icons-outlined">add</span>
+          Book New
+        </app-button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-bar">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'upcoming'"
+          (click)="activeTab.set('upcoming')"
+        >
+          Upcoming
+          <span class="tab-count">{{ upcomingAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'past'"
+          (click)="activeTab.set('past')"
+        >
+          Past
+          <span class="tab-count">{{ pastAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'cancelled'"
+          (click)="activeTab.set('cancelled')"
+        >
+          Cancelled
+          <span class="tab-count">{{ cancelledAppointments().length }}</span>
+        </button>
+      </div>
+
+      <!-- Content -->
+      @if (filteredAppointments().length > 0) {
+        <div class="appointments-list">
+          @for (appointment of filteredAppointments(); track appointment._id) {
+            <app-appointment-card [appointment]="appointment" />
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          [icon]="emptyIcon()"
+          [title]="emptyTitle()"
+          [description]="emptyDescription()"
+          actionLabel="Book an Appointment"
+          [routerLink]="['/customer/book']"
+        />
+      }
     </div>
   `,
   styles: [`
-    .appointments-page { display: flex; flex-direction: column; gap: var(--space-6); }
-    .page-header { margin-bottom: var(--space-2); }
-    .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
-    .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
-    .appointments-list { display: flex; flex-direction: column; }
-    .appointment-item { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4); border-bottom: 1px solid var(--border); }
-    .appointment-item:last-child { border-bottom: none; }
-    .appointment-date { display: flex; flex-direction: column; align-items: center; padding: var(--space-2); background: var(--gray-100); border-radius: var(--radius-lg); min-width: 56px; }
-    .date-day { font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--text-primary); }
-    .date-month { font-size: var(--font-size-xs); color: var(--text-secondary); text-transform: uppercase; }
-    .appointment-info { flex: 1; min-width: 0; }
-    .service-name { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); color: var(--text-primary); margin: 0 0 var(--space-1); }
-    .provider-info { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--text-secondary); }
-    .appointment-meta { display: flex; flex-direction: column; align-items: flex-end; gap: var(--space-2); }
-    .time { font-size: var(--font-size-sm); color: var(--text-secondary); }
-    .appointment-actions { display: flex; gap: var(--space-2); }
+    :host { display: block; }
+
+    .appointments-page {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .page-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--space-1) 0 0;
+    }
+
+    .tabs-bar {
+      display: flex;
+      gap: var(--space-1);
+      border-bottom: 2px solid var(--border);
+    }
+
+    :host-context(.dark) .tabs-bar { border-color: var(--gray-700); }
+
+    .tab-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: none;
+      border: none;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: all var(--transition-fast);
+
+      &:hover { color: var(--primary-500); }
+
+      &.is-active {
+        color: var(--primary-600);
+        border-bottom-color: var(--primary-500);
+      }
+    }
+
+    :host-context(.dark) .tab-btn.is-active { color: var(--primary-400); }
+
+    .tab-count {
+      padding: 0 var(--space-1);
+      font-size: var(--font-size-xs);
+      background: var(--gray-100);
+      border-radius: var(--radius-full);
+      min-width: 20px;
+      text-align: center;
+    }
+
+    :host-context(.dark) .tab-count {
+      background: var(--gray-700);
+      color: var(--gray-300);
+    }
+
+    .appointments-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
   `],
 })
-export class CustomerAppointmentsComponent {}
+export class CustomerAppointmentsComponent {
+  activeTab = signal<Tab>('upcoming');
+
+  upcomingAppointments = computed(() =>
+    MOCK_APPOINTMENTS.filter(a => ['pending_payment', 'confirmed'].includes(a.status))
+  );
+
+  pastAppointments = computed(() =>
+    MOCK_APPOINTMENTS.filter(a => a.status === 'completed')
+  );
+
+  cancelledAppointments = computed(() =>
+    MOCK_APPOINTMENTS.filter(a => a.status === 'cancelled')
+  );
+
+  filteredAppointments = computed<PopulatedAppointment[]>(() => {
+    const tab = this.activeTab();
+    if (tab === 'upcoming')   return this.upcomingAppointments();
+    if (tab === 'past')       return this.pastAppointments();
+    if (tab === 'cancelled')  return this.cancelledAppointments();
+    return [];
+  });
+
+  emptyIcon(): string {
+    return this.activeTab() === 'upcoming' ? 'event_available' : 'event_busy';
+  }
+
+  emptyTitle(): string {
+    const tab = this.activeTab();
+    if (tab === 'upcoming')   return 'No upcoming appointments';
+    if (tab === 'past')       return 'No past appointments';
+    if (tab === 'cancelled')  return 'No cancelled appointments';
+    return 'No appointments';
+  }
+
+  emptyDescription(): string {
+    const tab = this.activeTab();
+    if (tab === 'upcoming')   return 'Book your first appointment to get started.';
+    if (tab === 'past')       return 'Your completed appointments will appear here.';
+    if (tab === 'cancelled')  return 'Cancelled appointments will appear here.';
+    return '';
+  }
+}

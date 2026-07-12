@@ -5,7 +5,6 @@ import { filter } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 import { SearchComponent } from '../../shared/components/search/search.component';
-import { ButtonComponent } from '../../shared/components/button/button.component';
 
 export interface BreadcrumbItem {
   label: string;
@@ -15,7 +14,7 @@ export interface BreadcrumbItem {
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule, RouterLink, AvatarComponent, SearchComponent, ButtonComponent],
+  imports: [CommonModule, RouterLink, AvatarComponent, SearchComponent],
   template: `
     <header class="navbar">
       <div class="navbar-left">
@@ -54,7 +53,7 @@ export interface BreadcrumbItem {
 
         <div class="navbar-user" (click)="toggleUserMenu()" #userMenuTrigger>
           <app-avatar
-            [src]="authService.user()?.avatar_url"
+            [src]="authService.user()?.avatar"
             [name]="userDisplayName()"
             size="sm"
           />
@@ -388,7 +387,7 @@ export class NavbarComponent {
   userDisplayName = computed(() => {
     const user = this.authService.user();
     if (!user) return 'User';
-    return `${user.first_name} ${user.last_name}`;
+    return user.name;
   });
 
   roleLabel = computed(() => {

@@ -110,19 +110,12 @@ import { ButtonComponent } from '../button/button.component';
 
     :host-context(.dark) .modal-container {
       background: var(--gray-800);
+      border: 1px solid var(--gray-700);
     }
 
-    .modal-sm {
-      max-width: 360px;
-    }
-
-    .modal-lg {
-      max-width: 640px;
-    }
-
-    .modal-xl {
-      max-width: 800px;
-    }
+    .modal-sm { max-width: 360px; }
+    .modal-lg { max-width: 640px; }
+    .modal-xl { max-width: 800px; }
 
     .modal-header {
       padding: var(--space-5) var(--space-6);
@@ -130,6 +123,7 @@ import { ButtonComponent } from '../button/button.component';
       align-items: flex-start;
       gap: var(--space-4);
       border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
     }
 
     :host-context(.dark) .modal-header {
@@ -167,12 +161,14 @@ import { ButtonComponent } from '../button/button.component';
       font-weight: var(--font-weight-semibold);
       color: var(--text-primary);
       margin: 0;
+      letter-spacing: -0.01em;
     }
 
     .modal-description {
       font-size: var(--font-size-sm);
       color: var(--text-secondary);
       margin: 0.25rem 0 0;
+      line-height: var(--line-height-normal);
     }
 
     .modal-close {
@@ -186,6 +182,7 @@ import { ButtonComponent } from '../button/button.component';
       color: var(--gray-400);
       transition: all var(--transition-fast);
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .modal-close:hover {
@@ -214,6 +211,7 @@ import { ButtonComponent } from '../button/button.component';
       display: flex;
       justify-content: flex-end;
       gap: var(--space-3);
+      flex-shrink: 0;
     }
 
     :host-context(.dark) .modal-footer {
@@ -228,11 +226,51 @@ import { ButtonComponent } from '../button/button.component';
     @keyframes scaleIn {
       from {
         opacity: 0;
-        transform: scale(0.95);
+        transform: scale(0.95) translateY(10px);
       }
       to {
         opacity: 1;
-        transform: scale(1);
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @media (max-width: 639px) {
+      .modal-overlay {
+        padding: 0;
+        align-items: flex-end;
+      }
+
+      .modal-container {
+        max-width: 100%;
+        max-height: 90vh;
+        border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+        animation: slideUp var(--transition-normal);
+      }
+
+      .modal-header {
+        padding: var(--space-4) var(--space-4);
+      }
+
+      .modal-body {
+        padding: var(--space-4);
+      }
+
+      .modal-footer {
+        padding: var(--space-3) var(--space-4);
+        flex-direction: column-reverse;
+      }
+
+      .modal-footer app-button {
+        width: 100%;
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        transform: translateY(100%);
+      }
+      to {
+        transform: translateY(0);
       }
     }
   `],

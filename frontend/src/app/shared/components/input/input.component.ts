@@ -71,13 +71,14 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
     .input-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 0.375rem;
+      gap: 0.5rem;
     }
 
     .input-label {
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
-      color: var(--gray-700);
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
     }
 
     :host-context(.dark) .input-label {
@@ -86,6 +87,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
 
     .text-danger {
       color: var(--danger-500);
+      margin-left: 0.125rem;
     }
 
     .input-container {
@@ -100,25 +102,25 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-normal);
       line-height: 1.5rem;
-      color: var(--gray-900);
+      color: var(--text-primary);
       background: var(--surface);
-      border: 1px solid var(--gray-300);
+      border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      transition: all var(--transition-fast);
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
     }
 
     :host-context(.dark) .input-field {
       color: var(--gray-50);
-      background: var(--gray-800);
-      border-color: var(--gray-600);
+      background: var(--gray-900);
+      border-color: var(--gray-700);
     }
 
     .input-field::placeholder {
-      color: var(--gray-400);
+      color: var(--text-tertiary);
     }
 
     .input-field:hover:not(:disabled) {
-      border-color: var(--gray-400);
+      border-color: var(--border-hover);
     }
 
     .input-field:focus {
@@ -134,11 +136,11 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
     .input-field:disabled {
       opacity: 0.5;
       cursor: not-allowed;
-      background: var(--gray-100);
+      background: var(--gray-50);
     }
 
     :host-context(.dark) .input-field:disabled {
-      background: var(--gray-900);
+      background: var(--gray-800);
     }
 
     .input-field.has-icon-start {
@@ -154,8 +156,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
       display: flex;
       align-items: center;
       justify-content: center;
-      color: var(--gray-400);
+      color: var(--text-tertiary);
       pointer-events: none;
+      transition: color var(--transition-fast);
     }
 
     .input-icon-start {
@@ -172,12 +175,18 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/f
 
     .input-hint {
       font-size: var(--font-size-xs);
-      color: var(--gray-500);
+      color: var(--text-tertiary);
+      line-height: var(--line-height-normal);
     }
 
     .input-error {
       font-size: var(--font-size-xs);
       color: var(--danger-500);
+      font-weight: var(--font-weight-medium);
+      line-height: var(--line-height-normal);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
     }
 
     .has-error .input-field {

@@ -7,6 +7,7 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
+import { MOCK_PROVIDER_APPOINTMENTS, MOCK_PROVIDER_REVIEWS, PopulatedAppointment, PopulatedReview } from '../shared/provider.models';
 
 @Component({
   selector: 'app-provider-dashboard',
@@ -71,11 +72,11 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
           <span class="today-date">{{ todayDateString() }}</span>
         </div>
         <div class="schedule-timeline">
-          @for (appointment of todayAppointments(); track appointment.id) {
+          @for (appointment of todayAppointments(); track appointment._id) {
             <div class="timeline-item">
               <div class="timeline-time">
-                <span class="time-start">{{ formatTime(appointment.start_time) }}</span>
-                <span class="time-end">{{ formatTime(appointment.end_time) }}</span>
+                <span class="time-start">{{ formatTime(appointment.startTime) }}</span>
+                <span class="time-end">{{ formatTime(appointment.endTime) }}</span>
               </div>
               <div class="timeline-marker" [ngClass]="appointment.status">
                 <span class="marker-dot"></span>
@@ -84,18 +85,18 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
               <div class="timeline-content">
                 <div class="appointment-card">
                   <div class="appointment-header">
-                    <p class="appointment-service">{{ appointment.service_name }}</p>
+                    <p class="appointment-service">{{ appointment.service.title }}</p>
                     <app-badge [variant]="getStatusVariant(appointment.status)" size="sm">
                       {{ appointment.status }}
                     </app-badge>
                   </div>
                   <div class="appointment-customer">
                     <app-avatar
-                      [src]="appointment.customer_avatar ?? undefined"
-                      [name]="appointment.customer_name"
+                      [src]="appointment.customer.avatar ?? undefined"
+                      [name]="appointment.customer.name"
                       size="sm"
                     />
-                    <span>{{ appointment.customer_name }}</span>
+                    <span>{{ appointment.customer.name }}</span>
                   </div>
                   <p class="appointment-notes" *ngIf="appointment.notes">{{ appointment.notes }}</p>
                 </div>
@@ -118,16 +119,16 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
             <a routerLink="/provider/reviews" class="view-all-link">View all</a>
           </div>
           <div class="reviews-list">
-            @for (review of recentReviews(); track review.id) {
+            @for (review of recentReviews(); track review._id) {
               <div class="review-item">
                 <div class="review-header">
                   <app-avatar
-                    [src]="review.customer_avatar ?? undefined"
-                    [name]="review.customer_name"
+                    [src]="review.customer.avatar ?? undefined"
+                    [name]="review.customer.name"
                     size="sm"
                   />
                   <div class="review-meta">
-                    <p class="customer-name">{{ review.customer_name }}</p>
+                    <p class="customer-name">{{ review.customer.name }}</p>
                     <div class="review-rating">
                       @for (star of [1,2,3,4,5]; track star) {
                         <span class="material-icons-outlined star" [ngClass]="{ 'filled': star <= review.rating }">
@@ -303,7 +304,7 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
       border-color: var(--success-100);
     }
 
-    .timeline-marker.in_progress .marker-dot {
+    .timeline-marker.pending_payment .marker-dot {
       background: var(--warning-500);
       border-color: var(--warning-100);
     }
@@ -525,7 +526,7 @@ import { BadgeComponent } from '../../../shared/components/badge/badge.component
 export class ProviderDashboardComponent {
   authService = inject(AuthService);
 
-  userFirstName = () => this.authService.user()?.first_name ?? 'Provider';
+  userFirstName = () => this.authService.user()?.name ?? 'Provider';
 
   todayDateString = () => {
     const today = new Date();
@@ -545,65 +546,26 @@ export class ProviderDashboardComponent {
     cancelled: 2,
   });
 
-  todayAppointments = signal([
-    {
-      id: '1',
-      service_name: 'Haircut & Styling',
-      customer_name: 'Emma Wilson',
-      customer_avatar: null,
-      start_time: '2026-07-01T09:00:00',
-      end_time: '2026-07-01T10:00:00',
-      status: 'completed',
-      notes: 'First-time customer',
-    },
-    {
-      id: '2',
-      service_name: 'Hair Coloring',
-      customer_name: 'James Brown',
-      customer_avatar: null,
-      start_time: '2026-07-01T10:30:00',
-      end_time: '2026-07-01T12:00:00',
-      status: 'in_progress',
-    },
-    {
-      id: '3',
-      service_name: 'Beard Trim',
-      customer_name: 'Marcus Lee',
-      customer_avatar: null,
-      start_time: '2026-07-01T14:00:00',
-      end_time: '2026-07-01T14:30:00',
-      status: 'confirmed',
-    },
-  ]);
+  todayAppointments = signal<PopulatedAppointment[]>(MOCK_PROVIDER_APPOINTMENTS.filter(a => a.localDate === '2026-07-12'));
 
-  recentReviews = signal([
-    {
-      id: '1',
-      customer_name: 'Emma Wilson',
-      customer_avatar: null,
-      rating: 5,
-      comment: 'Amazing service! Will definitely come back.',
-    },
-    {
-      id: '2',
-      customer_name: 'David Chen',
-      customer_avatar: null,
-      rating: 4,
-      comment: 'Great haircut, very professional.',
-    },
-  ]);
+  recentReviews = signal<PopulatedReview[]>(MOCK_PROVIDER_REVIEWS.slice(0, 2));
 
-  formatTime(dateStr: string): string {
-    return new Date(dateStr).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+  formatTime(time: string): string {
+    if (!time) return '';
+    const [h, m] = time.split(':');
+    const hour = parseInt(h, 10);
+    const ampm = hour >= 12 ? 'PM' : 'AM';
+    const hour12 = hour % 12 || 12;
+    return `${hour12}:${m} ${ampm}`;
   }
 
-  getStatusVariant(status: string): 'success' | 'warning' | 'gray' {
+  getStatusVariant(status: string): 'success' | 'warning' | 'gray' | 'primary' {
     switch (status) {
       case 'confirmed':
+        return 'primary';
       case 'completed':
         return 'success';
-      case 'in_progress':
-      case 'pending':
+      case 'pending_payment':
         return 'warning';
       default:
         return 'gray';

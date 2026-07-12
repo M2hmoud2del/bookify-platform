@@ -54,6 +54,7 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
       transition: all var(--transition-fast);
       position: relative;
       white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
     }
 
     .btn:disabled {
@@ -61,14 +62,20 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
       cursor: not-allowed;
     }
 
+    .btn:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
     .btn-primary {
       background: var(--primary-500);
       color: white;
       border: 1px solid transparent;
+      box-shadow: 0 1px 2px rgba(79, 70, 229, 0.2);
     }
 
     .btn-primary:hover:not(:disabled) {
       background: var(--primary-600);
+      box-shadow: var(--shadow-primary);
     }
 
     .btn-secondary {
@@ -103,12 +110,14 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
 
     .btn-outline:hover:not(:disabled) {
       background: var(--gray-50);
-      border-color: var(--gray-400);
+      border-color: var(--primary-300);
+      color: var(--primary-600);
     }
 
     :host-context(.dark) .btn-outline:hover:not(:disabled) {
       background: var(--gray-800);
-      border-color: var(--gray-500);
+      border-color: var(--primary-500);
+      color: var(--primary-400);
     }
 
     .btn-ghost {
@@ -133,10 +142,12 @@ export type ButtonSize = 'sm' | 'md' | 'lg';
       background: var(--danger-500);
       color: white;
       border: 1px solid transparent;
+      box-shadow: 0 1px 2px rgba(239, 68, 68, 0.2);
     }
 
     .btn-danger:hover:not(:disabled) {
       background: var(--danger-600);
+      box-shadow: 0 4px 14px 0 rgba(239, 68, 68, 0.25);
     }
 
     .btn-sm {

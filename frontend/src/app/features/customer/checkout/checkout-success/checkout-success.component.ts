@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
@@ -40,7 +40,7 @@ import { CardComponent } from '../../../../shared/components/card/card.component
               <span class="material-icons-outlined">event</span>
               <div class="detail-content">
                 <span class="detail-label">Date</span>
-                <span class="detail-value">July 2, 2026</span>
+                <span class="detail-value">July 15, 2026</span>
               </div>
             </div>
             <div class="detail-item">
@@ -54,18 +54,23 @@ import { CardComponent } from '../../../../shared/components/card/card.component
               <span class="material-icons-outlined">payments</span>
               <div class="detail-content">
                 <span class="detail-label">Total</span>
-                <span class="detail-value price">$65.00</span>
+                <span class="detail-value price">$ 65.00</span>
               </div>
             </div>
           </div>
         </app-card>
 
+        <div class="info-banner">
+          <span class="material-icons-outlined">notifications</span>
+          <span>We'll send you a reminder 24 hours before your appointment.</span>
+        </div>
+
         <div class="actions">
-          <app-button variant="primary" routerLink="/customer/dashboard">
-            View Dashboard
-          </app-button>
-          <app-button variant="outline" routerLink="/customer/appointments">
+          <app-button variant="primary" routerLink="/customer/appointments">
             View Appointments
+          </app-button>
+          <app-button variant="outline" routerLink="/customer/dashboard">
+            Go to Dashboard
           </app-button>
         </div>
       </div>
@@ -99,6 +104,13 @@ import { CardComponent } from '../../../../shared/components/card/card.component
       background: var(--success-100);
       border-radius: var(--radius-full);
       margin-bottom: var(--space-6);
+      animation: pop-in 0.4s ease-out;
+    }
+
+    @keyframes pop-in {
+      0%   { transform: scale(0); opacity: 0; }
+      60%  { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; }
     }
 
     :host-context(.dark) .success-icon {
@@ -120,12 +132,12 @@ import { CardComponent } from '../../../../shared/components/card/card.component
     .success-message {
       font-size: var(--font-size-base);
       color: var(--text-secondary);
-      margin: 0 0 var(--space-8);
+      margin: 0 0 var(--space-6);
     }
 
     .details-card {
       text-align: left;
-      margin-bottom: var(--space-6);
+      margin-bottom: var(--space-5);
     }
 
     .card-title {
@@ -152,9 +164,7 @@ import { CardComponent } from '../../../../shared/components/card/card.component
       font-size: 1.25rem;
     }
 
-    .detail-content {
-      flex: 1;
-    }
+    .detail-content { flex: 1; }
 
     .detail-label {
       display: block;
@@ -173,6 +183,29 @@ import { CardComponent } from '../../../../shared/components/card/card.component
       color: var(--primary-500);
       font-size: var(--font-size-lg);
       font-weight: var(--font-weight-bold);
+    }
+
+    .info-banner {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      background: var(--primary-50);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-6);
+      font-size: var(--font-size-sm);
+      color: var(--primary-700);
+      text-align: left;
+    }
+
+    :host-context(.dark) .info-banner {
+      background: rgba(79, 70, 229, 0.1);
+      color: var(--primary-300);
+    }
+
+    .info-banner .material-icons-outlined {
+      font-size: 1.125rem;
+      flex-shrink: 0;
     }
 
     .actions {

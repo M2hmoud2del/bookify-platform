@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { InputComponent } from '../../../../shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '../../../../shared/components/dropdown/dropdown.component';
+import { SelectOption } from '../../../../shared/components/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-service-form',
@@ -16,7 +16,6 @@ import { SelectComponent, SelectOption } from '../../../../shared/components/dro
     ButtonComponent,
     CardComponent,
     InputComponent,
-    SelectComponent,
   ],
   template: `
     <div class="service-form-page">
@@ -36,8 +35,8 @@ import { SelectComponent, SelectOption } from '../../../../shared/components/dro
             <app-input
               label="Service Name"
               placeholder="e.g., Haircut & Styling"
-              [(ngModel)]="service.name"
-              name="name"
+              [(ngModel)]="service.title"
+              name="title"
               [required]="true"
             />
 
@@ -53,8 +52,8 @@ import { SelectComponent, SelectOption } from '../../../../shared/components/dro
                 label="Duration (minutes)"
                 type="number"
                 placeholder="45"
-                [(ngModel)]="service.duration"
-                name="duration"
+                [(ngModel)]="service.durationMinutes"
+                name="durationMinutes"
                 [required]="true"
               />
 
@@ -308,9 +307,9 @@ export class ServiceFormComponent {
   isEditMode = computed(() => !!this.serviceId());
 
   service = {
-    name: '',
+    title: '',
     category: '',
-    duration: 45,
+    durationMinutes: 45,
     price: 0,
     description: '',
     isActive: true,

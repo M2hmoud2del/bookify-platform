@@ -59,9 +59,15 @@ import { AuthService } from '../../core/services/auth.service';
       overflow-y: auto;
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 1023px) {
       .layout-content {
         padding: var(--space-4);
+      }
+    }
+
+    @media (max-width: 767px) {
+      .layout-content {
+        padding: var(--space-3);
       }
     }
 
@@ -69,8 +75,13 @@ import { AuthService } from '../../core/services/auth.service';
       position: fixed;
       inset: 0;
       background: rgba(15, 23, 42, 0.5);
-      z-index: calc(var(--z-fixed) - 1);
+      backdrop-filter: blur(2px);
+      z-index: calc(var(--z-sidebar) - 1);
       animation: fadeIn var(--transition-fast);
+    }
+
+    :host-context(.dark) .mobile-overlay {
+      background: rgba(0, 0, 0, 0.6);
     }
 
     @keyframes fadeIn {

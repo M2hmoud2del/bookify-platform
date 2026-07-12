@@ -19,6 +19,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
         </a>
 
         <nav class="navbar-nav">
+          <a routerLink="/providers" class="nav-link">Find Providers</a>
           <a routerLink="/#features" class="nav-link">Features</a>
           <a routerLink="/#how-it-works" class="nav-link">How It Works</a>
           <a routerLink="/#pricing" class="nav-link">Pricing</a>
@@ -47,6 +48,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       @if (mobileMenuOpen()) {
         <div class="mobile-menu">
           <nav class="mobile-nav">
+            <a routerLink="/providers" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Find Providers</a>
             <a routerLink="/#features" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Features</a>
             <a routerLink="/#how-it-works" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">How It Works</a>
             <a routerLink="/#pricing" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Pricing</a>
@@ -86,13 +88,15 @@ import { ButtonComponent } from '../../shared/components/button/button.component
     }
 
     .navbar.is-scrolled {
-      background: rgba(255, 255, 255, 0.9);
-      backdrop-filter: blur(8px);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
     }
 
     :host-context(.dark) .navbar.is-scrolled {
-      background: rgba(17, 24, 39, 0.9);
+      background: rgba(15, 23, 42, 0.85);
       border-color: var(--gray-700);
     }
 
@@ -101,6 +105,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       align-items: center;
       justify-content: space-between;
       height: 100%;
+      gap: var(--space-4);
     }
 
     .navbar-brand {
@@ -109,6 +114,11 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       gap: var(--space-2);
       text-decoration: none;
       color: var(--text-primary);
+      transition: opacity var(--transition-fast);
+    }
+
+    .navbar-brand:hover {
+      opacity: 0.85;
     }
 
     .brand-icon {
@@ -117,9 +127,15 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       justify-content: center;
       width: 36px;
       height: 36px;
-      background: var(--primary-500);
+      background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
       border-radius: var(--radius-lg);
       color: white;
+      box-shadow: var(--shadow-primary);
+      transition: box-shadow var(--transition-fast);
+    }
+
+    .navbar-brand:hover .brand-icon {
+      box-shadow: var(--shadow-primary-lg);
     }
 
     .brand-icon .material-icons-outlined {
@@ -129,6 +145,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
     .brand-text {
       font-size: var(--font-size-lg);
       font-weight: var(--font-weight-bold);
+      letter-spacing: -0.02em;
     }
 
     .navbar-nav {
@@ -137,7 +154,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       gap: var(--space-6);
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 1023px) {
       .navbar-nav {
         display: none;
       }
@@ -149,10 +166,27 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       color: var(--text-secondary);
       text-decoration: none;
       transition: color var(--transition-fast);
+      position: relative;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-500);
+      border-radius: var(--radius-full);
+      transition: width var(--transition-fast);
     }
 
     .nav-link:hover {
       color: var(--primary-500);
+    }
+
+    .nav-link:hover::after {
+      width: 100%;
     }
 
     .navbar-actions {
@@ -161,7 +195,7 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       gap: var(--space-3);
     }
 
-    @media (max-width: 767px) {
+    @media (max-width: 1023px) {
       .navbar-actions {
         display: none;
       }
@@ -171,9 +205,23 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       display: none;
       padding: var(--space-2);
       color: var(--text-primary);
+      border-radius: var(--radius-lg);
+      transition: background var(--transition-fast);
     }
 
-    @media (max-width: 767px) {
+    .mobile-menu-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .navbar.is-scrolled .mobile-menu-btn:hover {
+      background: var(--gray-100);
+    }
+
+    :host-context(.dark) .navbar.is-scrolled .mobile-menu-btn:hover {
+      background: var(--gray-800);
+    }
+
+    @media (max-width: 1023px) {
       .mobile-menu-btn {
         display: flex;
       }
@@ -194,6 +242,8 @@ import { ButtonComponent } from '../../shared/components/button/button.component
       display: flex;
       flex-direction: column;
       gap: var(--space-4);
+      box-shadow: var(--shadow-lg);
+      animation: fadeInDown var(--transition-normal);
     }
 
     :host-context(.dark) .mobile-menu {
@@ -204,29 +254,50 @@ import { ButtonComponent } from '../../shared/components/button/button.component
     .mobile-nav {
       display: flex;
       flex-direction: column;
-      gap: var(--space-2);
+      gap: var(--space-1);
     }
 
     .mobile-nav-link {
-      padding: var(--space-3);
+      padding: var(--space-3) var(--space-4);
       font-size: var(--font-size-base);
+      font-weight: var(--font-weight-medium);
       color: var(--text-primary);
       text-decoration: none;
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
     }
 
     .mobile-nav-link:hover {
       background: var(--gray-100);
+      color: var(--primary-600);
     }
 
     :host-context(.dark) .mobile-nav-link:hover {
       background: var(--gray-700);
+      color: var(--primary-400);
     }
 
     .mobile-actions {
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
+      padding-top: var(--space-3);
+      border-top: 1px solid var(--border);
+    }
+
+    :host-context(.dark) .mobile-actions {
+      border-color: var(--gray-700);
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
   `],
 })

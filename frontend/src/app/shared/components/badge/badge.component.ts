@@ -29,11 +29,14 @@ export type BadgeVariant = 'primary' | 'secondary' | 'success' | 'warning' | 'da
     .badge {
       display: inline-flex;
       align-items: center;
-      padding: 0.125rem 0.5rem;
+      gap: 0.25rem;
+      padding: 0.25rem 0.625rem;
       font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-medium);
-      border-radius: var(--radius-md);
+      font-weight: var(--font-weight-semibold);
+      border-radius: var(--radius-full);
       white-space: nowrap;
+      line-height: 1;
+      letter-spacing: 0.01em;
     }
 
     .badge-primary {

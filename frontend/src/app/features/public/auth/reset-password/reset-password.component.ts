@@ -1,313 +1,204 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { InputComponent } from '../../../../shared/components/input/input.component';
+import { AuthLayoutComponent } from '../shared/auth-layout.component';
+import { PasswordInputComponent } from '../shared/password-input.component';
+import { PasswordStrengthComponent } from '../shared/password-strength.component';
+import { validatePassword, validatePasswordConfirm } from '../shared/auth-validators';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ButtonComponent, InputComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    ButtonComponent,
+    AuthLayoutComponent,
+    PasswordInputComponent,
+    PasswordStrengthComponent,
+  ],
   template: `
-    <div class="auth-page">
-      <div class="auth-container">
-        @if (!success()) {
-          <div class="auth-header">
-            <a routerLink="/" class="auth-logo">
-              <span class="logo-icon">
-                <span class="material-icons-outlined">calendar_month</span>
-              </span>
-              <span class="logo-text">Bookify</span>
-            </a>
-            <h1 class="auth-title">Set new password</h1>
-            <p class="auth-subtitle">Your new password must be different from previous passwords.</p>
+    <app-auth-layout
+      title="Set new password"
+      subtitle="Choose a strong password you haven't used before"
+      imageUrl="https://images.pexels.com/photos/3184405/pexels-photo-3184405.jpeg?auto=compress&cs=tinysrgb&w=1200"
+      quote="Security matters. Bookify makes it simple to stay protected."
+      quoteAuthor="James Brown, Freelance Consultant"
+    >
+      <!-- Success state -->
+      @if (done()) {
+        <div class="success-card">
+          <div class="success-icon">
+            <span class="material-icons-outlined">lock_reset</span>
           </div>
+          <h2 class="success-title">Password updated!</h2>
+          <p class="success-body">
+            Your password has been changed successfully. You can now sign in with your new credentials.
+          </p>
+          <a routerLink="/login" class="back-btn">
+            Go to Sign In
+          </a>
+        </div>
 
-          <form class="auth-form" (ngSubmit)="onSubmit()">
-            <app-input
-              label="New Password"
-              type="password"
-              placeholder="Enter new password"
-              iconStart="lock"
-              [error]="passwordError() ?? undefined"
-              [(ngModel)]="password"
-              name="password"
-              [required]="true"
-            />
-
-            <app-input
-              label="Confirm Password"
-              type="password"
-              placeholder="Confirm new password"
-              iconStart="lock"
-              [error]="confirmPasswordError() ?? undefined"
-              [(ngModel)]="confirmPassword"
-              name="confirmPassword"
-              [required]="true"
-            />
-
-            @if (authService.error()) {
-              <p class="auth-error">{{ authService.error() }}</p>
-            }
-
-            <div class="password-requirements">
-              <p class="requirements-title">Password must contain:</p>
-              <ul class="requirements-list">
-                <li [class.is-valid]="password.length >= 8">At least 8 characters</li>
-                <li [class.is-valid]="/[A-Z]/.test(password)">One uppercase letter</li>
-                <li [class.is-valid]="/[a-z]/.test(password)">One lowercase letter</li>
-                <li [class.is-valid]="/[0-9]/.test(password)">One number</li>
-              </ul>
-            </div>
-
-            <app-button type="submit" variant="primary" [fullWidth]="true" [loading]="authService.loading()">
-              Reset Password
-            </app-button>
-          </form>
-        } @else {
-          <div class="success-state">
-            <div class="success-icon">
-              <span class="material-icons-outlined">check_circle</span>
-            </div>
-            <h1 class="auth-title">Password reset successful</h1>
-            <p class="auth-subtitle">
-              Your password has been successfully reset. You can now sign in with your new password.
-            </p>
-            <app-button variant="primary" routerLink="/login">
-              Continue to Sign In
-            </app-button>
+      } @else {
+        @if (authService.error()) {
+          <div class="auth-banner auth-banner-error">
+            <span class="material-icons-outlined">error_outline</span>
+            <span>{{ authService.error() }}</span>
           </div>
         }
-      </div>
 
-      <div class="auth-image">
-        <img
-          src="https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=800"
-          alt="Reset password illustration"
-        />
-      </div>
-    </div>
+        <form class="auth-form" (ngSubmit)="onSubmit()" novalidate>
+          <div class="form-field-group">
+            <app-password-input
+              label="New Password"
+              placeholder="Create a new password"
+              [required]="true"
+              [error]="passwordError() ?? undefined"
+              autocomplete="new-password"
+              [(ngModel)]="password"
+              name="password"
+              (blur)="passwordError.set(validatePassword(password))"
+            />
+            <app-password-strength [password]="password" />
+          </div>
+
+          <app-password-input
+            label="Confirm New Password"
+            placeholder="Repeat your new password"
+            [required]="true"
+            [error]="confirmError() ?? undefined"
+            autocomplete="new-password"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            (blur)="confirmError.set(validatePasswordConfirm(password, confirmPassword))"
+          />
+
+          <app-button
+            type="submit"
+            variant="primary"
+            [fullWidth]="true"
+            [loading]="authService.loading()"
+          >
+            Update Password
+          </app-button>
+        </form>
+      }
+    </app-auth-layout>
   `,
   styles: [`
-    :host {
-      display: block;
-      min-height: 100vh;
-    }
+    :host { display: block; }
 
-    .auth-page {
-      display: grid;
-      grid-template-columns: 1fr;
-      min-height: 100vh;
-    }
-
-    @media (min-width: 1024px) {
-      .auth-page {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    .auth-container {
+    .auth-banner {
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: var(--space-8);
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    @media (min-width: 768px) {
-      .auth-container {
-        padding: var(--space-12);
-      }
-    }
-
-    .auth-header {
-      margin-bottom: var(--space-8);
-    }
-
-    .auth-logo {
-      display: inline-flex;
       align-items: center;
       gap: var(--space-2);
-      color: var(--text-primary);
-      text-decoration: none;
-      margin-bottom: var(--space-6);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-5);
+    }
+    .auth-banner .material-icons-outlined { font-size: 1.125rem; flex-shrink: 0; }
+    .auth-banner-error {
+      background: var(--danger-50);
+      color: var(--danger-700);
+      border: 1px solid var(--danger-200);
+    }
+    :host-context(.dark) .auth-banner-error {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger-300);
+      border-color: rgba(239, 68, 68, 0.25);
     }
 
-    .logo-icon {
+    .auth-form { display: flex; flex-direction: column; gap: var(--space-4); }
+
+    .form-field-group { display: flex; flex-direction: column; gap: var(--space-2); }
+
+    /* Success */
+    .success-card {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: var(--primary-500);
-      border-radius: var(--radius-lg);
-      color: white;
-    }
-
-    .logo-icon .material-icons-outlined {
-      font-size: 1.5rem;
-    }
-
-    .logo-text {
-      font-size: var(--font-size-xl);
-      font-weight: var(--font-weight-bold);
-    }
-
-    .auth-title {
-      font-size: var(--font-size-3xl);
-      font-weight: var(--font-weight-bold);
-      color: var(--text-primary);
-      margin: 0 0 var(--space-2);
-    }
-
-    .auth-subtitle {
-      font-size: var(--font-size-base);
-      color: var(--text-secondary);
-      margin: 0;
-    }
-
-    .auth-form {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-4);
-    }
-
-    .auth-error {
-      font-size: var(--font-size-sm);
-      color: var(--danger-500);
-    }
-
-    .password-requirements {
-      background: var(--gray-50);
-      border-radius: var(--radius-lg);
-      padding: var(--space-4);
-    }
-
-    :host-context(.dark) .password-requirements {
-      background: var(--gray-800);
-    }
-
-    .requirements-title {
-      font-size: var(--font-size-sm);
-      font-weight: var(--font-weight-medium);
-      color: var(--text-primary);
-      margin: 0 0 var(--space-2);
-    }
-
-    .requirements-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-1);
-    }
-
-    .requirements-list li {
-      font-size: var(--font-size-xs);
-      color: var(--text-secondary);
-      padding-left: var(--space-4);
-      position: relative;
-    }
-
-    .requirements-list li::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-    }
-
-    .requirements-list li.is-valid {
-      color: var(--success-500);
-    }
-
-    .success-state {
       text-align: center;
+      gap: var(--space-4);
+      padding: var(--space-8) var(--space-4);
     }
 
     .success-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 80px;
-      height: 80px;
-      margin: 0 auto var(--space-6);
+      width: 64px;
+      height: 64px;
       background: var(--success-100);
       border-radius: var(--radius-full);
+      color: var(--success-600);
     }
-
     :host-context(.dark) .success-icon {
-      background: rgba(34, 197, 94, 0.2);
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--success-400);
+    }
+    .success-icon .material-icons-outlined { font-size: 2rem; }
+
+    .success-title {
+      font-size: var(--font-size-xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0;
     }
 
-    .success-icon .material-icons-outlined {
-      font-size: 2.5rem;
-      color: var(--success-500);
+    .success-body {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin: 0;
+      max-width: 340px;
     }
 
-    .auth-image {
-      display: none;
-      overflow: hidden;
-    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-3) var(--space-8);
+      background: var(--primary-500);
+      color: #fff;
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      text-decoration: none;
+      margin-top: var(--space-2);
+      transition: background var(--transition-fast), box-shadow var(--transition-fast);
 
-    @media (min-width: 1024px) {
-      .auth-image {
-        display: block;
-      }
-    }
-
-    .auth-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+      &:hover { background: var(--primary-600); box-shadow: var(--shadow-md); }
     }
   `],
 })
 export class ResetPasswordComponent {
   authService = inject(AuthService);
-  router = inject(Router);
-  route = inject(ActivatedRoute);
+  router      = inject(Router);
 
-  password = '';
+  password        = '';
   confirmPassword = '';
-  success = signal(false);
+  passwordError   = signal<string | null>(null);
+  confirmError    = signal<string | null>(null);
+  done            = signal(false);
 
-  passwordError = signal<string | null>(null);
-  confirmPasswordError = signal<string | null>(null);
+  readonly validatePassword        = validatePassword;
+  readonly validatePasswordConfirm = validatePasswordConfirm;
 
-  async onSubmit(): Promise<void> {
-    if (!this.validate()) return;
-
-    const result = await this.authService.resetPassword(this.password);
-    if (result) {
-      this.success.set(true);
-    }
+  private validateAll(): boolean {
+    this.passwordError.set(validatePassword(this.password));
+    this.confirmError.set(validatePasswordConfirm(this.password, this.confirmPassword));
+    return !this.passwordError() && !this.confirmError();
   }
 
-  private validate(): boolean {
-    this.passwordError.set(null);
-    this.confirmPasswordError.set(null);
-
-    let valid = true;
-
-    if (!this.password) {
-      this.passwordError.set('Password is required');
-      valid = false;
-    } else if (this.password.length < 8) {
-      this.passwordError.set('Password must be at least 8 characters');
-      valid = false;
-    }
-
-    if (!this.confirmPassword) {
-      this.confirmPasswordError.set('Please confirm your password');
-      valid = false;
-    } else if (this.password !== this.confirmPassword) {
-      this.confirmPasswordError.set('Passwords do not match');
-      valid = false;
-    }
-
-    return valid;
+  async onSubmit(): Promise<void> {
+    if (!this.validateAll()) return;
+    const ok = await this.authService.resetPassword(this.password);
+    if (ok) this.done.set(true);
   }
 }

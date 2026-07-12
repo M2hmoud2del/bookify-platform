@@ -46,18 +46,20 @@ import { ButtonComponent } from '../button/button.component';
       justify-content: center;
       text-align: center;
       padding: var(--space-12) var(--space-4);
+      animation: fadeIn var(--transition-normal);
     }
 
     .empty-state-icon {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 64px;
-      height: 64px;
+      width: 72px;
+      height: 72px;
       border-radius: var(--radius-full);
       background: var(--gray-100);
       color: var(--gray-400);
-      margin-bottom: var(--space-4);
+      margin-bottom: var(--space-5);
+      transition: transform var(--transition-normal);
     }
 
     :host-context(.dark) .empty-state-icon {
@@ -66,7 +68,7 @@ import { ButtonComponent } from '../button/button.component';
     }
 
     .empty-state-icon .material-icons-outlined {
-      font-size: 2rem;
+      font-size: 2.25rem;
     }
 
     .empty-state-title {
@@ -74,13 +76,30 @@ import { ButtonComponent } from '../button/button.component';
       font-weight: var(--font-weight-semibold);
       color: var(--text-primary);
       margin: 0;
+      letter-spacing: -0.01em;
     }
 
     .empty-state-description {
       font-size: var(--font-size-sm);
       color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
       margin: var(--space-2) 0 var(--space-6);
       max-width: 400px;
+    }
+
+    @media (max-width: 639px) {
+      .empty-state {
+        padding: var(--space-8) var(--space-4);
+      }
+
+      .empty-state-icon {
+        width: 60px;
+        height: 60px;
+      }
+
+      .empty-state-icon .material-icons-outlined {
+        font-size: 1.75rem;
+      }
     }
   `],
 })
