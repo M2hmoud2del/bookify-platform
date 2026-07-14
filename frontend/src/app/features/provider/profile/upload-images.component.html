@@ -8,16 +8,24 @@
         <p class="page-subtitle">Manage your profile image and service images</p>
       </div>
 
+      @if (loading()) {
+        <p class="state-message">Loading images...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
       <!-- Profile Image -->
       <app-card title="Profile Image">
         <div card-header>
           <span class="card-hint">Your profile image appears on your profile and booking page</span>
         </div>
+        <input #profileInput type="file" class="file-input" accept="image/jpeg,image/png,image/webp" (change)="onProfileFileInputChanged($event)" />
         @if (profileImage()) {
           <div class="profile-preview">
             <img [src]="profileImage()!.url" alt="Profile" />
             <div class="profile-actions">
-              <app-button variant="outline" size="sm">
+              <app-button variant="outline" size="sm" [loading]="uploadingProfile()" [disabled]="uploadingProfile()" (onClick)="profileInput.click()">
                 <span class="material-icons-outlined">swap_horiz</span>
                 Replace
               </app-button>
@@ -42,7 +50,7 @@
       @for (service of services(); track service._id) {
         <app-card [title]="'Images: ' + service.title">
           <div card-header>
-            <span class="card-hint">Images for this service (up to 8 images)</span>
+            <span class="card-hint">Images for this service (upload up to 5 images at a time)</span>
           </div>
 
           @if (getServiceImages(service._id).length > 0) {
@@ -65,17 +73,15 @@
             </div>
           }
 
-          @if (getServiceImages(service._id).length < 8) {
-            <div class="upload-section">
-              <app-upload-area
-                title="Add Service Images"
-                description="Click to browse or drag and drop"
-                [multiple]="true"
-                icon="add_photo_alternate"
-                (filesSelected)="onServiceFilesSelected($event, service._id)"
-              />
-            </div>
-          }
+          <div class="upload-section">
+            <app-upload-area
+              [title]="uploadingServiceId() === service._id ? 'Uploading...' : 'Add Service Images'"
+              description="Click to browse or drag and drop"
+              [multiple]="true"
+              icon="add_photo_alternate"
+              (filesSelected)="onServiceFilesSelected($event, service._id)"
+            />
+          </div>
         </app-card>
       }
 

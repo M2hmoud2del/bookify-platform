@@ -155,3 +155,6 @@
     :host-context(.dark) .quick-btn { background: var(--gray-900); border-color: var(--gray-700); }
     .quick-btn:hover { border-color: var(--primary-300); color: var(--primary-600); }
     .quick-btn .material-icons-outlined { font-size: 1rem; }
+
+.state-message { color: #64748b; font-size: 0.875rem; margin: 1rem 0; }
+.error-message { color: #dc2626; font-size: 0.875rem; margin: 1rem 0; }

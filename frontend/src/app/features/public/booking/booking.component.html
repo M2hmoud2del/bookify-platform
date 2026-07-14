@@ -2,6 +2,7 @@
       <div class="booking-header">
         <div class="provider-info">
           <app-avatar
+            [src]="provider()?.profile?.profileImage?.url || provider()?.user?.avatar"
             [name]="provider()?.profile?.businessName ?? ''"
             size="lg"
           />
@@ -17,6 +18,13 @@
         </div>
       </div>
 
+      @if (loading()) {
+        <p class="state-message">Loading booking details...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
       <div class="booking-content">
         <div class="services-section">
           <h2 class="section-title">Select a Service</h2>
@@ -25,7 +33,7 @@
               <div
                 class="service-item"
                 [ngClass]="{ 'is-selected': selectedService()?._id === service._id }"
-                (click)="selectedService.set(service)"
+                (click)="selectService(service)"
               >
                 <div class="service-info">
                   <h3 class="service-name">{{ service.title }}</h3>
@@ -84,7 +92,7 @@
                           'is-disabled': date < today
                         }"
                         [disabled]="date < today"
-                        (click)="selectedDate.set(date)"
+                        (click)="selectDate(date)"
                       >
                         {{ date.getDate() }}
                       </button>
@@ -96,19 +104,27 @@
               </div>
               <div class="times-list">
                 <h3 class="times-title">Available Times</h3>
-                @if (selectedDate()) {
+                @if (loadingSlots()) {
+                  <p class="prompt">Loading available times...</p>
+                } @else if (selectedDate() && availabilitySlots().length > 0) {
                   <div class="times-grid">
-                    @for (time of availableTimes(); track time) {
+                    @for (slot of availabilitySlots(); track slot.startTime) {
                       <button
                         type="button"
                         class="time-btn"
-                        [ngClass]="{ 'is-selected': selectedTime() === time }"
-                        (click)="selectedTime.set(time)"
+                        [ngClass]="{
+                          'is-selected': selectedTime() === slot.startTime,
+                          'is-disabled': !slot.available
+                        }"
+                        [disabled]="!slot.available"
+                        (click)="selectedTime.set(slot.startTime)"
                       >
-                        {{ time }}
+                        {{ slot.label }}
                       </button>
                     }
                   </div>
+                } @else if (selectedDate()) {
+                  <p class="prompt">No available times for this date</p>
                 } @else {
                   <p class="prompt">Select a date to see available times</p>
                 }

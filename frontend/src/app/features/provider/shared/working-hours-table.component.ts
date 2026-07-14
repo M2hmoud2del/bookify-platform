@@ -2,7 +2,6 @@ import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
-import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { WorkingHour } from '../../../core/models/user.model';
 
 @Component({
@@ -18,7 +17,20 @@ export class WorkingHoursTableComponent {
 
   toggleDay(index: number): void {
     const arr = [...this.days()];
-    arr[index] = { ...arr[index], isClosed: !arr[index].isClosed };
+    const day = arr[index];
+    arr[index] = {
+      ...day,
+      isClosed: !day.isClosed,
+      startTime: day.isClosed ? day.startTime || '09:00' : undefined,
+      endTime: day.isClosed ? day.endTime || '17:00' : undefined,
+      breaks: day.isClosed ? day.breaks : [],
+    };
+    this.daysChange.emit(arr);
+  }
+
+  setDayTime(index: number, field: 'startTime' | 'endTime', value: string): void {
+    const arr = [...this.days()];
+    arr[index] = { ...arr[index], [field]: value };
     this.daysChange.emit(arr);
   }
 

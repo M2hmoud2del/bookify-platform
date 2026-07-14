@@ -14,8 +14,9 @@
           <div class="media-section">
             <div class="logo-section">
               <app-avatar [src]="profileImageUrl()" [name]="avatarName()" size="xl" />
+              <input #profileImageInput type="file" class="file-input" accept="image/jpeg,image/png,image/webp" (change)="onProfileImageSelected($event)" />
               <div class="logo-actions">
-                <app-button variant="outline" size="sm" [disabled]="true">
+                <app-button variant="outline" size="sm" [loading]="uploadingImage()" [disabled]="uploadingImage()" (onClick)="profileImageInput.click()">
                   <span class="material-icons-outlined">photo_camera</span>
                   Upload Profile Image
                 </app-button>
@@ -24,6 +25,9 @@
                   Remove
                 </app-button>
               </div>
+              @if (uploadError()) {
+                <p class="form-error">{{ uploadError() }}</p>
+              }
             </div>
           </div>
         </app-card>

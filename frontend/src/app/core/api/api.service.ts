@@ -12,6 +12,7 @@ export interface ApiOptions {
   params?: HttpParams | Record<string, QueryValue>;
   context?: HttpContext;
   withCredentials?: boolean;
+  body?: unknown;
 }
 
 @Injectable({ providedIn: 'root' })

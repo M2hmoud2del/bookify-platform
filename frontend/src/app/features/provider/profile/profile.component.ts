@@ -8,6 +8,7 @@ import { CardComponent } from '../../../shared/components/card/card.component';
 import { InputComponent } from '../../../shared/components/input/input.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { ProviderProfileApi } from './provider-profile.api';
+import { ProviderUploadApi } from './provider-upload.api';
 
 @Component({
   selector: 'app-provider-profile',
@@ -19,11 +20,14 @@ import { ProviderProfileApi } from './provider-profile.api';
 export class ProviderProfileComponent {
   private router = inject(Router);
   private providerProfileApi = inject(ProviderProfileApi);
+  private providerUploadApi = inject(ProviderUploadApi);
   authService = inject(AuthService);
 
   loading = signal(false);
   saving = signal(false);
+  uploadingImage = signal(false);
   error = signal<string | null>(null);
+  uploadError = signal<string | null>(null);
   profileImageUrl = signal<string | undefined>(undefined);
 
   business = {
@@ -58,9 +62,36 @@ export class ProviderProfileComponent {
       };
       this.profileImageUrl.set(profile.profileImage?.url || undefined);
     } catch (err) {
-      this.error.set(this.errorMessage(err));
+      this.error.set(this.errorMessage(err, 'Unable to load provider profile.'));
     } finally {
       this.loading.set(false);
+    }
+  }
+
+  async onProfileImageSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    input.value = '';
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      this.uploadError.set('Please select a valid image file.');
+      return;
+    }
+
+    this.uploadingImage.set(true);
+    this.uploadError.set(null);
+
+    try {
+      const image = await this.providerUploadApi.uploadProviderProfileImage(file);
+      this.profileImageUrl.set(image.url || undefined);
+    } catch (err) {
+      this.uploadError.set(this.errorMessage(err, 'Unable to upload provider profile image.'));
+    } finally {
+      this.uploadingImage.set(false);
     }
   }
 
@@ -73,14 +104,14 @@ export class ProviderProfileComponent {
       this.profileImageUrl.set(profile.profileImage?.url || undefined);
       this.router.navigate(['/provider/dashboard']);
     } catch (err) {
-      this.error.set(this.errorMessage(err));
+      this.error.set(this.errorMessage(err, 'Unable to save provider profile.'));
     } finally {
       this.saving.set(false);
     }
   }
 
-  private errorMessage(err: unknown): string {
+  private errorMessage(err: unknown, fallback: string): string {
     const message = (err as { message?: string })?.message;
-    return message || (err instanceof Error ? err.message : 'Unable to save provider profile.');
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }

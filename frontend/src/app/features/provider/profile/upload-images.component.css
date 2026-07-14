@@ -128,3 +128,7 @@
       justify-content: flex-end;
       padding-top: var(--space-2);
     }
+
+.file-input { display: none; }
+.state-message { color: #64748b; font-size: 0.875rem; margin: 1rem 0; }
+.error-message { color: #dc2626; font-size: 0.875rem; margin: 1rem 0; }

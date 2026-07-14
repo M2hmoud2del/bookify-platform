@@ -26,7 +26,8 @@
                 <input
                   type="time"
                   class="time-input"
-                  [(ngModel)]="days()[i].startTime"
+                  [ngModel]="days()[i].startTime ?? ''"
+                  (ngModelChange)="setDayTime(i, 'startTime', $event)"
                   name="start_{{ day.dayOfWeek }}"
                 />
               </div>
@@ -36,7 +37,8 @@
                 <input
                   type="time"
                   class="time-input"
-                  [(ngModel)]="days()[i].endTime"
+                  [ngModel]="days()[i].endTime ?? ''"
+                  (ngModelChange)="setDayTime(i, 'endTime', $event)"
                   name="end_{{ day.dayOfWeek }}"
                 />
               </div>
