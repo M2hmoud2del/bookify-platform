@@ -1,11 +1,27 @@
-import { Injectable, inject, signal, computed } from '@angular/core';
+import { Injectable, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { supabase } from '../config/supabase.config';
+import { firstValueFrom } from 'rxjs';
+import { ApiError } from '../api/api-error.model';
+import { ApiService } from '../api/api.service';
+import { API_ENDPOINTS } from '../api/endpoints';
+import { TokenService } from '../auth/token.service';
+import { BackendUser, mapBackendUser } from '../mappers/user.mapper';
 import { User, UserRole } from '../models/user.model';
+
+interface AuthData {
+  token?: string;
+  accessToken?: string;
+  access_token?: string;
+  user?: BackendUser;
+}
+
+type MeData = BackendUser | { user?: BackendUser };
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private router = inject(Router);
+  private api = inject(ApiService);
+  private tokenService = inject(TokenService);
 
   user = signal<User | null>(null);
   session = signal<{ access_token: string } | null>(null);
@@ -15,33 +31,48 @@ export class AuthService {
   isAuthenticated = computed(() => !!this.user() && !!this.session());
   isProvider = computed(() => this.user()?.role === 'provider');
   isCustomer = computed(() => this.user()?.role === 'customer');
+  isAdmin = computed(() => this.user()?.role === 'admin');
 
-  async checkSession(): Promise<void> {
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-
-      if (session) {
-        this.session.set(session);
-        await this.loadUserProfile(session.user.id);
-      }
-    } catch (err) {
-      console.error('Session check error:', err);
-    }
+  constructor() {
+    window.addEventListener('bookify:auth:unauthorized', () => this.clearAuthState());
   }
 
-  private async loadUserProfile(userId: string): Promise<void> {
-    const { data, error } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('id', userId)
-      .single();
+  async checkSession(): Promise<void> {
+    const token = this.tokenService.getToken();
 
-    if (error) {
-      console.error('Error loading user profile:', error);
+    if (!token) {
+      this.clearAuthState();
       return;
     }
 
-    this.user.set(data);
+    this.session.set({ access_token: token });
+
+    try {
+      await this.me();
+    } catch (err) {
+      console.error('Session check error:', err);
+      this.clearAuthState();
+    }
+  }
+
+  async me(): Promise<User | null> {
+    if (!this.tokenService.hasToken()) {
+      this.clearAuthState();
+      return null;
+    }
+
+    const response = await firstValueFrom(this.api.get<MeData>(API_ENDPOINTS.auth.me));
+    const backendUser = this.extractUser(response.data);
+
+    if (!backendUser) {
+      throw new Error('Unable to load the current user.');
+    }
+
+    const mappedUser = mapBackendUser(backendUser);
+    this.user.set(mappedUser);
+    this.restoreSessionFromToken();
+
+    return mappedUser;
   }
 
   async login(email: string, password: string): Promise<boolean> {
@@ -49,27 +80,16 @@ export class AuthService {
     this.error.set(null);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      const response = await firstValueFrom(
+        this.api.post<AuthData>(API_ENDPOINTS.auth.login, { email, password })
+      );
 
-      if (error) throw error;
-
-      this.session.set(data.session);
-      await this.loadUserProfile(data.user.id);
-
-      const user = this.user();
-      if (user?.role === 'provider') {
-        this.router.navigate(['/provider/dashboard']);
-      } else {
-        this.router.navigate(['/customer/dashboard']);
-      }
+      this.applyAuthData(response.data);
+      this.navigateByRole(this.user()?.role);
 
       return true;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      this.error.set(errorMessage);
+      this.error.set(this.getErrorMessage(err));
       return false;
     } finally {
       this.loading.set(false);
@@ -86,49 +106,23 @@ export class AuthService {
     this.error.set(null);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            name,
-            role,
-          },
-        },
-      });
+      const response = await firstValueFrom(
+        this.api.post<AuthData>(API_ENDPOINTS.auth.register, { email, password, name, role })
+      );
 
-      if (error) throw error;
+      this.applyAuthData(response.data);
 
-      if (data.user) {
-        await supabase.from('user_profiles').insert({
-          id: data.user.id,
-          email,
-          name,
-          role,
+      if (this.isAuthenticated()) {
+        this.navigateByRole(this.user()?.role);
+      } else {
+        this.router.navigate(['/login'], {
+          queryParams: { message: 'check-email' },
         });
-
-        if (data.session) {
-          this.session.set(data.session);
-          await this.loadUserProfile(data.user.id);
-        }
-
-        if (!data.session) {
-          this.router.navigate(['/login'], {
-            queryParams: { message: 'check-email' },
-          });
-        } else if (role === 'provider') {
-          this.router.navigate(['/provider/dashboard']);
-        } else {
-          this.router.navigate(['/customer/dashboard']);
-        }
-
-        return true;
       }
 
-      return false;
+      return true;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      this.error.set(errorMessage);
+      this.error.set(this.getErrorMessage(err));
       return false;
     } finally {
       this.loading.set(false);
@@ -139,57 +133,21 @@ export class AuthService {
     this.loading.set(true);
 
     try {
-      await supabase.auth.signOut();
-      this.user.set(null);
-      this.session.set(null);
+      this.clearAuthState();
       this.router.navigate(['/']);
-    } catch (err) {
-      console.error('Logout error:', err);
     } finally {
       this.loading.set(false);
     }
   }
 
-  async forgotPassword(email: string): Promise<boolean> {
-    this.loading.set(true);
-    this.error.set(null);
-
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) throw error;
-
-      return true;
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      this.error.set(errorMessage);
-      return false;
-    } finally {
-      this.loading.set(false);
-    }
+  async forgotPassword(_email: string): Promise<boolean> {
+    this.error.set('Password reset is not available yet.');
+    return false;
   }
 
-  async resetPassword(newPassword: string): Promise<boolean> {
-    this.loading.set(true);
-    this.error.set(null);
-
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) throw error;
-
-      return true;
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      this.error.set(errorMessage);
-      return false;
-    } finally {
-      this.loading.set(false);
-    }
+  async resetPassword(_newPassword: string): Promise<boolean> {
+    this.error.set('Password reset is not available yet.');
+    return false;
   }
 
   async updateProfile(profile: Partial<User>): Promise<boolean> {
@@ -198,24 +156,105 @@ export class AuthService {
 
     try {
       const currentUser = this.user();
-      if (!currentUser) throw new Error('No user logged in');
 
-      const { error } = await supabase
-        .from('user_profiles')
-        .update(profile)
-        .eq('id', currentUser._id);
+      if (!currentUser) {
+        throw new Error('No user logged in');
+      }
 
-      if (error) throw error;
-
-      this.user.update((u) => (u ? { ...u, ...profile } : u));
+      this.user.set({
+        ...currentUser,
+        ...profile,
+        updatedAt: new Date().toISOString(),
+      });
 
       return true;
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred';
-      this.error.set(errorMessage);
+      this.error.set(this.getErrorMessage(err));
       return false;
     } finally {
       this.loading.set(false);
     }
+  }
+
+  hasStoredToken(): boolean {
+    return this.tokenService.hasToken();
+  }
+
+  hasRole(role: UserRole | UserRole[]): boolean {
+    const currentRole = this.user()?.role;
+    return Array.isArray(role) ? role.includes(currentRole as UserRole) : currentRole === role;
+  }
+
+  redirectPathForRole(role?: UserRole): string {
+    if (role === 'provider') {
+      return '/provider/dashboard';
+    }
+
+    if (role === 'admin') {
+      return '/admin/dashboard';
+    }
+
+    return '/customer/dashboard';
+  }
+
+  private applyAuthData(data: AuthData): void {
+    const token = data.token || data.accessToken || data.access_token;
+    const backendUser = this.extractUser(data);
+
+    if (!token) {
+      throw new Error('Authentication token was not returned by the server.');
+    }
+
+    if (!backendUser) {
+      throw new Error('User data was not returned by the server.');
+    }
+
+    this.tokenService.saveToken(token);
+    this.session.set({ access_token: token });
+    this.user.set(mapBackendUser(backendUser));
+  }
+
+  private extractUser(data: AuthData | MeData | undefined): BackendUser | null {
+    if (!data) {
+      return null;
+    }
+
+    if ('user' in data && data.user) {
+      return data.user;
+    }
+
+    if ('email' in data || '_id' in data || 'id' in data) {
+      return data as BackendUser;
+    }
+
+    return null;
+  }
+
+  private restoreSessionFromToken(): void {
+    const token = this.tokenService.getToken();
+
+    if (token) {
+      this.session.set({ access_token: token });
+    }
+  }
+
+  private clearAuthState(): void {
+    this.tokenService.clearToken();
+    this.user.set(null);
+    this.session.set(null);
+  }
+
+  private navigateByRole(role?: UserRole): void {
+    this.router.navigate([this.redirectPathForRole(role)]);
+  }
+
+  private getErrorMessage(err: unknown): string {
+    const apiError = err as ApiError;
+
+    if (apiError?.message) {
+      return apiError.message;
+    }
+
+    return err instanceof Error ? err.message : 'An error occurred';
   }
 }

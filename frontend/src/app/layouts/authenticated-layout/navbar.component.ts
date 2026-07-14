@@ -4,6 +4,7 @@ import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
+import { UserRole } from '../../core/models/user.model';
 import { SearchComponent } from '../../shared/components/search/search.component';
 
 export interface BreadcrumbItem {
@@ -22,7 +23,7 @@ export class NavbarComponent {
   authService = inject(AuthService);
   router = inject(Router);
 
-  role = input<'customer' | 'provider'>('customer');
+  role = input<UserRole>('customer');
   toggleMobileMenu = output<void>();
 
   notificationCount = signal(3);

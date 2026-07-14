@@ -1,5 +1,5 @@
 // ── User (matches backend Mongoose User schema) ──
-export type UserRole = 'customer' | 'provider';
+export type UserRole = 'customer' | 'provider' | 'admin';
 export type AuthProvider = 'local' | 'google';
 
 export interface User {
