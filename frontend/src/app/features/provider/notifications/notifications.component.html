@@ -1,30 +1,57 @@
 <div class="notifications-page">
-      <div class="page-header">
-        <h1 class="page-title">Notifications</h1>
-        <p class="page-subtitle">Manage your alerts and updates</p>
+  <div class="page-header">
+    <h1 class="page-title">Notifications</h1>
+    <p class="page-subtitle">Manage your alerts and updates</p>
+  </div>
+
+  @if (error()) {
+    <p class="error-message">{{ error() }}</p>
+  }
+
+  @if (loading()) {
+    <p class="state-message">Loading notifications...</p>
+  }
+
+  <app-card>
+    @if (notifications().length > 0) {
+      <div class="notifications-list">
+        @for (notification of notifications(); track notification._id) {
+          @if (notificationLink(notification); as link) {
+            <a
+              class="notification-item notification-link"
+              [class.unread]="notification.isUnread"
+              [routerLink]="link"
+            >
+              <ng-container [ngTemplateOutlet]="notificationBody" [ngTemplateOutletContext]="{ notification: notification }" />
+            </a>
+          } @else {
+            <div class="notification-item" [class.unread]="notification.isUnread">
+              <ng-container [ngTemplateOutlet]="notificationBody" [ngTemplateOutletContext]="{ notification: notification }" />
+            </div>
+          }
+        }
       </div>
-      <app-card>
-        <div class="notifications-list">
-          <div class="notification-item unread">
-            <span class="notification-icon booking">
-              <span class="material-icons-outlined">event</span>
-            </span>
-            <div class="notification-content">
-              <h3 class="notification-title">New Booking</h3>
-              <p class="notification-message">Emma Wilson booked a Haircut & Styling for July 2, 2026.</p>
-              <p class="notification-time">1 hour ago</p>
-            </div>
-          </div>
-          <div class="notification-item">
-            <span class="notification-icon review">
-              <span class="material-icons-outlined">star</span>
-            </span>
-            <div class="notification-content">
-              <h3 class="notification-title">New Review</h3>
-              <p class="notification-message">Emma Wilson left a 5-star review!</p>
-              <p class="notification-time">3 hours ago</p>
-            </div>
-          </div>
-        </div>
-      </app-card>
+    } @else if (!loading()) {
+      <app-empty-state
+        icon="notifications_none"
+        title="No notifications yet"
+        description="New appointment and payment updates will appear here."
+      />
+    }
+  </app-card>
+
+  <ng-template #notificationBody let-notification="notification">
+    <span class="notification-icon" [ngClass]="notification.iconClass">
+      <span class="material-icons-outlined">{{ notification.icon }}</span>
+    </span>
+    <div class="notification-content">
+      <div class="notification-header">
+        <h3 class="notification-title">{{ notification.title }}</h3>
+        <span class="notification-status" [ngClass]="notification.status">{{ notification.statusLabel }}</span>
+      </div>
+      <p class="notification-type">{{ notification.typeLabel }}</p>
+      <p class="notification-message">{{ notification.message }}</p>
+      <p class="notification-time">{{ notification.createdAt | date: 'medium' }}</p>
     </div>
+  </ng-template>
+</div>

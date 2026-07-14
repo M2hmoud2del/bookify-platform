@@ -60,5 +60,6 @@ export const API_ENDPOINTS = {
   },
   notifications: {
     root: '/notifications',
+    my: '/notifications/my',
   },
 } as const;
