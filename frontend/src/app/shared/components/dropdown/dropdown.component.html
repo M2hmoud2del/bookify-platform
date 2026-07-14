@@ -1,0 +1,42 @@
+<div class="select-wrapper" [ngClass]="{ 'is-disabled': disabled() }">
+      @if (label()) {
+        <label class="select-label">{{ label() }}</label>
+      }
+      <div class="select-container" #container>
+        <button
+          type="button"
+          class="select-trigger"
+          [disabled]="disabled()"
+          (click)="toggle()"
+          aria-haspopup="listbox"
+          [attr.aria-expanded]="isOpen()"
+        >
+          <span [class.select-placeholder]="!selectedLabel()">
+            {{ selectedLabel() || placeholder() }}
+          </span>
+          <span class="select-icon">
+            <span class="material-icons-outlined">{{ isOpen() ? 'expand_less' : 'expand_more' }}</span>
+          </span>
+        </button>
+        @if (isOpen()) {
+          <ul class="select-dropdown" role="listbox">
+            @for (option of options(); track option.value) {
+              <li
+                class="select-option"
+                [ngClass]="{ 'is-selected': option.value === value() }"
+                (click)="selectOption(option)"
+                role="option"
+                [attr.aria-selected]="option.value === value()"
+              >
+                {{ option.label }}
+                @if (option.value === value()) {
+                  <span class="select-check">
+                    <span class="material-icons-outlined">check</span>
+                  </span>
+                }
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    </div>

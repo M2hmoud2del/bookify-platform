@@ -6,62 +6,8 @@ import { ButtonComponent } from '../button/button.component';
   selector: 'app-pagination',
   standalone: true,
   imports: [CommonModule, ButtonComponent],
-  template: `
-    @if (totalPages() > 1) {
-      <nav class="pagination" role="navigation" aria-label="Pagination">
-        <app-button
-          variant="ghost"
-          size="sm"
-          [disabled]="currentPage() === 1"
-          (onClick)="onPageChange(currentPage() - 1)"
-        >
-          <span class="material-icons-outlined">chevron_left</span>
-          <span class="sr-only">Previous</span>
-        </app-button>
-
-        @for (page of visiblePages(); track page) {
-          @if (page === '...') {
-            <span class="pagination-ellipsis">...</span>
-          } @else {
-            <app-button
-              [variant]="page === currentPage() ? 'primary' : 'ghost'"
-              size="sm"
-              (onClick)="handlePageClick(page)"
-            >
-              {{ page }}
-            </app-button>
-          }
-        }
-
-        <app-button
-          variant="ghost"
-          size="sm"
-          [disabled]="currentPage() === totalPages()"
-          (onClick)="onPageChange(currentPage() + 1)"
-        >
-          <span class="material-icons-outlined">chevron_right</span>
-          <span class="sr-only">Next</span>
-        </app-button>
-      </nav>
-    }
-  `,
-  styles: [`
-    :host {
-      display: block;
-    }
-
-    .pagination {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-1);
-    }
-
-    .pagination-ellipsis {
-      padding: 0 var(--space-2);
-      color: var(--text-secondary);
-    }
-  `],
+  templateUrl: './pagination.component.html',
+  styleUrl: './pagination.component.css',
 })
 export class PaginationComponent {
   currentPage = input.required<number>();

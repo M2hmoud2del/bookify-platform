@@ -1,0 +1,82 @@
+<aside class="sidebar" [ngClass]="{ 'is-collapsed': isCollapsed() }">
+      <div class="sidebar-header">
+        <a routerLink="/" class="sidebar-brand">
+          <span class="brand-icon">
+            <span class="material-icons-outlined">calendar_month</span>
+          </span>
+          @if (!isCollapsed()) {
+            <span class="brand-name">Bookify</span>
+          }
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          @for (item of navItems(); track item.path) {
+            <a
+              [routerLink]="item.path"
+              routerLinkActive="is-active"
+              [routerLinkActiveOptions]="{exact: true}"
+              class="nav-item"
+              [title]="isCollapsed() ? item.label : ''"
+            >
+              <span class="nav-icon">
+                <span class="material-icons-outlined">{{ item.icon }}</span>
+              </span>
+              @if (!isCollapsed()) {
+                <span class="nav-label">{{ item.label }}</span>
+              }
+              @if (!isCollapsed() && item.badge) {
+                <span class="nav-badge">{{ item.badge }}</span>
+              }
+            </a>
+          }
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <a
+          routerLink="/settings"
+          routerLinkActive="is-active"
+          class="nav-item"
+          [title]="isCollapsed() ? 'Settings' : ''"
+        >
+          <span class="nav-icon">
+            <span class="material-icons-outlined">settings</span>
+          </span>
+          @if (!isCollapsed()) {
+            <span class="nav-label">Settings</span>
+          }
+        </a>
+        <button type="button" class="nav-item" (click)="themeService.toggleTheme()" [title]="isCollapsed() ? 'Toggle theme' : ''">
+          <span class="nav-icon">
+            <span class="material-icons-outlined">
+              {{ themeService.isDarkMode() ? 'light_mode' : 'dark_mode' }}
+            </span>
+          </span>
+          @if (!isCollapsed()) {
+            <span class="nav-label">{{ themeService.isDarkMode() ? 'Light Mode' : 'Dark Mode' }}</span>
+          }
+        </button>
+      </div>
+
+      <div class="sidebar-user">
+        <app-avatar
+          [src]="authService.user()?.avatar_url"
+          [name]="userDisplayName()"
+          size="sm"
+        />
+        @if (!isCollapsed()) {
+          <div class="user-info">
+            <p class="user-name">{{ userDisplayName() }}</p>
+            <p class="user-email">{{ authService.user()?.email }}</p>
+          </div>
+        }
+      </div>
+
+      <button type="button" class="collapse-toggle" (click)="toggleCollapse()" [attr.aria-label]="isCollapsed() ? 'Expand sidebar' : 'Collapse sidebar'">
+        <span class="material-icons-outlined">
+          {{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}
+        </span>
+      </button>
+    </aside>

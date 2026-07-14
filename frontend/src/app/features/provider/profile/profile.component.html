@@ -1,0 +1,28 @@
+<div class="profile-page">
+      <div class="page-header">
+        <h1 class="page-title">Business Profile</h1>
+        <p class="page-subtitle">Manage your business information</p>
+      </div>
+      <div class="profile-grid">
+        <app-card title="Business Logo">
+          <div class="avatar-section">
+            <app-avatar name="My Business" size="xl" />
+            <app-button variant="outline" size="sm">Upload Logo</app-button>
+          </div>
+        </app-card>
+        <app-card title="Business Information">
+          <form class="profile-form">
+            <app-input label="Business Name" placeholder="Your business name" />
+            <app-input label="Business Type" placeholder="e.g., Beauty Salon" />
+            <app-input label="Address" placeholder="Street address" />
+            <app-input label="Phone" type="tel" placeholder="Business phone" />
+            <app-input label="Website" type="url" placeholder="https://" />
+          </form>
+          <div class="form-group">
+            <label class="form-label">Business Description</label>
+            <textarea class="form-textarea" placeholder="Tell customers about your business..." rows="4"></textarea>
+          </div>
+          <app-button variant="primary">Save Changes</app-button>
+        </app-card>
+      </div>
+    </div>

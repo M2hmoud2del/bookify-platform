@@ -1,0 +1,14 @@
+.payments-page { display: flex; flex-direction: column; gap: var(--space-6); }
+    .page-header { margin-bottom: var(--space-2); }
+    .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
+    .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .payments-list { display: flex; flex-direction: column; }
+    .payment-item { display: flex; align-items: center; justify-content: space-between; padding: var(--space-4); border-bottom: 1px solid var(--border); }
+    .payment-info { flex: 1; }
+    .service-name { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); color: var(--text-primary); margin: 0; }
+    .provider-name { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .payment-date { font-size: var(--font-size-xs); color: var(--text-tertiary); margin: var(--space-1) 0 0; }
+    .payment-amount { text-align: right; }
+    .amount { font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--text-primary); display: block; }
+    .status { font-size: var(--font-size-xs); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); }
+    .status.completed { background: var(--success-100); color: var(--success-700); }

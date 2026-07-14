@@ -1,0 +1,13 @@
+<span
+      class="badge"
+      [ngClass]="{
+        'badge-primary': variant() === 'primary',
+        'badge-secondary': variant() === 'secondary',
+        'badge-success': variant() === 'success',
+        'badge-warning': variant() === 'warning',
+        'badge-danger': variant() === 'danger',
+        'badge-gray': variant() === 'gray'
+      }"
+    >
+      <ng-content />
+    </span>

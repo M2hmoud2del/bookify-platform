@@ -1,0 +1,26 @@
+<div class="working-hours-page">
+      <div class="page-header">
+        <h1 class="page-title">Working Hours</h1>
+        <p class="page-subtitle">Set your availability for bookings</p>
+      </div>
+      <app-card>
+        <div class="hours-list">
+          @for (day of days; track day.name) {
+            <div class="day-row">
+              <div class="day-info">
+                <span class="day-name">{{ day.name }}</span>
+                <app-badge variant="success">Open</app-badge>
+              </div>
+              <div class="hours-inputs">
+                <input type="time" value="09:00" class="time-input" />
+                <span class="separator">to</span>
+                <input type="time" value="17:00" class="time-input" />
+                <button class="toggle-btn">
+                  <span class="material-icons-outlined">toggle_on</span>
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </app-card>
+    </div>

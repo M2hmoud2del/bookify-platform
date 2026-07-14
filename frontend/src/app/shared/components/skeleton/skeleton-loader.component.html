@@ -1,0 +1,10 @@
+<div
+      class="skeleton"
+      [ngClass]="{
+        'skeleton-circle': variant() === 'circle',
+        'skeleton-text': variant() === 'text',
+        'skeleton-avatar': variant() === 'avatar'
+      }"
+      [style.width]="width()"
+      [style.height]="height()"
+    ></div>

@@ -1,0 +1,63 @@
+@if (isOpen()) {
+      <div class="modal-overlay" (click)="onOverlayClick()" role="none" aria-hidden="true">
+        <div
+          class="modal-container"
+          [ngClass]="{
+            'modal-sm': size() === 'sm',
+            'modal-lg': size() === 'lg',
+            'modal-xl': size() === 'xl'
+          }"
+          role="dialog"
+          aria-modal="true"
+          [attr.aria-labelledby]="title() ? 'modal-title' : null"
+          [attr.aria-describedby]="description() ? 'modal-description' : null"
+          (click)="$event.stopPropagation()"
+        >
+          <div class="modal-header">
+            @if (icon()) {
+              <span class="modal-icon">
+                <span class="material-icons-outlined">{{ icon() }}</span>
+              </span>
+            }
+            <div class="modal-header-content">
+              @if (title()) {
+                <h2 id="modal-title" class="modal-title">{{ title() }}</h2>
+              }
+              @if (description()) {
+                <p id="modal-description" class="modal-description">{{ description() }}</p>
+              }
+            </div>
+            <button
+              type="button"
+              class="modal-close"
+              (click)="close.emit()"
+              aria-label="Close modal"
+            >
+              <span class="material-icons-outlined">close</span>
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <ng-content />
+          </div>
+
+          @if (showFooter()) {
+            <div class="modal-footer">
+              <ng-content select="[modal-footer]" />
+              @if (!hasFooterContent) {
+                <app-button variant="secondary" (onClick)="close.emit()">
+                  {{ cancelText() }}
+                </app-button>
+                <app-button
+                  [variant]="confirmVariant()"
+                  [loading]="loading()"
+                  (onClick)="confirm.emit()"
+                >
+                  {{ confirmText() }}
+                </app-button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    }

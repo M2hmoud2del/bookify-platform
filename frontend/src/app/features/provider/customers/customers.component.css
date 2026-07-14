@@ -1,0 +1,13 @@
+.customers-page { display: flex; flex-direction: column; gap: var(--space-6); }
+    .page-header { margin-bottom: var(--space-2); }
+    .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
+    .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .filters-bar { display: flex; gap: var(--space-4); }
+    .search-input { max-width: 320px; }
+    .customers-list { display: flex; flex-direction: column; }
+    .customer-item { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4); border-bottom: 1px solid var(--border); }
+    .customer-info { flex: 1; }
+    .customer-name { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); color: var(--text-primary); margin: 0; }
+    .customer-email { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .customer-stats { display: flex; gap: var(--space-4); font-size: var(--font-size-sm); color: var(--text-secondary); }
+    .stat strong { color: var(--text-primary); }

@@ -9,48 +9,8 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
   selector: 'app-provider-reviews',
   standalone: true,
   imports: [CommonModule, CardComponent, AvatarComponent, RatingComponent, ButtonComponent],
-  template: `
-    <div class="reviews-page">
-      <div class="page-header">
-        <h1 class="page-title">Reviews</h1>
-        <p class="page-subtitle">Manage customer reviews and feedback</p>
-      </div>
-      <app-card>
-        <div class="reviews-list">
-          @for (review of reviews; track review.id) {
-            <div class="review-item">
-              <div class="review-header">
-                <app-avatar [name]="review.customer_name" size="sm" />
-                <div class="reviewer-info">
-                  <span class="reviewer-name">{{ review.customer_name }}</span>
-                  <span class="review-date">{{ review.date }}</span>
-                </div>
-                <app-rating [value]="review.rating" [readonly]="true" />
-              </div>
-              <p class="review-comment">{{ review.comment }}</p>
-              <div class="review-actions">
-                <app-button variant="ghost" size="sm">Respond</app-button>
-              </div>
-            </div>
-          }
-        </div>
-      </app-card>
-    </div>
-  `,
-  styles: [`
-    .reviews-page { display: flex; flex-direction: column; gap: var(--space-6); }
-    .page-header { margin-bottom: var(--space-2); }
-    .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
-    .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
-    .reviews-list { display: flex; flex-direction: column; }
-    .review-item { padding: var(--space-4); border-bottom: 1px solid var(--border); }
-    .review-header { display: flex; align-items: center; gap: var(--space-3); margin-bottom: var(--space-3); }
-    .reviewer-info { flex: 1; }
-    .reviewer-name { font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--text-primary); display: block; }
-    .review-date { font-size: var(--font-size-xs); color: var(--text-tertiary); }
-    .review-comment { font-size: var(--font-size-sm); color: var(--text-secondary); margin: 0 0 var(--space-3); line-height: var(--line-height-relaxed); }
-    .review-actions { display: flex; justify-content: flex-end; }
-  `],
+  templateUrl: './reviews.component.html',
+  styleUrl: './reviews.component.css',
 })
 export class ProviderReviewsComponent {
   reviews = [

@@ -1,0 +1,185 @@
+:host {
+      display: block;
+    }
+
+    .service-form-page {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .page-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+      margin-bottom: var(--space-6);
+    }
+
+    .back-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      color: var(--text-secondary);
+      border-radius: var(--radius-lg);
+      transition: all var(--transition-fast);
+    }
+
+    .back-btn:hover {
+      background: var(--gray-100);
+      color: var(--text-primary);
+    }
+
+    :host-context(.dark) .back-btn:hover {
+      background: var(--gray-800);
+    }
+
+    .back-btn .material-icons-outlined {
+      font-size: 1.5rem;
+    }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--space-1) 0 0;
+    }
+
+    .service-form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .form-grid {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .form-label {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--gray-700);
+    }
+
+    :host-context(.dark) .form-label {
+      color: var(--gray-300);
+    }
+
+    .form-textarea {
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+      background: var(--surface);
+      border: 1px solid var(--gray-300);
+      border-radius: var(--radius-lg);
+      resize: vertical;
+      transition: all var(--transition-fast);
+    }
+
+    :host-context(.dark) .form-textarea {
+      background: var(--gray-800);
+      border-color: var(--gray-600);
+    }
+
+    .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary-500);
+      box-shadow: 0 0 0 3px var(--primary-100);
+    }
+
+    :host-context(.dark) .form-textarea:focus {
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .form-hint {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+
+    .settings-options {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .setting-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-4) 0;
+    }
+
+    .setting-info {
+      flex: 1;
+    }
+
+    .setting-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .setting-description {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      margin: var(--space-1) 0 0;
+    }
+
+    .toggle-btn {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--gray-200);
+      border-radius: var(--radius-full);
+      transition: all var(--transition-fast);
+    }
+
+    :host-context(.dark) .toggle-btn {
+      background: var(--gray-700);
+    }
+
+    .toggle-btn.is-active {
+      background: var(--primary-500);
+    }
+
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: var(--radius-full);
+      transition: transform var(--transition-fast);
+    }
+
+    .toggle-btn.is-active .toggle-slider {
+      transform: translateX(20px);
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-3);
+      padding-top: var(--space-4);
+    }

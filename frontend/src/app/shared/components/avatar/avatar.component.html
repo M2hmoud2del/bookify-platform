@@ -1,0 +1,34 @@
+<div
+      class="avatar"
+      [ngClass]="{
+        'avatar-xs': size() === 'xs',
+        'avatar-sm': size() === 'sm',
+        'avatar-lg': size() === 'lg',
+        'avatar-xl': size() === 'xl'
+      }"
+      [style.background-color]="backgroundColor()"
+    >
+      @if (src() && !imageError) {
+        <img
+          [src]="src()"
+          [alt]="alt()"
+          class="avatar-image"
+          (error)="onImageError()"
+        />
+      } @else {
+        <span class="avatar-initials" [style.color]="textColor()">
+          {{ initials() }}
+        </span>
+      }
+      @if (status()) {
+        <span
+          class="avatar-status"
+          [ngClass]="{
+            'status-online': status() === 'online',
+            'status-busy': status() === 'busy',
+            'status-away': status() === 'away',
+            'status-offline': status() === 'offline'
+          }"
+        ></span>
+      }
+    </div>

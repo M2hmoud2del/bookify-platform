@@ -1,0 +1,25 @@
+<div class="profile-page">
+      <div class="page-header">
+        <h1 class="page-title">Profile Settings</h1>
+        <p class="page-subtitle">Manage your personal information</p>
+      </div>
+      <div class="profile-grid">
+        <app-card title="Profile Picture">
+          <div class="avatar-section">
+            <app-avatar [name]="userDisplayName()" size="xl" />
+            <app-button variant="outline" size="sm">Change Photo</app-button>
+          </div>
+        </app-card>
+        <app-card title="Personal Information">
+          <form class="profile-form">
+            <div class="form-row">
+              <app-input label="First Name" [value]="authService.user()?.first_name ?? ''" />
+              <app-input label="Last Name" [value]="authService.user()?.last_name ?? ''" />
+            </div>
+            <app-input label="Email" type="email" [value]="authService.user()?.email ?? ''" />
+            <app-input label="Phone" type="tel" placeholder="Enter phone" />
+          </form>
+          <app-button variant="primary">Save Changes</app-button>
+        </app-card>
+      </div>
+    </div>

@@ -1,0 +1,26 @@
+<div class="reviews-page">
+      <div class="page-header">
+        <h1 class="page-title">Reviews</h1>
+        <p class="page-subtitle">Manage customer reviews and feedback</p>
+      </div>
+      <app-card>
+        <div class="reviews-list">
+          @for (review of reviews; track review.id) {
+            <div class="review-item">
+              <div class="review-header">
+                <app-avatar [name]="review.customer_name" size="sm" />
+                <div class="reviewer-info">
+                  <span class="reviewer-name">{{ review.customer_name }}</span>
+                  <span class="review-date">{{ review.date }}</span>
+                </div>
+                <app-rating [value]="review.rating" [readonly]="true" />
+              </div>
+              <p class="review-comment">{{ review.comment }}</p>
+              <div class="review-actions">
+                <app-button variant="ghost" size="sm">Respond</app-button>
+              </div>
+            </div>
+          }
+        </div>
+      </app-card>
+    </div>

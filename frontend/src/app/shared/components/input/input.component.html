@@ -1,0 +1,48 @@
+<div class="input-wrapper" [ngClass]="{ 'has-error': showErrors(), 'is-disabled': isDisabled() }">
+      @if (label()) {
+        <label class="input-label" [for]="inputId()">
+          {{ label() }}
+          @if (required()) {
+            <span class="text-danger">*</span>
+          }
+        </label>
+      }
+
+      <div class="input-container">
+        @if (iconStart()) {
+          <span class="input-icon input-icon-start">
+            <span class="material-icons-outlined">{{ iconStart() }}</span>
+          </span>
+        }
+
+        <input
+          [id]="inputId()"
+          [type]="type()"
+          [placeholder]="placeholder()"
+          [disabled]="isDisabled()"
+          [value]="value()"
+          (input)="onInput($event)"
+          (blur)="onBlur()"
+          (focus)="onFocus()"
+          class="input-field"
+          [ngClass]="{
+            'has-icon-start': iconStart(),
+            'has-icon-end': iconEnd()
+          }"
+        />
+
+        @if (iconEnd()) {
+          <span class="input-icon input-icon-end">
+            <span class="material-icons-outlined">{{ iconEnd() }}</span>
+          </span>
+        }
+      </div>
+
+      @if (hint()) {
+        <p class="input-hint">{{ hint() }}</p>
+      }
+
+      @if (showErrors()) {
+        <p class="input-error">{{ errorMessage() }}</p>
+      }
+    </div>

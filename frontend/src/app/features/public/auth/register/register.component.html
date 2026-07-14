@@ -1,0 +1,117 @@
+<div class="auth-page">
+      <div class="auth-container">
+        <div class="auth-header">
+          <a routerLink="/" class="auth-logo">
+            <span class="logo-icon">
+              <span class="material-icons-outlined">calendar_month</span>
+            </span>
+            <span class="logo-text">Bookify</span>
+          </a>
+          <h1 class="auth-title">Create your account</h1>
+          <p class="auth-subtitle">Start managing appointments like a pro</p>
+        </div>
+
+        <form class="auth-form" (ngSubmit)="onSubmit()">
+          <div class="role-selector">
+            <button
+              type="button"
+              class="role-btn"
+              [ngClass]="{ 'is-active': role === 'customer' }"
+              (click)="role = 'customer'"
+            >
+              <span class="material-icons-outlined">person</span>
+              <span>I'm a Customer</span>
+            </button>
+            <button
+              type="button"
+              class="role-btn"
+              [ngClass]="{ 'is-active': role === 'provider' }"
+              (click)="role = 'provider'"
+            >
+              <span class="material-icons-outlined">business_center</span>
+              <span>I'm a Provider</span>
+            </button>
+          </div>
+
+          <div class="form-row">
+            <app-input
+              label="First Name"
+              type="text"
+              placeholder="First name"
+              iconStart="badge"
+              [error]="firstNameError() ?? undefined"
+              [(ngModel)]="firstName"
+              name="firstName"
+              [required]="true"
+            />
+            <app-input
+              label="Last Name"
+              type="text"
+              placeholder="Last name"
+              [error]="lastNameError() ?? undefined"
+              [(ngModel)]="lastName"
+              name="lastName"
+              [required]="true"
+            />
+          </div>
+
+          <app-input
+            label="Email"
+            type="email"
+            placeholder="Enter your email"
+            iconStart="email"
+            [error]="emailError() ?? undefined"
+            [(ngModel)]="email"
+            name="email"
+            [required]="true"
+          />
+
+          <app-input
+            label="Password"
+            type="password"
+            placeholder="Create a password"
+            iconStart="lock"
+            [error]="passwordError() ?? undefined"
+            [(ngModel)]="password"
+            name="password"
+            [required]="true"
+          />
+
+          <app-input
+            label="Confirm Password"
+            type="password"
+            placeholder="Confirm your password"
+            iconStart="lock"
+            [error]="confirmPasswordError() ?? undefined"
+            [(ngModel)]="confirmPassword"
+            name="confirmPassword"
+            [required]="true"
+          />
+
+          @if (authService.error()) {
+            <p class="auth-error">{{ authService.error() }}</p>
+          }
+
+          <label class="terms-checkbox">
+            <input type="checkbox" [(ngModel)]="acceptTerms" name="acceptTerms" />
+            <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+          </label>
+
+          <app-button type="submit" variant="primary" [fullWidth]="true" [loading]="authService.loading()">
+            Create Account
+          </app-button>
+        </form>
+
+        <p class="auth-footer">
+          Already have an account?
+          <a routerLink="/login">Sign in</a>
+        </p>
+      </div>
+
+      <div class="auth-image">
+        <img
+          src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800"
+          alt="Create account illustration"
+        />
+      </div>
+    </div>
