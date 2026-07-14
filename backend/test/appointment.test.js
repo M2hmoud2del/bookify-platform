@@ -121,7 +121,7 @@ test("provider cannot create appointment as customer", async () => {
 });
 
 test("unauthenticated user cannot create appointment", async () => {
-  const response = await request(app).post("/api/appointments").send(validPayload);
+  const response = await request(app).post("/api/v1/appointments").send(validPayload);
 
   assert.equal(response.status, 401);
 });

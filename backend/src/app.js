@@ -19,6 +19,7 @@ import paymentWebhookRoutes from "./modules/payment/payment.webhook.routes.js";
 import reviewRoutes from "./modules/review/review.routes.js";
 import dashboardRoutes from "./modules/dashboard/dashboard.routes.js";
 import notificationRoutes from "./modules/notification/notification.routes.js";
+import adminRoutes from "./modules/admin/admin.routes.js";
 
 const app = express();
 
@@ -50,6 +51,7 @@ app.use("/api/v1/payments", paymentRoutes);
 app.use("/api/v1/reviews", reviewRoutes);
 app.use("/api/v1/dashboard", dashboardRoutes);
 app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/admin", adminRoutes);
 
 // 404 Handler
 app.use((req, res) => {

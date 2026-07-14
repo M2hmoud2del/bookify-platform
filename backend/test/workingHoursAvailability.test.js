@@ -100,7 +100,7 @@ test("customer cannot update working hours", async () => {
 });
 
 test("unauthenticated user cannot update working hours", async () => {
-  const response = await request(app).put("/api/working-hours/my").send({
+  const response = await request(app).put("/api/v1/working-hours/my").send({
     workingHours: [{ dayOfWeek: "sunday", isClosed: true }]
   });
 
