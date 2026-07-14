@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { ThemeService } from '../../core/services/theme.service';
+import { UserRole } from '../../core/models/user.model';
 import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 
 export interface SidebarItem {
@@ -24,7 +25,7 @@ export class SidebarComponent {
   themeService = inject(ThemeService);
   router = inject(Router);
 
-  role = input<'customer' | 'provider'>('customer');
+  role = input<UserRole>('customer');
 
   isCollapsed = signal(false);
 
