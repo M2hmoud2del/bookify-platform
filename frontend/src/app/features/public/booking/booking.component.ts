@@ -4,12 +4,13 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
-import { BadgeComponent } from '../../../shared/components/badge/badge.component';
+import { getProviderById, getServiceById } from '../shared/public.models';
+import { Service } from '../../../core/models/user.model';
 
 @Component({
   selector: 'app-public-booking',
   standalone: true,
-  imports: [CommonModule, ButtonComponent, CardComponent, AvatarComponent, BadgeComponent],
+  imports: [CommonModule, ButtonComponent, CardComponent, AvatarComponent],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',
 })
@@ -20,24 +21,13 @@ export class PublicBookingComponent {
   today = new Date();
   currentMonth = new Date();
 
-  selectedService = signal<any>(null);
+  selectedService = signal<Service | null>(null);
   selectedDate = signal<Date | null>(null);
   selectedTime = signal<string | null>(null);
 
-  provider = signal({
-    id: '1',
-    business_name: 'Blossom Beauty Salon',
-    business_type: 'Beauty Salon',
-    rating: 4.9,
-    total_reviews: 128,
-  });
+  provider = computed(() => getProviderById('1'));
 
-  services = signal([
-    { id: '1', name: 'Haircut & Styling', description: 'Professional haircut and styling session', duration_minutes: 45, price: 65 },
-    { id: '2', name: 'Hair Coloring', description: 'Full hair coloring service', duration_minutes: 90, price: 120 },
-    { id: '3', name: 'Beard Trim', description: 'Professional beard grooming', duration_minutes: 30, price: 35 },
-    { id: '4', name: 'Facial Treatment', description: 'Rejuvenating facial treatment', duration_minutes: 60, price: 85 },
-  ]);
+  services = computed(() => this.provider()?.services ?? []);
 
   availableTimes = signal(['9:00 AM', '10:00 AM', '11:00 AM', '2:00 PM', '3:00 PM', '4:00 PM']);
 

@@ -1,26 +1,72 @@
 <div class="working-hours-page">
       <div class="page-header">
-        <h1 class="page-title">Working Hours</h1>
-        <p class="page-subtitle">Set your availability for bookings</p>
+        <div>
+          <h1 class="page-title">Working Hours & Availability</h1>
+          <p class="page-subtitle">Set when customers can book appointments</p>
+        </div>
+        <app-button variant="primary" (onClick)="save()">
+          <span class="material-icons-outlined">save</span>
+          Save Changes
+        </app-button>
       </div>
-      <app-card>
-        <div class="hours-list">
-          @for (day of days; track day.name) {
-            <div class="day-row">
-              <div class="day-info">
-                <span class="day-name">{{ day.name }}</span>
-                <app-badge variant="success">Open</app-badge>
-              </div>
-              <div class="hours-inputs">
-                <input type="time" value="09:00" class="time-input" />
-                <span class="separator">to</span>
-                <input type="time" value="17:00" class="time-input" />
-                <button class="toggle-btn">
-                  <span class="material-icons-outlined">toggle_on</span>
-                </button>
+
+      <!-- Working Hours -->
+      <app-card title="Weekly Working Hours">
+        <div card-header>
+          <span class="card-hint">Set your regular working hours for each day of the week</span>
+        </div>
+        <app-working-hours-table
+          [days]="workingDays()"
+          (daysChange)="onDaysChange($event)"
+        />
+      </app-card>
+
+      <!-- Availability Calendar -->
+      <div class="availability-section">
+        <app-card title="Date-Specific Availability">
+          <div card-header>
+            <span class="card-hint">Block specific dates for holidays or time off</span>
+          </div>
+          <div class="avail-grid">
+            <app-availability-calendar
+              [blockedDates]="blockedDates()"
+              [appointmentCounts]="appointmentCounts()"
+              (dateSelect)="onDateSelect($event)"
+            />
+
+            <div class="blocked-list">
+              <h3 class="blocked-title">Blocked Dates</h3>
+              @if (blockedDates().length > 0) {
+                <div class="blocked-items">
+                  @for (date of blockedDates(); track date) {
+                    <div class="blocked-item">
+                      <span class="material-icons-outlined">event_busy</span>
+                      <span>{{ formatDate(date) }}</span>
+                      <button type="button" class="remove-btn" (click)="unblockDate(date)">
+                        <span class="material-icons-outlined">close</span>
+                      </button>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <p class="no-blocked">No blocked dates. Click a date on the calendar to block it.</p>
+              }
+
+              <div class="quick-actions">
+                <h4 class="quick-title">Quick Block</h4>
+                <div class="quick-buttons">
+                  <button type="button" class="quick-btn" (click)="blockRange('weekend')">
+                    <span class="material-icons-outlined">weekend</span>
+                    All Weekends
+                  </button>
+                  <button type="button" class="quick-btn" (click)="blockRange('holidays')">
+                    <span class="material-icons-outlined">celebration</span>
+                    Holidays
+                  </button>
+                </div>
               </div>
             </div>
-          }
-        </div>
-      </app-card>
+          </div>
+        </app-card>
+      </div>
     </div>

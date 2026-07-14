@@ -30,8 +30,7 @@ export class SidebarComponent {
 
   userDisplayName = computed(() => {
     const user = this.authService.user();
-    if (!user) return 'User';
-    return `${user.first_name} ${user.last_name}`;
+    return user?.name ?? 'User';
   });
 
   navItems = computed(() => {
@@ -50,7 +49,10 @@ export class SidebarComponent {
         { label: 'Working Hours', icon: 'schedule', path: '/provider/working-hours' },
         { label: 'Customers', icon: 'people', path: '/provider/customers' },
         { label: 'Reviews', icon: 'star', path: '/provider/reviews' },
-        { label: 'Payments', icon: 'payments', path: '/provider/payments' }
+        { label: 'Payments', icon: 'payments', path: '/provider/payments' },
+        { label: 'Notifications', icon: 'notifications', path: '/provider/notifications' },
+        { label: 'Profile', icon: 'person', path: '/provider/profile' },
+        { label: 'Upload Images', icon: 'add_a_photo', path: '/provider/upload-images' }
       );
     } else {
       items.push(
@@ -58,7 +60,9 @@ export class SidebarComponent {
         { label: 'Appointments', icon: 'event_note', path: '/customer/appointments' },
         { label: 'History', icon: 'history', path: '/customer/history' },
         { label: 'Payments', icon: 'receipt_long', path: '/customer/payments' },
-        { label: 'Reviews', icon: 'star', path: '/customer/reviews' }
+        { label: 'Reviews', icon: 'star', path: '/customer/reviews' },
+        { label: 'Notifications', icon: 'notifications', path: '/customer/notifications' },
+        { label: 'Profile', icon: 'person', path: '/customer/profile' }
       );
     }
 

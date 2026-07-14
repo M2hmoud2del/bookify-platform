@@ -1,0 +1,89 @@
+:host { display: block; }
+
+    .upload-zone {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-10) var(--space-6);
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-2xl);
+      background: var(--gray-50);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      text-align: center;
+    }
+
+    :host-context(.dark) .upload-zone {
+      background: var(--gray-900);
+      border-color: var(--gray-700);
+    }
+
+    .upload-zone:hover {
+      border-color: var(--primary-400);
+      background: var(--primary-50);
+    }
+
+    :host-context(.dark) .upload-zone:hover {
+      border-color: var(--primary-500);
+      background: rgba(79, 70, 229, 0.05);
+    }
+
+    .upload-zone.is-dragging {
+      border-color: var(--primary-500);
+      background: var(--primary-100);
+      transform: scale(1.01);
+    }
+
+    :host-context(.dark) .upload-zone.is-dragging {
+      background: rgba(79, 70, 229, 0.15);
+    }
+
+    .file-input {
+      position: absolute;
+      width: 0;
+      height: 0;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .upload-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 64px;
+      height: 64px;
+      background: var(--primary-100);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-2);
+    }
+
+    :host-context(.dark) .upload-icon {
+      background: rgba(79, 70, 229, 0.15);
+    }
+
+    .upload-icon .material-icons-outlined {
+      font-size: 2rem;
+      color: var(--primary-500);
+    }
+
+    .upload-title {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .upload-desc {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .upload-hint {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+      margin: var(--space-1) 0 0;
+    }

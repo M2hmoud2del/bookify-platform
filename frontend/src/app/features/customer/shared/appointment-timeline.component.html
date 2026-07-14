@@ -1,0 +1,36 @@
+<div class="timeline">
+      @for (event of events(); track $index; let last = $last) {
+        <div class="timeline-item" [class.is-completed]="event.completed" [class.is-last]="last">
+          <div class="timeline-marker">
+            <span class="marker-icon" [class.is-done]="event.completed">
+              <span class="material-icons-outlined">{{ event.icon }}</span>
+            </span>
+            @if (!last) {
+              <span class="timeline-line" [class.is-done]="event.completed"></span>
+            }
+          </div>
+
+          <div class="timeline-content">
+            <div class="content-header">
+              <h3 class="event-label">{{ event.label }}</h3>
+              @if (event.completed) {
+                <span class="event-badge">
+                  <span class="material-icons-outlined">check</span>
+                </span>
+              }
+            </div>
+            <p class="event-description">{{ event.description }}</p>
+            <div class="event-meta">
+              <span class="meta-item">
+                <span class="material-icons-outlined">event</span>
+                {{ event.date | date: 'MMM d, y' }}
+              </span>
+              <span class="meta-item">
+                <span class="material-icons-outlined">schedule</span>
+                {{ event.time }}
+              </span>
+            </div>
+          </div>
+        </div>
+      }
+    </div>

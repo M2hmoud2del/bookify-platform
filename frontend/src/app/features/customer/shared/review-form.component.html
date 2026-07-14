@@ -1,0 +1,50 @@
+<div class="review-form-wrap">
+      <div class="form-header">
+        <h3 class="form-title">
+          @if (isEditMode()) { Edit Your Review } @else { Write a Review }
+        </h3>
+        <p class="form-subtitle">Share your experience to help others</p>
+      </div>
+
+      <form class="review-form" (ngSubmit)="onSubmit()">
+        <div class="form-field">
+          <label class="field-label">Your Rating</label>
+          <div class="rating-row">
+            <app-rating
+              [value]="rating()"
+              (valueChange)="onRatingChange($event)"
+            />
+            <span class="rating-text">{{ ratingLabel() }}</span>
+          </div>
+          @if (ratingError()) {
+            <p class="field-error">Please select a rating</p>
+          }
+        </div>
+
+        <div class="form-field">
+          <label class="field-label" for="comment">Your Review</label>
+          <textarea
+            id="comment"
+            class="comment-input"
+            [(ngModel)]="comment"
+            name="comment"
+            rows="4"
+            placeholder="Tell others about your experience..."
+            maxlength="500"
+          ></textarea>
+          <div class="char-count">{{ comment.length }} / 500</div>
+          @if (commentError()) {
+            <p class="field-error">Please write a review (minimum 10 characters)</p>
+          }
+        </div>
+
+        <div class="form-actions">
+          <app-button variant="outline" type="button" (onClick)="cancel.emit()">
+            Cancel
+          </app-button>
+          <app-button variant="primary" type="submit" [loading]="submitting()">
+            {{ isEditMode() ? 'Update Review' : 'Submit Review' }}
+          </app-button>
+        </div>
+      </form>
+    </div>

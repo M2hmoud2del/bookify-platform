@@ -1,74 +1,44 @@
-:host {
-      display: inline-flex;
-    }
+:host { display: block; }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 0.125rem 0.5rem;
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-medium);
-      line-height: 1.25rem;
+    .skeleton {
+      background: linear-gradient(
+        90deg,
+        var(--gray-100) 25%,
+        var(--gray-200) 50%,
+        var(--gray-100) 75%
+      );
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
       border-radius: var(--radius-md);
-      white-space: nowrap;
     }
 
-    .badge-primary {
-      background: var(--primary-100);
-      color: var(--primary-700);
+    :host-context(.dark) .skeleton {
+      background: linear-gradient(
+        90deg,
+        var(--gray-700) 25%,
+        var(--gray-600) 50%,
+        var(--gray-700) 75%
+      );
+      background-size: 200% 100%;
     }
 
-    :host-context(.dark) .badge-primary {
-      background: rgba(79, 70, 229, 0.2);
-      color: var(--primary-300);
+    .skeleton-text {
+      width: 100%;
+      height: 0.875rem;
+      border-radius: var(--radius-sm);
     }
 
-    .badge-secondary {
-      background: var(--accent-100);
-      color: var(--accent-700);
+    .skeleton-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
     }
 
-    :host-context(.dark) .badge-secondary {
-      background: rgba(20, 184, 166, 0.2);
-      color: var(--accent-300);
+    .skeleton-circle {
+      border-radius: var(--radius-full);
     }
 
-    .badge-success {
-      background: var(--success-100);
-      color: var(--success-700);
-    }
-
-    :host-context(.dark) .badge-success {
-      background: rgba(34, 197, 94, 0.2);
-      color: var(--success-500);
-    }
-
-    .badge-warning {
-      background: var(--warning-100);
-      color: var(--warning-700);
-    }
-
-    :host-context(.dark) .badge-warning {
-      background: rgba(245, 158, 11, 0.2);
-      color: var(--warning-500);
-    }
-
-    .badge-danger {
-      background: var(--danger-100);
-      color: var(--danger-700);
-    }
-
-    :host-context(.dark) .badge-danger {
-      background: rgba(239, 68, 68, 0.2);
-      color: var(--danger-500);
-    }
-
-    .badge-gray {
-      background: var(--gray-100);
-      color: var(--gray-600);
-    }
-
-    :host-context(.dark) .badge-gray {
-      background: var(--gray-700);
-      color: var(--gray-300);
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
     }

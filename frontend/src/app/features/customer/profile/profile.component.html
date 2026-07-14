@@ -1,25 +1,102 @@
 <div class="profile-page">
-      <div class="page-header">
-        <h1 class="page-title">Profile Settings</h1>
-        <p class="page-subtitle">Manage your personal information</p>
-      </div>
-      <div class="profile-grid">
-        <app-card title="Profile Picture">
-          <div class="avatar-section">
-            <app-avatar [name]="userDisplayName()" size="xl" />
-            <app-button variant="outline" size="sm">Change Photo</app-button>
+      <app-profile-header
+        [displayName]="displayName()"
+        [email]="authService.user()?.email ?? 'user@example.com'"
+        [avatarUrl]="null"
+        [totalAppointments]="totalAppointments()"
+        [completedAppointments]="completedAppointments()"
+        [totalReviews]="totalReviews()"
+        [editLink]="['/customer/profile/edit']"
+      />
+
+      <div class="content-grid">
+        <!-- Personal Info -->
+        <app-card title="Personal Information">
+          <div class="info-list">
+            <div class="info-row">
+              <span class="info-label">Name</span>
+              <span class="info-value">{{ authService.user()?.name ?? 'John Doe' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Email</span>
+              <span class="info-value">{{ authService.user()?.email ?? 'john.doe@example.com' }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Phone</span>
+              <span class="info-value">{{ phone() }}</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Member Since</span>
+              <span class="info-value">{{ memberSince() }}</span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <app-button variant="outline" size="sm" [routerLink]="['/customer/profile/edit']">
+              <span class="material-icons-outlined">edit</span>
+              Edit Profile
+            </app-button>
           </div>
         </app-card>
-        <app-card title="Personal Information">
-          <form class="profile-form">
-            <div class="form-row">
-              <app-input label="First Name" [value]="authService.user()?.first_name ?? ''" />
-              <app-input label="Last Name" [value]="authService.user()?.last_name ?? ''" />
+
+        <!-- Preferences -->
+        <app-card title="Preferences">
+          <div class="pref-list">
+            <div class="pref-row">
+              <div class="pref-info">
+                <span class="material-icons-outlined pref-icon">notifications</span>
+                <div>
+                  <p class="pref-label">Email Notifications</p>
+                  <p class="pref-desc">Receive booking confirmations and reminders</p>
+                </div>
+              </div>
+              <span class="pref-status" [class.is-on]="true">On</span>
             </div>
-            <app-input label="Email" type="email" [value]="authService.user()?.email ?? ''" />
-            <app-input label="Phone" type="tel" placeholder="Enter phone" />
-          </form>
-          <app-button variant="primary">Save Changes</app-button>
+            <div class="pref-row">
+              <div class="pref-info">
+                <span class="material-icons-outlined pref-icon">sms</span>
+                <div>
+                  <p class="pref-label">SMS Reminders</p>
+                  <p class="pref-desc">Get text reminders before appointments</p>
+                </div>
+              </div>
+              <span class="pref-status" [class.is-on]="true">On</span>
+            </div>
+            <div class="pref-row">
+              <div class="pref-info">
+                <span class="material-icons-outlined pref-icon">dark_mode</span>
+                <div>
+                  <p class="pref-label">Dark Mode</p>
+                  <p class="pref-desc">Use dark theme across the app</p>
+                </div>
+              </div>
+              <span class="pref-status" [class.is-on]="false">Off</span>
+            </div>
+          </div>
+        </app-card>
+
+        <!-- Account Actions -->
+        <app-card title="Account">
+          <div class="account-list">
+            <button type="button" class="account-btn" [routerLink]="['/customer/profile/edit']">
+              <span class="material-icons-outlined">person</span>
+              <span>Edit Personal Info</span>
+              <span class="material-icons-outlined chevron">chevron_right</span>
+            </button>
+            <button type="button" class="account-btn" [routerLink]="['/customer/appointments']">
+              <span class="material-icons-outlined">event</span>
+              <span>My Appointments</span>
+              <span class="material-icons-outlined chevron">chevron_right</span>
+            </button>
+            <button type="button" class="account-btn" [routerLink]="['/customer/reviews']">
+              <span class="material-icons-outlined">rate_review</span>
+              <span>My Reviews</span>
+              <span class="material-icons-outlined chevron">chevron_right</span>
+            </button>
+            <button type="button" class="account-btn danger" (click)="onLogout()">
+              <span class="material-icons-outlined">logout</span>
+              <span>Sign Out</span>
+            </button>
+          </div>
         </app-card>
       </div>
     </div>

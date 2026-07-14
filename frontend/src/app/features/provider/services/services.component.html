@@ -26,15 +26,15 @@
       </div>
 
       <div class="services-grid">
-        @for (service of filteredServices(); track service.id) {
+        @for (service of filteredServices(); track service._id) {
           <div class="service-card">
             <div class="service-header">
               <div class="service-info">
-                <h3 class="service-name">{{ service.name }}</h3>
+                <h3 class="service-name">{{ service.title }}</h3>
                 <p class="service-category">{{ service.category }}</p>
               </div>
-              <app-badge [variant]="service.is_active ? 'success' : 'gray'">
-                {{ service.is_active ? 'Active' : 'Inactive' }}
+              <app-badge [variant]="service.isActive ? 'success' : 'gray'">
+                {{ service.isActive ? 'Active' : 'Inactive' }}
               </app-badge>
             </div>
 
@@ -45,7 +45,7 @@
             <div class="service-meta">
               <div class="meta-item">
                 <span class="material-icons-outlined">schedule</span>
-                <span>{{ service.duration_minutes }} min</span>
+                <span>{{ service.durationMinutes }} min</span>
               </div>
               <div class="meta-item price">
                 <span class="material-icons-outlined">payments</span>
@@ -53,25 +53,14 @@
               </div>
             </div>
 
-            <div class="service-stats">
-              <div class="stat">
-                <span class="stat-value">{{ service.total_bookings }}</span>
-                <span class="stat-label">Bookings</span>
-              </div>
-              <div class="stat">
-                <span class="stat-value">{{ service.total_revenue | currency }}</span>
-                <span class="stat-label">Revenue</span>
-              </div>
-            </div>
-
             <div class="service-actions">
-              <app-button variant="ghost" size="sm" [routerLink]="['/provider/services', service.id, 'edit']">
+              <app-button variant="ghost" size="sm" [routerLink]="['/provider/services', service._id, 'edit']">
                 <span class="material-icons-outlined">edit</span>
                 Edit
               </app-button>
               <button type="button" class="action-btn" (click)="toggleServiceStatus(service)">
-                <span class="material-icons-outlined">{{ service.is_active ? 'toggle_off' : 'toggle_on' }}</span>
-                {{ service.is_active ? 'Deactivate' : 'Activate' }}
+                <span class="material-icons-outlined">{{ service.isActive ? 'toggle_off' : 'toggle_on' }}</span>
+                {{ service.isActive ? 'Deactivate' : 'Activate' }}
               </button>
             </div>
           </div>

@@ -15,8 +15,8 @@
             <app-input
               label="Service Name"
               placeholder="e.g., Haircut & Styling"
-              [(ngModel)]="service.name"
-              name="name"
+              [(ngModel)]="service.title"
+              name="title"
               [required]="true"
             />
 
@@ -32,8 +32,8 @@
                 label="Duration (minutes)"
                 type="number"
                 placeholder="45"
-                [(ngModel)]="service.duration"
-                name="duration"
+                [(ngModel)]="service.durationMinutes"
+                name="durationMinutes"
                 [required]="true"
               />
 

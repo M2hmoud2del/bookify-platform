@@ -1,95 +1,85 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { InputComponent } from '../../../../shared/components/input/input.component';
+import { AuthLayoutComponent } from '../shared/auth-layout.component';
+import { PasswordInputComponent } from '../shared/password-input.component';
+import { PasswordStrengthComponent } from '../shared/password-strength.component';
+import {
+  validateEmail,
+  validatePassword,
+  validatePasswordConfirm,
+  validateRequired,
+} from '../shared/auth-validators';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ButtonComponent, InputComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    ButtonComponent,
+    InputComponent,
+    AuthLayoutComponent,
+    PasswordInputComponent,
+    PasswordStrengthComponent,
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
 })
 export class RegisterComponent {
   authService = inject(AuthService);
-  router = inject(Router);
+  router      = inject(Router);
 
-  role: 'customer' | 'provider' = 'customer';
-  firstName = '';
-  lastName = '';
-  email = '';
-  password = '';
+  role            : 'customer' | 'provider' = 'customer';
+  name            = '';
+  email           = '';
+  password        = '';
   confirmPassword = '';
-  acceptTerms = false;
+  acceptTerms     = false;
 
-  firstNameError = signal<string | null>(null);
-  lastNameError = signal<string | null>(null);
-  emailError = signal<string | null>(null);
-  passwordError = signal<string | null>(null);
+  nameError            = signal<string | null>(null);
+  emailError           = signal<string | null>(null);
+  passwordError        = signal<string | null>(null);
   confirmPasswordError = signal<string | null>(null);
+  termsError           = signal(false);
 
-  async onSubmit(): Promise<void> {
-    if (!this.validate()) return;
+  touchField(field: string): void {
+    switch (field) {
+      case 'name':             this.nameError.set(validateRequired(this.name, 'Full name')); break;
+      case 'email':           this.emailError.set(validateEmail(this.email)); break;
+      case 'password':        this.passwordError.set(validatePassword(this.password)); break;
+      case 'confirmPassword': this.confirmPasswordError.set(validatePasswordConfirm(this.password, this.confirmPassword)); break;
+    }
+  }
 
-    await this.authService.register(
-      this.email,
-      this.password,
-      this.firstName,
-      this.lastName,
-      this.role
+  private validateAll(): boolean {
+    this.nameError.set(validateRequired(this.name, 'Full name'));
+    this.emailError.set(validateEmail(this.email));
+    this.passwordError.set(validatePassword(this.password));
+    this.confirmPasswordError.set(validatePasswordConfirm(this.password, this.confirmPassword));
+    this.termsError.set(!this.acceptTerms);
+
+    return (
+      !this.nameError() &&
+      !this.emailError() &&
+      !this.passwordError() &&
+      !this.confirmPasswordError() &&
+      !this.termsError()
     );
   }
 
-  private validate(): boolean {
-    this.firstNameError.set(null);
-    this.lastNameError.set(null);
-    this.emailError.set(null);
-    this.passwordError.set(null);
-    this.confirmPasswordError.set(null);
-
-    let valid = true;
-
-    if (!this.firstName) {
-      this.firstNameError.set('First name is required');
-      valid = false;
-    }
-
-    if (!this.lastName) {
-      this.lastNameError.set('Last name is required');
-      valid = false;
-    }
-
-    if (!this.email) {
-      this.emailError.set('Email is required');
-      valid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) {
-      this.emailError.set('Please enter a valid email');
-      valid = false;
-    }
-
-    if (!this.password) {
-      this.passwordError.set('Password is required');
-      valid = false;
-    } else if (this.password.length < 8) {
-      this.passwordError.set('Password must be at least 8 characters');
-      valid = false;
-    }
-
-    if (!this.confirmPassword) {
-      this.confirmPasswordError.set('Please confirm your password');
-      valid = false;
-    } else if (this.password !== this.confirmPassword) {
-      this.confirmPasswordError.set('Passwords do not match');
-      valid = false;
-    }
-
-    if (!this.acceptTerms) {
-      valid = false;
-    }
-
-    return valid;
+  async onSubmit(): Promise<void> {
+    if (!this.validateAll()) return;
+    await this.authService.register(
+      this.email,
+      this.password,
+      this.name,
+      this.role,
+    );
   }
 }

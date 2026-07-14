@@ -5,11 +5,12 @@ import { ModalComponent } from '../../../shared/components/modal/modal.component
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
+import { MOCK_PROVIDER_APPOINTMENTS, PopulatedAppointment } from '../shared/provider.models';
 
 @Component({
   selector: 'app-calendar',
   standalone: true,
-  imports: [CommonModule, RouterLink, ModalComponent, ButtonComponent, AvatarComponent, BadgeComponent],
+  imports: [CommonModule, ModalComponent, AvatarComponent, BadgeComponent],
   templateUrl: './calendar.component.html',
   styleUrl: './calendar.component.css',
 })
@@ -20,7 +21,7 @@ export class CalendarComponent {
   currentDate = signal(new Date());
   viewMode = signal<'month' | 'week' | 'day'>('month');
   selectedDate = signal(new Date());
-  selectedAppointment = signal<any>(null);
+  selectedAppointment = signal<PopulatedAppointment | null>(null);
 
   currentMonth = computed(() => {
     const date = this.currentDate();
@@ -66,39 +67,13 @@ export class CalendarComponent {
     return days;
   });
 
-  selectedDayAppointments = signal([
-    {
-      id: '1',
-      service_name: 'Haircut & Styling',
-      customer_name: 'Emma Wilson',
-      start_time: '2026-07-01T09:00:00',
-      end_time: '2026-07-01T10:00:00',
-      status: 'confirmed',
-      duration: 60,
-      total_amount: 65,
-    },
-    {
-      id: '2',
-      service_name: 'Hair Coloring',
-      customer_name: 'James Brown',
-      start_time: '2026-07-01T10:30:00',
-      end_time: '2026-07-01T12:00:00',
-      status: 'in_progress',
-      duration: 90,
-      total_amount: 120,
-    },
-  ]);
+  selectedDayAppointments = signal<PopulatedAppointment[]>(MOCK_PROVIDER_APPOINTMENTS.filter(a => a.localDate === '2026-07-12'));
 
-  appointments = signal([
-    { id: '1', service_name: 'Haircut', start_time: '2026-07-01T09:00:00', end_time: '2026-07-01T10:00:00', status: 'confirmed', customer_name: 'Emma Wilson' },
-    { id: '2', service_name: 'Hair Coloring', start_time: '2026-07-01T10:30:00', end_time: '2026-07-01T12:00:00', status: 'pending', customer_name: 'James Brown' },
-    { id: '3', service_name: 'Facial', start_time: '2026-07-02T14:00:00', end_time: '2026-07-02T15:00:00', status: 'confirmed', customer_name: 'Sarah Davis' },
-    { id: '4', service_name: 'Massage', start_time: '2026-07-03T16:00:00', end_time: '2026-07-03T17:30:00', status: 'cancelled', customer_name: 'Mike Johnson' },
-  ]);
+  appointments = signal<PopulatedAppointment[]>(MOCK_PROVIDER_APPOINTMENTS);
 
-  getAppointmentsForDate(date: Date): any[] {
+  getAppointmentsForDate(date: Date): PopulatedAppointment[] {
     return this.appointments().filter(apt => {
-      const aptDate = new Date(apt.start_time);
+      const aptDate = new Date(apt.localDate + 'T00:00:00');
       return aptDate.toDateString() === date.toDateString();
     });
   }
@@ -111,19 +86,19 @@ export class CalendarComponent {
     switch (status) {
       case 'confirmed': return 'var(--primary-500)';
       case 'completed': return 'var(--success-500)';
-      case 'in_progress': return 'var(--warning-500)';
+      case 'pending_payment': return 'var(--warning-500)';
       case 'cancelled': return 'var(--gray-400)';
       default: return 'var(--primary-500)';
     }
   }
 
-  getStatusVariant(status: string): 'success' | 'warning' | 'gray' {
+  getStatusVariant(status: string | undefined): 'success' | 'warning' | 'gray' | 'primary' {
     switch (status) {
       case 'confirmed':
+        return 'primary';
       case 'completed':
         return 'success';
-      case 'in_progress':
-      case 'pending':
+      case 'pending_payment':
         return 'warning';
       default:
         return 'gray';
@@ -135,7 +110,7 @@ export class CalendarComponent {
     this.viewMode.set('day');
   }
 
-  openAppointmentDetail(apt: any): void {
+  openAppointmentDetail(apt: PopulatedAppointment): void {
     this.selectedAppointment.set(apt);
   }
 
@@ -143,16 +118,17 @@ export class CalendarComponent {
     console.log('New appointment at:', hour);
   }
 
-  getAppointmentTop(apt: any): string {
-    const start = new Date(apt.start_time);
-    const hours = start.getHours();
-    const minutes = start.getMinutes();
-    const totalMinutes = (hours - 8) * 60 + minutes;
+  getAppointmentTop(apt: PopulatedAppointment): string {
+    const [h, m] = apt.startTime.split(':').map(Number);
+    const totalMinutes = (h - 8) * 60 + m;
     return `${totalMinutes}px`;
   }
 
-  getAppointmentHeight(apt: any): string {
-    return `${apt.duration}px`;
+  getAppointmentHeight(apt: PopulatedAppointment): string {
+    const [sh, sm] = apt.startTime.split(':').map(Number);
+    const [eh, em] = apt.endTime.split(':').map(Number);
+    const duration = (eh - sh) * 60 + (em - sm);
+    return `${duration}px`;
   }
 
   prevMonth(): void {

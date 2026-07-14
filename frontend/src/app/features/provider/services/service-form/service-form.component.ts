@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { CardComponent } from '../../../../shared/components/card/card.component';
 import { InputComponent } from '../../../../shared/components/input/input.component';
-import { SelectComponent, SelectOption } from '../../../../shared/components/dropdown/dropdown.component';
+import { SelectOption } from '../../../../shared/components/dropdown/dropdown.component';
 
 @Component({
   selector: 'app-service-form',
@@ -16,7 +16,6 @@ import { SelectComponent, SelectOption } from '../../../../shared/components/dro
     ButtonComponent,
     CardComponent,
     InputComponent,
-    SelectComponent,
   ],
   templateUrl: './service-form.component.html',
   styleUrl: './service-form.component.css',
@@ -29,9 +28,9 @@ export class ServiceFormComponent {
   isEditMode = computed(() => !!this.serviceId());
 
   service = {
-    name: '',
+    title: '',
     category: '',
-    duration: 45,
+    durationMinutes: 45,
     price: 0,
     description: '',
     isActive: true,

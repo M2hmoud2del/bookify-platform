@@ -122,7 +122,7 @@
       border-color: var(--success-100);
     }
 
-    .timeline-marker.in_progress .marker-dot {
+    .timeline-marker.pending_payment .marker-dot {
       background: var(--warning-500);
       border-color: var(--warning-100);
     }

@@ -35,7 +35,7 @@
 
         <div class="navbar-user" (click)="toggleUserMenu()" #userMenuTrigger>
           <app-avatar
-            [src]="authService.user()?.avatar_url"
+            [src]="authService.user()?.avatar"
             [name]="userDisplayName()"
             size="sm"
           />

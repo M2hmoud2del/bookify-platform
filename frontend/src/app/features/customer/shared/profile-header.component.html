@@ -1,0 +1,45 @@
+<div class="profile-header">
+      <div class="header-cover"></div>
+
+      <div class="header-content">
+        <div class="header-main">
+          <app-avatar
+            class="header-avatar"
+            [src]="avatarUrl() ?? undefined"
+            [name]="displayName()"
+            size="xl"
+          />
+
+          <div class="header-info">
+            <h1 class="display-name">{{ displayName() }}</h1>
+            <p class="user-email">{{ email() }}</p>
+
+            <div class="header-stats">
+              <div class="stat">
+                <span class="stat-value">{{ totalAppointments() }}</span>
+                <span class="stat-label">Appointments</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">{{ completedAppointments() }}</span>
+                <span class="stat-label">Completed</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">{{ totalReviews() }}</span>
+                <span class="stat-label">Reviews</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          @if (showEditButton()) {
+            <app-button variant="primary" [routerLink]="editLink()">
+              <span class="material-icons-outlined">edit</span>
+              Edit Profile
+            </app-button>
+          }
+        </div>
+      </div>
+    </div>

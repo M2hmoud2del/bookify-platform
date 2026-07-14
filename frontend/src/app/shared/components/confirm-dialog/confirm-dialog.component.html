@@ -1,0 +1,33 @@
+<app-modal
+      [isOpen]="isOpen()"
+      [title]="title()"
+      [description]="description()"
+      [icon]="icon()"
+      size="sm"
+      [showFooter]="false"
+      (close)="cancel.emit()"
+    >
+      <div class="confirm-body">
+        @if (message()) {
+          <p class="confirm-message">{{ message() }}</p>
+        }
+
+        <div class="confirm-actions">
+          <app-button
+            variant="ghost"
+            [disabled]="loading()"
+            (onClick)="cancel.emit()"
+          >
+            {{ cancelText() }}
+          </app-button>
+
+          <app-button
+            [variant]="confirmVariant()"
+            [loading]="loading()"
+            (onClick)="confirm.emit()"
+          >
+            {{ confirmText() }}
+          </app-button>
+        </div>
+      </div>
+    </app-modal>

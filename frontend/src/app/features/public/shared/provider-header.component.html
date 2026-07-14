@@ -1,0 +1,64 @@
+<div class="header">
+      <div class="cover">
+        <img [src]="provider().profile.profileImage.url" [alt]="provider().profile.businessName" />
+        <div class="cover-overlay"></div>
+      </div>
+
+      <div class="header-content">
+        <div class="header-main">
+          <app-avatar
+            class="provider-avatar"
+            [src]="provider().user.avatar ?? provider().profile.profileImage.url"
+            [name]="provider().profile.businessName"
+            size="xl"
+          />
+
+          <div class="header-info">
+            <div class="title-row">
+              <h1 class="business-name">{{ provider().profile.businessName }}</h1>
+              @if (provider().profile.isVerified) {
+                <span class="verified-icon" title="Verified Business">
+                  <span class="material-icons-outlined">verified</span>
+                </span>
+              }
+            </div>
+
+            <div class="meta-row">
+              <app-rating [value]="provider().profile.ratingAverage" [readonly]="true" [showValue]="true" />
+              <span class="meta-divider">•</span>
+              <span class="review-count">{{ provider().profile.ratingCount }} reviews</span>
+              <span class="meta-divider">•</span>
+              <app-badge variant="primary">{{ provider().profile.category }}</app-badge>
+            </div>
+
+            <div class="info-row">
+              <span class="info-item">
+                <span class="material-icons-outlined">location_on</span>
+                {{ provider().profile.city }}
+              </span>
+              <span class="info-item">
+                <span class="material-icons-outlined">payments</span>
+                {{ priceRange() }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <button
+            type="button"
+            class="favorite-btn"
+            (click)="favorite.emit()"
+            aria-label="Add to favorites"
+          >
+            <span class="material-icons-outlined">favorite_border</span>
+            <span>Save</span>
+          </button>
+
+          <app-button variant="primary" (onClick)="book.emit()">
+            <span class="material-icons-outlined">calendar_today</span>
+            Book Now
+          </app-button>
+        </div>
+      </div>
+    </div>

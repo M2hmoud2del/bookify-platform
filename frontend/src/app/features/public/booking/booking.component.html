@@ -2,16 +2,16 @@
       <div class="booking-header">
         <div class="provider-info">
           <app-avatar
-            [name]="provider()?.business_name ?? ''"
+            [name]="provider()?.profile?.businessName ?? ''"
             size="lg"
           />
           <div class="provider-details">
-            <h1 class="provider-name">{{ provider()?.business_name }}</h1>
-            <p class="provider-type">{{ provider()?.business_type }}</p>
+            <h1 class="provider-name">{{ provider()?.profile?.businessName }}</h1>
+            <p class="provider-type">{{ provider()?.profile?.category }}</p>
             <div class="provider-rating">
               <span class="material-icons-outlined">star</span>
-              <span>{{ provider()?.rating }}</span>
-              <span class="review-count">({{ provider()?.total_reviews }} reviews)</span>
+              <span>{{ provider()?.profile?.ratingAverage }}</span>
+              <span class="review-count">({{ provider()?.profile?.ratingCount }} reviews)</span>
             </div>
           </div>
         </div>
@@ -21,26 +21,26 @@
         <div class="services-section">
           <h2 class="section-title">Select a Service</h2>
           <div class="services-list">
-            @for (service of services(); track service.id) {
+            @for (service of services(); track service._id) {
               <div
                 class="service-item"
-                [ngClass]="{ 'is-selected': selectedService()?.id === service.id }"
+                [ngClass]="{ 'is-selected': selectedService()?._id === service._id }"
                 (click)="selectedService.set(service)"
               >
                 <div class="service-info">
-                  <h3 class="service-name">{{ service.name }}</h3>
+                  <h3 class="service-name">{{ service.title }}</h3>
                   @if (service.description) {
                     <p class="service-description">{{ service.description }}</p>
                   }
                   <div class="service-meta">
                     <span class="duration">
                       <span class="material-icons-outlined">schedule</span>
-                      {{ service.duration_minutes }} min
+                      {{ service.durationMinutes }} min
                     </span>
                     <span class="price">{{ service.price | currency }}</span>
                   </div>
                 </div>
-                @if (selectedService()?.id === service.id) {
+                @if (selectedService()?._id === service._id) {
                   <span class="check-icon">
                     <span class="material-icons-outlined">check_circle</span>
                   </span>
@@ -122,7 +122,7 @@
             <div class="summary">
               <div class="summary-row">
                 <span>Service</span>
-                <span>{{ selectedService()?.name }}</span>
+                <span>{{ selectedService()?.title }}</span>
               </div>
               <div class="summary-row">
                 <span>Date</span>
@@ -134,7 +134,7 @@
               </div>
               <div class="summary-row">
                 <span>Duration</span>
-                <span>{{ selectedService()?.duration_minutes }} min</span>
+                <span>{{ selectedService()?.durationMinutes }} min</span>
               </div>
               <div class="summary-divider"></div>
               <div class="summary-total">

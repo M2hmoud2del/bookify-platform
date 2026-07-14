@@ -1,52 +1,45 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { InputComponent } from '../../../../shared/components/input/input.component';
+import { AuthLayoutComponent } from '../shared/auth-layout.component';
+import { validateEmail } from '../shared/auth-validators';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ButtonComponent, InputComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    ButtonComponent,
+    InputComponent,
+    AuthLayoutComponent,
+  ],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.css',
 })
 export class ForgotPasswordComponent {
   authService = inject(AuthService);
-  router = inject(Router);
 
-  email = '';
-  submitted = signal(false);
+  email      = '';
   emailError = signal<string | null>(null);
+  sent       = signal(false);
+
+  readonly validateEmail = validateEmail;
 
   async onSubmit(): Promise<void> {
-    if (!this.validate()) return;
+    this.emailError.set(validateEmail(this.email));
+    if (this.emailError()) return;
 
-    await this.authService.forgotPassword(this.email);
-    this.submitted.set(true);
+    const ok = await this.authService.forgotPassword(this.email);
+    if (ok) this.sent.set(true);
   }
 
   async onResend(): Promise<void> {
-    if (this.email) {
-      await this.authService.forgotPassword(this.email);
-    }
-  }
-
-  private validate(): boolean {
-    this.emailError.set(null);
-
-    if (!this.email) {
-      this.emailError.set('Email is required');
-      return false;
-    }
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.email)) {
-      this.emailError.set('Please enter a valid email');
-      return false;
-    }
-
-    return true;
+    await this.authService.forgotPassword(this.email);
   }
 }

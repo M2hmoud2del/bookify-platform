@@ -1,0 +1,87 @@
+<div class="hours-table">
+      @for (day of days(); track day._id; let i = $index) {
+        <div class="day-row" [class.is-disabled]="day.isClosed">
+          <div class="day-info">
+            <button
+              type="button"
+              class="toggle-switch"
+              [class.is-on]="!day.isClosed"
+              (click)="toggleDay(i)"
+              [attr.aria-label]="'Toggle ' + day.dayOfWeek"
+            >
+              <span class="toggle-slider"></span>
+            </button>
+            <span class="day-name">{{ day.dayOfWeek | titlecase }}</span>
+            @if (!day.isClosed) {
+              <app-badge variant="success" size="sm">Open</app-badge>
+            } @else {
+              <app-badge variant="gray" size="sm">Closed</app-badge>
+            }
+          </div>
+
+          @if (!day.isClosed) {
+            <div class="hours-inputs">
+              <div class="time-field">
+                <label class="time-label">Open</label>
+                <input
+                  type="time"
+                  class="time-input"
+                  [(ngModel)]="days()[i].startTime"
+                  name="start_{{ day.dayOfWeek }}"
+                />
+              </div>
+              <span class="separator">to</span>
+              <div class="time-field">
+                <label class="time-label">Close</label>
+                <input
+                  type="time"
+                  class="time-input"
+                  [(ngModel)]="days()[i].endTime"
+                  name="end_{{ day.dayOfWeek }}"
+                />
+              </div>
+              <button
+                type="button"
+                class="break-btn"
+                [class.is-active]="day.breaks.length > 0"
+                (click)="toggleBreak(i)"
+                title="Toggle lunch break"
+              >
+                <span class="material-icons-outlined">restaurant</span>
+              </button>
+            </div>
+
+            @if (day.breaks.length > 0) {
+              <div class="break-section">
+                <span class="break-label">
+                  <span class="material-icons-outlined">restaurant</span>
+                  Break
+                </span>
+                <div class="break-inputs">
+                  <input
+                    type="time"
+                    class="time-input"
+                    [ngModel]="days()[i].breaks[0]?.startTime ?? ''"
+                    (ngModelChange)="setBreakTime(i, 'startTime', $event)"
+                    name="break_start_{{ day.dayOfWeek }}"
+                  />
+                  <span class="separator">to</span>
+                  <input
+                    type="time"
+                    class="time-input"
+                    [ngModel]="days()[i].breaks[0]?.endTime ?? ''"
+                    (ngModelChange)="setBreakTime(i, 'endTime', $event)"
+                    name="break_end_{{ day.dayOfWeek }}"
+                  />
+                </div>
+              </div>
+            }
+          } @else {
+            <div class="closed-message">
+              <span class="material-icons-outlined">bedtime</span>
+              Not available
+            </div>
+          }
+        </div>
+      }
+    </div>

@@ -1,0 +1,39 @@
+<div class="textarea-wrapper" [class.has-error]="error()" [class.is-disabled]="isDisabled">
+      @if (label()) {
+        <label class="textarea-label" [for]="textareaId">
+          {{ label() }}
+          @if (required()) {
+            <span class="required-mark" aria-hidden="true">*</span>
+          }
+        </label>
+      }
+
+      <textarea
+        [id]="textareaId"
+        class="textarea-field"
+        [placeholder]="placeholder() ?? ''"
+        [disabled]="isDisabled"
+        [rows]="rows()"
+        [maxlength]="maxLength() ?? null!"
+        [(ngModel)]="value"
+        (ngModelChange)="onValueChange($event)"
+        (blur)="onTouched()"
+      ></textarea>
+
+      <div class="textarea-footer">
+        @if (hint() && !error()) {
+          <p class="textarea-hint">{{ hint() }}</p>
+        }
+        @if (error()) {
+          <p class="textarea-error">
+            <span class="material-icons-outlined error-icon">error_outline</span>
+            {{ error() }}
+          </p>
+        }
+        @if (maxLength()) {
+          <span class="char-count" [class.near-limit]="isNearLimit()">
+            {{ value().length }} / {{ maxLength() }}
+          </span>
+        }
+      </div>
+    </div>

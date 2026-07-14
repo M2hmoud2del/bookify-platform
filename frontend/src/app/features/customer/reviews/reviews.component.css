@@ -1,10 +1,70 @@
-.reviews-page { display: flex; flex-direction: column; gap: var(--space-6); }
+:host { display: block; }
+
+    .reviews-page {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
     .page-header { margin-bottom: var(--space-2); }
-    .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
-    .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
-    .reviews-list { display: flex; flex-direction: column; }
-    .review-item { padding: var(--space-4); border-bottom: 1px solid var(--border); }
-    .review-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2); }
-    .provider-name { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); color: var(--text-primary); margin: 0; }
-    .review-comment { font-size: var(--font-size-sm); color: var(--text-secondary); margin: 0 0 var(--space-2); line-height: var(--line-height-relaxed); }
-    .review-date { font-size: var(--font-size-xs); color: var(--text-tertiary); margin: 0; }
+
+    .page-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--space-1) 0 0;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-4);
+    }
+
+    .stat-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-5);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+    }
+
+    :host-context(.dark) .stat-card {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+    }
+
+    .stat-value {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-600);
+    }
+
+    :host-context(.dark) .stat-value { color: var(--primary-400); }
+
+    .stat-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .reviews-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .delete-message {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.6;
+    }

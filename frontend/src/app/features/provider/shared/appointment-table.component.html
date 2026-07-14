@@ -1,0 +1,95 @@
+<div class="table-wrap">
+      @if (appointments().length > 0) {
+        <table class="apt-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Service</th>
+              <th>Date & Time</th>
+              <th>Duration</th>
+              <th>Price</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th class="actions-col">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (apt of appointments(); track apt._id) {
+              <tr>
+                <td>
+                  <div class="customer-cell">
+                    <app-avatar
+                      [src]="apt.customer.avatar ?? undefined"
+                      [name]="apt.customer.name"
+                      size="sm"
+                    />
+                    <div class="customer-info">
+                      <span class="customer-name">{{ apt.customer.name }}</span>
+                      <span class="customer-email">{{ apt.customer.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  <span class="service-name">{{ apt.service.title }}</span>
+                </td>
+                <td>
+                  <div class="date-cell">
+                    <span class="date-text">{{ formatDate(apt.localDate) }}</span>
+                    <span class="time-text">{{ formatTime(apt.startTime) }}</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="duration-text">{{ apt.service.durationMinutes }} min</span>
+                </td>
+                <td>
+                  <span class="price-text">$ {{ apt.service.price }}</span>
+                </td>
+                <td>
+                  <app-status-badge [status]="apt.status" />
+                </td>
+                <td>
+                  <app-status-badge [status]="apt.paymentStatus" />
+                </td>
+                <td>
+                  <div class="actions">
+                    <button
+                      type="button"
+                      class="action-btn"
+                      [routerLink]="['/provider/appointments', apt._id]"
+                      title="View Details"
+                    >
+                      <span class="material-icons-outlined">visibility</span>
+                    </button>
+                    @if (canConfirm(apt.status)) {
+                      <button
+                        type="button"
+                        class="action-btn confirm"
+                        (click)="confirm.emit(apt._id)"
+                        title="Confirm"
+                      >
+                        <span class="material-icons-outlined">check</span>
+                      </button>
+                    }
+                    @if (canCancel(apt.status)) {
+                      <button
+                        type="button"
+                        class="action-btn cancel"
+                        (click)="cancel.emit(apt._id)"
+                        title="Cancel"
+                      >
+                        <span class="material-icons-outlined">close</span>
+                      </button>
+                    }
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      } @else {
+        <div class="empty-state">
+          <span class="material-icons-outlined">event_busy</span>
+          <p>No appointments found</p>
+        </div>
+      }
+    </div>

@@ -1,0 +1,39 @@
+<div class="review-card">
+      <div class="review-header">
+        <div class="review-provider">
+          <app-avatar
+            [src]="review().provider.avatar ?? undefined"
+            [name]="review().provider.name"
+            size="md"
+          />
+          <div class="provider-info">
+            <h3 class="provider-name">{{ review().provider.name }}</h3>
+            <p class="service-name">{{ review().service.title }}</p>
+          </div>
+        </div>
+
+        <div class="review-meta">
+          <app-rating [value]="review().rating" [readonly]="true" [showValue]="false" />
+          <span class="review-date">{{ review().createdAt | date: 'MMM d, y' }}</span>
+        </div>
+      </div>
+
+      <p class="review-comment">{{ review().comment }}</p>
+
+      <div class="review-footer">
+        <div class="rating-display">
+          <span class="rating-label">Rating:</span>
+          <span class="rating-value">{{ review().rating }} / 5</span>
+        </div>
+        <div class="review-actions">
+          <app-button variant="ghost" size="sm" (onClick)="edit.emit()">
+            <span class="material-icons-outlined">edit</span>
+            Edit
+          </app-button>
+          <app-button variant="ghost" size="sm" (onClick)="delete.emit()">
+            <span class="material-icons-outlined">delete</span>
+            Delete
+          </app-button>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,34 @@
+<div class="slot-selector">
+      <div class="slot-header">
+        <h3 class="slot-title">Available Times</h3>
+        <span class="slot-hint">
+          <span class="material-icons-outlined">info</span>
+          Times in your local timezone
+        </span>
+      </div>
+
+      @if (slots().length > 0) {
+        <div class="slot-grid">
+          @for (slot of slots(); track slot.time) {
+            <button
+              type="button"
+              class="slot-btn"
+              [class.is-selected]="selectedTime() === slot.time"
+              [class.is-unavailable]="!slot.available"
+              [disabled]="!slot.available"
+              (click)="onSelect(slot)"
+            >
+              <span class="slot-label">{{ slot.label }}</span>
+              @if (!slot.available) {
+                <span class="slot-status">Booked</span>
+              }
+            </button>
+          }
+        </div>
+      } @else {
+        <div class="no-slots">
+          <span class="material-icons-outlined">event_busy</span>
+          <p>No available time slots for this date. Please select another day.</p>
+        </div>
+      }
+    </div>

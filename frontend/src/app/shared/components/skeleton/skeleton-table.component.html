@@ -1,0 +1,16 @@
+<div class="skeleton-table">
+      <div class="skeleton-thead">
+        @for (col of columns(); track $index) {
+          <app-skeleton variant="text" width="80%" height="0.75rem" />
+        }
+      </div>
+      @for (row of rows(); track $index) {
+        <div class="skeleton-row">
+          @for (col of columns(); track $index) {
+            <div class="skeleton-cell">
+              <app-skeleton variant="text" width="60%" height="0.875rem" />
+            </div>
+          }
+        </div>
+      }
+    </div>

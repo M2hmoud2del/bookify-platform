@@ -1,0 +1,15 @@
+<div class="category-bar">
+      <div class="category-scroll">
+        @for (cat of categories; track cat.id) {
+          <button
+            type="button"
+            class="category-chip"
+            [class.is-active]="activeCategory() === cat.id"
+            (click)="selectCategory(cat.id)"
+          >
+            <span class="material-icons-outlined">{{ cat.icon }}</span>
+            <span class="chip-label">{{ cat.label }}</span>
+          </button>
+        }
+      </div>
+    </div>

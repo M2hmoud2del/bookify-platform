@@ -1,0 +1,185 @@
+:host { display: block; }
+
+    .header {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      overflow: hidden;
+    }
+
+    :host-context(.dark) .header {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+    }
+
+    .cover {
+      position: relative;
+      height: 220px;
+      overflow: hidden;
+    }
+
+    @media (min-width: 768px) {
+      .cover { height: 280px; }
+    }
+
+    .cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .cover-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(0, 0, 0, 0.45) 100%);
+    }
+
+    .header-content {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+      padding: var(--space-5);
+    }
+
+    @media (min-width: 768px) {
+      .header-content {
+        flex-direction: row;
+        align-items: flex-end;
+        justify-content: space-between;
+        padding: var(--space-6);
+      }
+    }
+
+    .header-main {
+      display: flex;
+      gap: var(--space-4);
+      align-items: flex-end;
+      margin-top: calc(-1 * var(--space-12));
+    }
+
+    @media (min-width: 768px) {
+      .header-main { margin-top: calc(-1 * var(--space-16)); }
+    }
+
+    .provider-avatar {
+      flex-shrink: 0;
+      border: 4px solid var(--surface);
+      border-radius: var(--radius-full);
+    }
+
+    :host-context(.dark) .provider-avatar {
+      border-color: var(--gray-800);
+    }
+
+    .header-info {
+      flex: 1;
+      padding-bottom: var(--space-2);
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+
+    .business-name {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    @media (min-width: 768px) {
+      .business-name { font-size: var(--font-size-3xl); }
+    }
+
+    .verified-icon {
+      display: flex;
+      align-items: center;
+      color: var(--primary-500);
+    }
+
+    .verified-icon .material-icons-outlined { font-size: 1.5rem; }
+
+    .meta-row {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-bottom: var(--space-3);
+      flex-wrap: wrap;
+    }
+
+    .meta-divider { color: var(--gray-300); }
+    :host-context(.dark) .meta-divider { color: var(--gray-600); }
+
+    .review-count {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .info-row {
+      display: flex;
+      gap: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .info-item .material-icons-outlined { font-size: 1rem; }
+
+    .header-actions {
+      display: flex;
+      gap: var(--space-3);
+      flex-shrink: 0;
+    }
+
+    .favorite-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      padding: var(--space-2) var(--space-4);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+
+      &:hover {
+        border-color: var(--danger-300);
+        color: var(--danger-500);
+      }
+
+      &.is-favorited {
+        background: var(--danger-50);
+        border-color: var(--danger-300);
+        color: var(--danger-500);
+      }
+    }
+
+    :host-context(.dark) .favorite-btn {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+
+      &:hover {
+        border-color: var(--danger-500);
+        color: var(--danger-400);
+      }
+
+      &.is-favorited {
+        background: rgba(239, 68, 68, 0.1);
+        border-color: var(--danger-500);
+        color: var(--danger-400);
+      }
+    }
+
+    .favorite-btn .material-icons-outlined { font-size: 1.125rem; }

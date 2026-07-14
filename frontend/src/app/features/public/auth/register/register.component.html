@@ -1,117 +1,135 @@
-<div class="auth-page">
-      <div class="auth-container">
-        <div class="auth-header">
-          <a routerLink="/" class="auth-logo">
-            <span class="logo-icon">
-              <span class="material-icons-outlined">calendar_month</span>
-            </span>
-            <span class="logo-text">Bookify</span>
-          </a>
-          <h1 class="auth-title">Create your account</h1>
-          <p class="auth-subtitle">Start managing appointments like a pro</p>
+<app-auth-layout
+      title="Create your account"
+      subtitle="Start managing appointments like a pro — free for 14 days"
+      imageUrl="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1200"
+      quote="Bookify transformed my salon. I went from juggling a paper calendar to having a fully automated booking system in one afternoon."
+      quoteAuthor="Sarah Johnson, Blossom Beauty Salon"
+    >
+      <!-- Global error -->
+      @if (authService.error()) {
+        <div class="auth-banner auth-banner-error">
+          <span class="material-icons-outlined">error_outline</span>
+          <span>{{ authService.error() }}</span>
         </div>
+      }
 
-        <form class="auth-form" (ngSubmit)="onSubmit()">
-          <div class="role-selector">
-            <button
-              type="button"
-              class="role-btn"
-              [ngClass]="{ 'is-active': role === 'customer' }"
-              (click)="role = 'customer'"
-            >
-              <span class="material-icons-outlined">person</span>
-              <span>I'm a Customer</span>
-            </button>
-            <button
-              type="button"
-              class="role-btn"
-              [ngClass]="{ 'is-active': role === 'provider' }"
-              (click)="role = 'provider'"
-            >
-              <span class="material-icons-outlined">business_center</span>
-              <span>I'm a Provider</span>
-            </button>
-          </div>
+      <!-- Role selector -->
+      <div class="role-selector" role="group" aria-label="Account type">
+        <button
+          type="button"
+          class="role-btn"
+          [class.is-active]="role === 'customer'"
+          (click)="role = 'customer'"
+        >
+          <span class="role-icon material-icons-outlined">person</span>
+          <span class="role-label">I'm a Customer</span>
+          <span class="role-desc">Book appointments</span>
+        </button>
 
-          <div class="form-row">
-            <app-input
-              label="First Name"
-              type="text"
-              placeholder="First name"
-              iconStart="badge"
-              [error]="firstNameError() ?? undefined"
-              [(ngModel)]="firstName"
-              name="firstName"
-              [required]="true"
-            />
-            <app-input
-              label="Last Name"
-              type="text"
-              placeholder="Last name"
-              [error]="lastNameError() ?? undefined"
-              [(ngModel)]="lastName"
-              name="lastName"
-              [required]="true"
-            />
-          </div>
+        <button
+          type="button"
+          class="role-btn"
+          [class.is-active]="role === 'provider'"
+          (click)="role = 'provider'"
+        >
+          <span class="role-icon material-icons-outlined">business_center</span>
+          <span class="role-label">I'm a Provider</span>
+          <span class="role-desc">Manage bookings</span>
+        </button>
+      </div>
 
-          <app-input
-            label="Email"
-            type="email"
-            placeholder="Enter your email"
-            iconStart="email"
-            [error]="emailError() ?? undefined"
-            [(ngModel)]="email"
-            name="email"
-            [required]="true"
-          />
+      <!-- Form -->
+      <form class="auth-form" (ngSubmit)="onSubmit()" novalidate>
 
-          <app-input
+        <!-- Name -->
+        <app-input
+          label="Full Name"
+          type="text"
+          placeholder="Your full name"
+          iconStart="person"
+          [required]="true"
+          [error]="nameError() ?? undefined"
+          [(ngModel)]="name"
+          name="name"
+          (blur)="touchField('name')"
+        />
+
+        <!-- Email -->
+        <app-input
+          label="Email address"
+          type="email"
+          placeholder="you@example.com"
+          iconStart="email"
+          [required]="true"
+          [error]="emailError() ?? undefined"
+          [(ngModel)]="email"
+          name="email"
+          (blur)="touchField('email')"
+        />
+
+        <!-- Password + strength -->
+        <div class="form-field-group">
+          <app-password-input
             label="Password"
-            type="password"
             placeholder="Create a password"
-            iconStart="lock"
+            [required]="true"
             [error]="passwordError() ?? undefined"
+            autocomplete="new-password"
             [(ngModel)]="password"
             name="password"
-            [required]="true"
+            (blur)="touchField('password')"
           />
+          <app-password-strength [password]="password" />
+        </div>
 
-          <app-input
-            label="Confirm Password"
-            type="password"
-            placeholder="Confirm your password"
-            iconStart="lock"
-            [error]="confirmPasswordError() ?? undefined"
-            [(ngModel)]="confirmPassword"
-            name="confirmPassword"
-            [required]="true"
-          />
-
-          @if (authService.error()) {
-            <p class="auth-error">{{ authService.error() }}</p>
-          }
-
-          <label class="terms-checkbox">
-            <input type="checkbox" [(ngModel)]="acceptTerms" name="acceptTerms" />
-            <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
-          </label>
-
-          <app-button type="submit" variant="primary" [fullWidth]="true" [loading]="authService.loading()">
-            Create Account
-          </app-button>
-        </form>
-
-        <p class="auth-footer">
-          Already have an account?
-          <a routerLink="/login">Sign in</a>
-        </p>
-      </div>
-
-      <div class="auth-image">
-        <img
-          src="https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=800"
-          alt="Create account illustration"
+        <!-- Confirm password -->
+        <app-password-input
+          label="Confirm Password"
+          placeholder="Repeat your password"
+          [required]="true"
+          [error]="confirmPasswordError() ?? undefined"
+          autocomplete="new-password"
+          [(ngModel)]="confirmPassword"
+          name="confirmPassword"
+          (blur)="touchField('confirmPassword')"
         />
-      </div>
-    </div>
+
+        <!-- Terms -->
+        <label class="terms-label" [class.terms-error]="termsError()">
+          <input
+            class="checkbox"
+            type="checkbox"
+            [(ngModel)]="acceptTerms"
+            name="acceptTerms"
+            (change)="termsError.set(false)"
+          />
+          <span>
+            I agree to the
+            <a href="#" class="terms-link" target="_blank" rel="noopener">Terms of Service</a>
+            and
+            <a href="#" class="terms-link" target="_blank" rel="noopener">Privacy Policy</a>
+          </span>
+        </label>
+        @if (termsError()) {
+          <p class="field-error">You must accept the terms to continue.</p>
+        }
+
+        <!-- Submit -->
+        <app-button
+          type="submit"
+          variant="primary"
+          [fullWidth]="true"
+          [loading]="authService.loading()"
+          [disabled]="authService.loading()"
+        >
+          Create Account
+        </app-button>
+      </form>
+
+      <!-- Footer -->
+      <p class="auth-footer-text">
+        Already have an account?
+        <a routerLink="/login" class="auth-link">Sign in</a>
+      </p>
+
+    </app-auth-layout>

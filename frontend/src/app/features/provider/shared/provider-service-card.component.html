@@ -1,0 +1,41 @@
+<div class="service-card">
+      <div class="card-header">
+        <div class="service-info">
+          <h3 class="service-name">{{ service().title }}</h3>
+          <p class="service-category">{{ service().category }}</p>
+        </div>
+        <app-badge [variant]="service().isActive ? 'success' : 'gray'" size="sm">
+          {{ service().isActive ? 'Active' : 'Inactive' }}
+        </app-badge>
+      </div>
+
+      @if (service().description) {
+        <p class="service-desc">{{ service().description }}</p>
+      }
+
+      <div class="service-meta">
+        <div class="meta-item">
+          <span class="material-icons-outlined">schedule</span>
+          <span>{{ service().durationMinutes }} min</span>
+        </div>
+        <div class="meta-item price">
+          <span class="material-icons-outlined">payments</span>
+          <span>$ {{ service().price }}</span>
+        </div>
+      </div>
+
+      <div class="card-actions">
+        <app-button variant="ghost" size="sm" [routerLink]="['/provider/services', service()._id, 'edit']">
+          <span class="material-icons-outlined">edit</span>
+          Edit
+        </app-button>
+        <button
+          type="button"
+          class="toggle-action"
+          (click)="toggleStatus.emit(service()._id)"
+        >
+          <span class="material-icons-outlined">{{ service().isActive ? 'toggle_off' : 'toggle_on' }}</span>
+          {{ service().isActive ? 'Deactivate' : 'Activate' }}
+        </button>
+      </div>
+    </div>

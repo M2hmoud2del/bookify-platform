@@ -28,7 +28,7 @@ export class CustomerDashboardComponent {
 
   userFirstName = () => {
     const user = this.authService.user();
-    return user?.first_name ?? 'User';
+    return user?.name?.split(' ')[0] ?? 'User';
   };
 
   stats = signal({

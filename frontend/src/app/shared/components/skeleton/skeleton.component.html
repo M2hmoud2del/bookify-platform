@@ -1,13 +1,8 @@
-<span
-      class="badge"
-      [ngClass]="{
-        'badge-primary': variant() === 'primary',
-        'badge-secondary': variant() === 'secondary',
-        'badge-success': variant() === 'success',
-        'badge-warning': variant() === 'warning',
-        'badge-danger': variant() === 'danger',
-        'badge-gray': variant() === 'gray'
-      }"
-    >
-      <ng-content />
-    </span>
+<div
+      class="skeleton"
+      [class.skeleton-circle]="variant() === 'circle'"
+      [class.skeleton-text]="variant() === 'text'"
+      [class.skeleton-avatar]="variant() === 'avatar'"
+      [style.width]="width()"
+      [style.height]="height()"
+    ></div>

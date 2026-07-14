@@ -1,0 +1,57 @@
+<div class="auth-shell">
+      <!-- Form panel -->
+      <div class="auth-panel">
+        <div class="auth-panel-inner">
+
+          <!-- Brand -->
+          <a routerLink="/" class="auth-brand" aria-label="Go to homepage">
+            <span class="brand-icon">
+              <span class="material-icons-outlined">calendar_month</span>
+            </span>
+            <span class="brand-name">Bookify</span>
+          </a>
+
+          <!-- Heading slot -->
+          <div class="auth-heading">
+            <h1 class="auth-title">{{ title() }}</h1>
+            @if (subtitle()) {
+              <p class="auth-subtitle">{{ subtitle() }}</p>
+            }
+          </div>
+
+          <!-- Content -->
+          <ng-content />
+
+        </div>
+      </div>
+
+      <!-- Image panel -->
+      <div class="auth-visual" [style.background-image]="'url(' + imageUrl() + ')'">
+        <div class="visual-overlay">
+          <div class="visual-content">
+            <div class="visual-quote">
+              <span class="quote-icon material-icons-outlined">format_quote</span>
+              <p class="quote-text">{{ quote() }}</p>
+              <p class="quote-author">— {{ quoteAuthor() }}</p>
+            </div>
+
+            <div class="visual-stats">
+              <div class="stat">
+                <span class="stat-value">10k+</span>
+                <span class="stat-label">Active Users</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">98%</span>
+                <span class="stat-label">Satisfaction</span>
+              </div>
+              <div class="stat-divider"></div>
+              <div class="stat">
+                <span class="stat-value">50k+</span>
+                <span class="stat-label">Bookings Made</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

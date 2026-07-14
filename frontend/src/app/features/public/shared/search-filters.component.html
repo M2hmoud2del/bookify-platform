@@ -1,0 +1,59 @@
+<div class="filters-bar">
+      <div class="filters-main">
+        <app-search
+          class="search-field"
+          placeholder="Search by name, service, or location..."
+          [value]="query()"
+          (valueChange)="onQueryChange($event)"
+        />
+
+        <div class="filter-controls">
+          <div class="control-group">
+            <label class="control-label">Min Rating</label>
+            <div class="rating-options">
+              @for (r of [0, 3, 4, 4.5]; track r) {
+                <button
+                  type="button"
+                  class="rating-pill"
+                  [class.is-active]="minRating() === r"
+                  (click)="onRatingChange(r)"
+                >
+                  @if (r === 0) {
+                    <span class="material-icons-outlined">star</span> Any
+                  } @else {
+                    <span class="material-icons-outlined">star</span>
+                    {{ r }}+
+                  }
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label">Price Range</label>
+            <div class="price-options">
+              @for (pr of priceRanges; track pr.value) {
+                <button
+                  type="button"
+                  class="price-pill"
+                  [class.is-active]="maxPrice() === pr.value"
+                  (click)="onPriceChange(pr.value)"
+                >
+                  {{ pr.label }}
+                </button>
+              }
+            </div>
+          </div>
+
+          <div class="control-group sort-group">
+            <label class="control-label">Sort By</label>
+            <app-select
+              class="sort-select"
+              [options]="sortOptions"
+              [(ngModel)]="sortValue"
+              (ngModelChange)="onSortChange($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>

@@ -1,0 +1,41 @@
+<div class="appointment-card" [routerLink]="['/customer/appointments', appointment()._id]">
+      <div class="card-date">
+        <span class="date-day">{{ dayNumber() }}</span>
+        <span class="date-month">{{ monthName() }}</span>
+      </div>
+
+      <div class="card-body">
+        <div class="card-main">
+          <div class="card-provider">
+            <app-avatar
+              [src]="appointment().provider.avatar ?? undefined"
+              [name]="appointment().provider.name"
+              size="sm"
+            />
+            <div class="provider-info">
+              <h3 class="service-name">{{ appointment().service.title }}</h3>
+              <p class="provider-name">{{ appointment().provider.name }}</p>
+            </div>
+          </div>
+
+          <div class="card-meta">
+            <span class="meta-item">
+              <span class="material-icons-outlined">schedule</span>
+              {{ formattedTime() }}
+            </span>
+            <span class="meta-item">
+              <span class="material-icons-outlined">location_on</span>
+              {{ appointment().service.category }}
+            </span>
+          </div>
+        </div>
+
+        <div class="card-aside">
+          <div class="aside-top">
+            <app-status-badge [status]="appointment().status" />
+            <app-status-badge [status]="appointment().paymentStatus" />
+          </div>
+          <span class="price">$ {{ appointment().service.price }}</span>
+        </div>
+      </div>
+    </div>

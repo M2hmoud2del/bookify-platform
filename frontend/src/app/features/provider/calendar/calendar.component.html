@@ -44,14 +44,14 @@
                   <span class="date-number">{{ date.getDate() }}</span>
                   @if (getAppointmentsForDate(date).length > 0) {
                     <div class="date-appointments">
-                      @for (apt of getAppointmentsForDate(date).slice(0, 2); track apt.id) {
+                      @for (apt of getAppointmentsForDate(date).slice(0, 2); track apt._id) {
                         <div
                           class="appointment-indicator"
                           [style.background]="getStatusColor(apt.status)"
                           (click)="$event.stopPropagation(); openAppointmentDetail(apt)"
                         >
-                          <span class="apt-time">{{ apt.start_time | date:'HH:mm' }}</span>
-                          <span class="apt-title">{{ apt.service_name }}</span>
+                          <span class="apt-time">{{ apt.startTime }}</span>
+                          <span class="apt-title">{{ apt.service.title }}</span>
                         </div>
                       }
                       @if (getAppointmentsForDate(date).length > 2) {
@@ -117,7 +117,7 @@
                   </div>
                 }
               </div>
-              @for (apt of selectedDayAppointments(); track apt.id) {
+              @for (apt of selectedDayAppointments(); track apt._id) {
                 <div
                   class="day-appointment"
                   [style.top]="getAppointmentTop(apt)"
@@ -125,9 +125,9 @@
                   [style.background]="getStatusColor(apt.status)"
                   (click)="openAppointmentDetail(apt)"
                 >
-                  <span class="apt-time">{{ apt.start_time | date:'HH:mm' }} - {{ apt.end_time | date:'HH:mm' }}</span>
-                  <span class="apt-title">{{ apt.service_name }}</span>
-                  <span class="apt-customer">{{ apt.customer_name }}</span>
+                  <span class="apt-time">{{ apt.startTime }} - {{ apt.endTime }}</span>
+                  <span class="apt-title">{{ apt.service.title }}</span>
+                  <span class="apt-customer">{{ apt.customer.name }}</span>
                 </div>
               }
             </div>
@@ -139,7 +139,7 @@
       @if (selectedAppointment()) {
         <app-modal
           [isOpen]="!!selectedAppointment()"
-          [title]="selectedAppointment()?.service_name"
+          [title]="selectedAppointment()?.service?.title"
           [description]="'Appointment Details'"
           size="md"
           (close)="selectedAppointment.set(null)"
@@ -149,19 +149,20 @@
               <span class="detail-label">Customer</span>
               <div class="detail-value">
                 <app-avatar
-                  [name]="selectedAppointment()?.customer_name"
+                  [src]="selectedAppointment()?.customer?.avatar ?? undefined"
+                  [name]="selectedAppointment()?.customer?.name ?? ''"
                   size="sm"
                 />
-                <span>{{ selectedAppointment()?.customer_name }}</span>
+                <span>{{ selectedAppointment()?.customer?.name }}</span>
               </div>
             </div>
             <div class="detail-row">
               <span class="detail-label">Date & Time</span>
-              <span class="detail-value">{{ selectedAppointment()?.start_time | date:'MMM d, y HH:mm' }}</span>
+              <span class="detail-value">{{ selectedAppointment()?.localDate | date:'MMM d, y' }} {{ selectedAppointment()?.startTime }}</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Duration</span>
-              <span class="detail-value">{{ selectedAppointment()?.duration }} minutes</span>
+              <span class="detail-value">{{ selectedAppointment()?.service?.durationMinutes }} minutes</span>
             </div>
             <div class="detail-row">
               <span class="detail-label">Status</span>
@@ -171,7 +172,7 @@
             </div>
             <div class="detail-row">
               <span class="detail-label">Price</span>
-              <span class="detail-value price">{{ selectedAppointment()?.total_amount | currency }}</span>
+              <span class="detail-value price">{{ selectedAppointment()?.service?.price | currency }}</span>
             </div>
           </div>
         </app-modal>

@@ -1,0 +1,43 @@
+<div class="service-list">
+      <div class="list-header">
+        <h2 class="list-title">Services</h2>
+        <span class="list-count">{{ services().length }} available</span>
+      </div>
+
+      <div class="list-body">
+        @for (service of services(); track service._id) {
+          <div class="list-item" [routerLink]="['/providers', providerId(), 'services', service._id]">
+            <div class="item-image">
+              <img [src]="service.images[0]?.url" [alt]="service.title" loading="lazy" />
+            </div>
+
+            <div class="item-info">
+              <div class="item-header">
+                <h3 class="item-name">{{ service.title }}</h3>
+                <span class="item-duration">
+                  <span class="material-icons-outlined">schedule</span>
+                  {{ service.durationMinutes }} min
+                </span>
+              </div>
+              <p class="item-desc">{{ service.description }}</p>
+            </div>
+
+            <div class="item-actions">
+              <span class="item-price">$ {{ service.price }}</span>
+              <app-button
+                variant="primary"
+                size="sm"
+                (onClick)="book.emit(service)"
+              >
+                Book
+              </app-button>
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-list">
+            <span class="material-icons-outlined">spa</span>
+            <p>No services available</p>
+          </div>
+        }
+      </div>
+    </div>

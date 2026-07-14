@@ -1,61 +1,51 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, ActivatedRoute } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { InputComponent } from '../../../../shared/components/input/input.component';
+import { AuthLayoutComponent } from '../shared/auth-layout.component';
+import { PasswordInputComponent } from '../shared/password-input.component';
+import { PasswordStrengthComponent } from '../shared/password-strength.component';
+import { validatePassword, validatePasswordConfirm } from '../shared/auth-validators';
 
 @Component({
   selector: 'app-reset-password',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ButtonComponent, InputComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    ButtonComponent,
+    AuthLayoutComponent,
+    PasswordInputComponent,
+    PasswordStrengthComponent,
+  ],
   templateUrl: './reset-password.component.html',
   styleUrl: './reset-password.component.css',
 })
 export class ResetPasswordComponent {
   authService = inject(AuthService);
-  router = inject(Router);
-  route = inject(ActivatedRoute);
+  router      = inject(Router);
 
-  password = '';
+  password        = '';
   confirmPassword = '';
-  success = signal(false);
+  passwordError   = signal<string | null>(null);
+  confirmError    = signal<string | null>(null);
+  done            = signal(false);
 
-  passwordError = signal<string | null>(null);
-  confirmPasswordError = signal<string | null>(null);
+  readonly validatePassword        = validatePassword;
+  readonly validatePasswordConfirm = validatePasswordConfirm;
 
-  async onSubmit(): Promise<void> {
-    if (!this.validate()) return;
-
-    const result = await this.authService.resetPassword(this.password);
-    if (result) {
-      this.success.set(true);
-    }
+  private validateAll(): boolean {
+    this.passwordError.set(validatePassword(this.password));
+    this.confirmError.set(validatePasswordConfirm(this.password, this.confirmPassword));
+    return !this.passwordError() && !this.confirmError();
   }
 
-  private validate(): boolean {
-    this.passwordError.set(null);
-    this.confirmPasswordError.set(null);
-
-    let valid = true;
-
-    if (!this.password) {
-      this.passwordError.set('Password is required');
-      valid = false;
-    } else if (this.password.length < 8) {
-      this.passwordError.set('Password must be at least 8 characters');
-      valid = false;
-    }
-
-    if (!this.confirmPassword) {
-      this.confirmPasswordError.set('Please confirm your password');
-      valid = false;
-    } else if (this.password !== this.confirmPassword) {
-      this.confirmPasswordError.set('Passwords do not match');
-      valid = false;
-    }
-
-    return valid;
+  async onSubmit(): Promise<void> {
+    if (!this.validateAll()) return;
+    const ok = await this.authService.resetPassword(this.password);
+    if (ok) this.done.set(true);
   }
 }

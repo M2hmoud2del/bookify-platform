@@ -2,42 +2,125 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../../../core/services/auth.service';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
-import { CardComponent } from '../../../shared/components/card/card.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
-import { BadgeComponent } from '../../../shared/components/badge/badge.component';
+import { BookingCalendarComponent } from '../shared/booking-calendar.component';
+import { TimeSlotSelectorComponent } from '../shared/time-slot-selector.component';
+import { MOCK_TIME_SLOTS, TimeSlot } from '../shared/customer.models';
+import { MOCK_PROVIDERS } from '../../public/shared/public.models';
+import { Service } from '../../../core/models/user.model';
+
+interface BookingProvider {
+  id: string;
+  business_name: string;
+  business_type: string;
+  rating: number;
+  avatar: string | null;
+  services: Service[];
+}
+
+interface BookingService {
+  id: string;
+  name: string;
+  description: string;
+  duration_minutes: number;
+  price: number;
+}
 
 @Component({
   selector: 'app-booking-customer',
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule, ButtonComponent, CardComponent, AvatarComponent, BadgeComponent],
+  imports: [
+    CommonModule,
+    RouterLink,
+    FormsModule,
+    ButtonComponent,
+    AvatarComponent,
+    BookingCalendarComponent,
+    TimeSlotSelectorComponent,
+  ],
   templateUrl: './booking.component.html',
   styleUrl: './booking.component.css',
 })
 export class BookingComponent {
-  authService = inject(AuthService);
-  router = inject(Router);
-  route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   currentStep = signal(1);
-  selectedProvider = signal<any>(null);
-  selectedService = signal<any>(null);
+  selectedProvider = signal<BookingProvider | null>(null);
+  selectedService = signal<BookingService | null>(null);
   selectedDate = signal<Date | null>(null);
   selectedTime = signal<string | null>(null);
 
-  providers = signal([
-    { id: '1', business_name: 'Blossom Beauty Salon', business_type: 'Beauty Salon', rating: 4.9 },
-    { id: '2', business_name: 'Dr. Michael Chen Dentistry', business_type: 'Dentist', rating: 4.8 },
-    { id: '3', business_name: 'FitLife Training', business_type: 'Personal Trainer', rating: 4.7 },
+  steps = [
+    { num: 1, label: 'Provider' },
+    { num: 2, label: 'Service' },
+    { num: 3, label: 'Date & Time' },
+    { num: 4, label: 'Confirm' },
+  ];
+
+  providers = signal<BookingProvider[]>(
+    MOCK_PROVIDERS.map(p => ({
+      id: p.user._id,
+      business_name: p.profile.businessName,
+      business_type: p.profile.category ?? 'General',
+      rating: p.profile.ratingAverage,
+      avatar: p.user.avatar ?? null,
+      services: p.services,
+    }))
+  );
+
+  services = signal<BookingService[]>([]);
+
+  availableDates = signal<string[]>([
+    '2026-07-13', '2026-07-14', '2026-07-15', '2026-07-16',
+    '2026-07-17', '2026-07-18', '2026-07-20', '2026-07-21',
+    '2026-07-22', '2026-07-23', '2026-07-24',
   ]);
 
-  services = signal([
-    { id: '1', name: 'Haircut & Styling', description: 'Professional haircut and styling', duration_minutes: 45, price: 65 },
-    { id: '2', name: 'Hair Coloring', description: 'Full hair coloring service', duration_minutes: 90, price: 120 },
-    { id: '3', name: 'Beard Trim', description: 'Professional beard grooming', duration_minutes: 30, price: 35 },
-    { id: '4', name: 'Facial Treatment', description: 'Rejuvenating facial', duration_minutes: 60, price: 85 },
-  ]);
+  timeSlots = signal<TimeSlot[]>([]);
+
+  formattedDate = computed(() => {
+    const d = this.selectedDate();
+    return d ? d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }) : '';
+  });
+
+  formattedTime = computed(() => {
+    const t = this.selectedTime();
+    if (!t) return '';
+    const [h, m] = t.split(':');
+    const hour = parseInt(h, 10);
+    const period = hour >= 12 ? 'PM' : 'AM';
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    return `${displayHour}:${m} ${period}`;
+  });
+
+  selectProvider(provider: BookingProvider): void {
+    this.selectedProvider.set(provider);
+    this.services.set(
+      provider.services.map(s => ({
+        id: s._id,
+        name: s.title,
+        description: s.description ?? '',
+        duration_minutes: s.durationMinutes,
+        price: s.price,
+      }))
+    );
+  }
+
+  selectService(service: BookingService): void {
+    this.selectedService.set(service);
+  }
+
+  onDateChange(date: Date): void {
+    this.selectedDate.set(date);
+    this.timeSlots.set(MOCK_TIME_SLOTS);
+    this.selectedTime.set(null);
+  }
+
+  onTimeChange(time: string): void {
+    this.selectedTime.set(time);
+  }
 
   nextStep(): void {
     this.currentStep.update(v => Math.min(v + 1, 4));
@@ -48,6 +131,6 @@ export class BookingComponent {
   }
 
   confirmBooking(): void {
-    this.router.navigate(['/checkout/success']);
+    this.router.navigate(['/customer/checkout/success']);
   }
 }
