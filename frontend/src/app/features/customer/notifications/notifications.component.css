@@ -3,13 +3,39 @@
     .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
     .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
     .notifications-list { display: flex; flex-direction: column; }
-    .notification-item { display: flex; gap: var(--space-3); padding: var(--space-4); border-bottom: 1px solid var(--border); }
+    .notification-item { display: flex; gap: var(--space-3); padding: var(--space-4); border-bottom: 1px solid var(--border); color: inherit; text-decoration: none; }
+    .notification-link { cursor: pointer; transition: background var(--transition-fast); }
+    .notification-link:hover { background: var(--gray-50); }
+    :host-context(.dark) .notification-link:hover { background: var(--gray-800); }
     .notification-item.unread { background: var(--primary-50); }
     :host-context(.dark) .notification-item.unread { background: rgba(79, 70, 229, 0.1); }
-    .notification-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: var(--radius-full); }
-    .notification-icon.confirmed { background: var(--success-100); color: var(--success-600); }
-    :host-context(.dark) .notification-icon.confirmed { background: rgba(34, 197, 94, 0.2); }
-    .notification-content { flex: 1; }
+    .notification-icon { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; min-width: 40px; border-radius: var(--radius-full); background: var(--gray-100); color: var(--gray-600); }
+    .notification-icon.confirmed,
+    .notification-icon.booking,
+    .notification-icon.reminder { background: var(--primary-100); color: var(--primary-600); }
+    .notification-icon.payment { background: var(--success-100); color: var(--success-600); }
+    .notification-icon.failed,
+    .notification-icon.cancelled { background: var(--danger-100); color: var(--danger-600); }
+    .notification-icon.review { background: var(--warning-100); color: var(--warning-600); }
+    .notification-icon.default { background: var(--gray-100); color: var(--gray-600); }
+    :host-context(.dark) .notification-icon.confirmed,
+    :host-context(.dark) .notification-icon.booking,
+    :host-context(.dark) .notification-icon.reminder { background: rgba(79, 70, 229, 0.2); }
+    :host-context(.dark) .notification-icon.payment { background: rgba(34, 197, 94, 0.2); }
+    :host-context(.dark) .notification-icon.failed,
+    :host-context(.dark) .notification-icon.cancelled { background: rgba(239, 68, 68, 0.2); }
+    :host-context(.dark) .notification-icon.review { background: rgba(245, 158, 11, 0.2); }
+    .notification-content { flex: 1; min-width: 0; }
+    .notification-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
     .notification-title { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--text-primary); margin: 0; }
-    .notification-message { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .notification-status { padding: 0.125rem 0.5rem; border-radius: var(--radius-full); background: var(--gray-100); color: var(--text-secondary); font-size: var(--font-size-xs); text-transform: capitalize; white-space: nowrap; }
+    .notification-status.sent { background: var(--success-100); color: var(--success-700); }
+    .notification-status.failed { background: var(--danger-100); color: var(--danger-700); }
+    .notification-status.pending { background: var(--warning-100); color: var(--warning-700); }
+    .notification-type { font-size: var(--font-size-xs); color: var(--text-tertiary); margin: var(--space-1) 0 0; }
+    .notification-message { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; line-height: 1.5; }
     .notification-time { font-size: var(--font-size-xs); color: var(--text-tertiary); margin: var(--space-2) 0 0; }
+    .state-message,
+    .error-message { margin: 0; padding: var(--space-3) var(--space-4); border-radius: var(--radius-lg); font-size: var(--font-size-sm); }
+    .state-message { color: var(--text-secondary); background: var(--gray-50); }
+    .error-message { color: var(--danger-700); background: var(--danger-50); }

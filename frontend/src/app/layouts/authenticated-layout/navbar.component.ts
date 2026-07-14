@@ -6,6 +6,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { AvatarComponent } from '../../shared/components/avatar/avatar.component';
 import { UserRole } from '../../core/models/user.model';
 import { SearchComponent } from '../../shared/components/search/search.component';
+import { NotificationsApi } from '../../features/customer/notifications/notifications.api';
 
 export interface BreadcrumbItem {
   label: string;
@@ -22,11 +23,12 @@ export interface BreadcrumbItem {
 export class NavbarComponent {
   authService = inject(AuthService);
   router = inject(Router);
+  private notificationsApi = inject(NotificationsApi);
 
   role = input<UserRole>('customer');
   toggleMobileMenu = output<void>();
 
-  notificationCount = signal(3);
+  notificationCount = signal(0);
   userMenuOpen = signal(false);
 
   userDisplayName = computed(() => {
@@ -50,6 +52,14 @@ export class NavbarComponent {
     ).subscribe((event) => {
       this.updateBreadcrumbs(event.url);
     });
+  }
+
+  private async loadNotificationCount(): Promise<void> {
+    try {
+      this.notificationCount.set(await this.notificationsApi.getUnreadCount());
+    } catch {
+      this.notificationCount.set(0);
+    }
   }
 
   private updateBreadcrumbs(url: string): void {
