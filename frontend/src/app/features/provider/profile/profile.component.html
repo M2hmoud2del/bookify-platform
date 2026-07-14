@@ -13,13 +13,13 @@
         <app-card title="Business Media">
           <div class="media-section">
             <div class="logo-section">
-              <app-avatar name="Blossom Beauty" size="xl" />
+              <app-avatar [src]="profileImageUrl()" [name]="avatarName()" size="xl" />
               <div class="logo-actions">
-                <app-button variant="outline" size="sm">
+                <app-button variant="outline" size="sm" [disabled]="true">
                   <span class="material-icons-outlined">photo_camera</span>
                   Upload Profile Image
                 </app-button>
-                <app-button variant="ghost" size="sm">
+                <app-button variant="ghost" size="sm" [disabled]="true">
                   <span class="material-icons-outlined">delete</span>
                   Remove
                 </app-button>
@@ -30,6 +30,12 @@
 
         <!-- Business Info -->
         <app-card title="Business Information">
+          @if (loading()) {
+            <p class="form-hint">Loading profile...</p>
+          }
+          @if (error()) {
+            <p class="form-error">{{ error() }}</p>
+          }
           <form class="info-form" (ngSubmit)="onSave()">
             <app-input
               label="Business Name"
@@ -82,7 +88,7 @@
               <app-button variant="outline" type="button" [routerLink]="['/provider/dashboard']">
                 Cancel
               </app-button>
-              <app-button variant="primary" type="submit" [loading]="saving()">
+              <app-button variant="primary" type="submit" [loading]="saving()" [disabled]="loading() || saving()">
                 <span class="material-icons-outlined">save</span>
                 Save Changes
               </app-button>

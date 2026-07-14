@@ -25,6 +25,13 @@
         </div>
       </div>
 
+      @if (loading()) {
+        <p class="state-message">Loading services...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
       <div class="services-grid">
         @for (service of filteredServices(); track service._id) {
           <div class="service-card">
@@ -61,6 +68,10 @@
               <button type="button" class="action-btn" (click)="toggleServiceStatus(service)">
                 <span class="material-icons-outlined">{{ service.isActive ? 'toggle_off' : 'toggle_on' }}</span>
                 {{ service.isActive ? 'Deactivate' : 'Activate' }}
+              </button>
+              <button type="button" class="action-btn danger" (click)="deleteService(service)">
+                <span class="material-icons-outlined">delete</span>
+                Delete
               </button>
             </div>
           </div>

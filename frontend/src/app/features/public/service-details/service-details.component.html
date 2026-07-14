@@ -1,6 +1,14 @@
 <app-public-navbar />
 
-    @if (service() && provider()) {
+    @if (loading()) {
+      <div class="container not-found-wrap">
+        <p class="state-message">Loading service...</p>
+      </div>
+    } @else if (error()) {
+      <div class="container not-found-wrap">
+        <p class="error-message">{{ error() }}</p>
+      </div>
+    } @else if (service() && provider()) {
       <div class="service-page">
         <div class="container">
           <!-- Breadcrumb -->
@@ -9,7 +17,7 @@
             <span class="material-icons-outlined separator">chevron_right</span>
             <a routerLink="/providers" class="crumb">Providers</a>
             <span class="material-icons-outlined separator">chevron_right</span>
-            <a [routerLink]="['/providers', provider()!.user._id]" class="crumb">{{ provider()!.profile.businessName }}</a>
+            <a [routerLink]="['/providers', provider()!.profile._id]" class="crumb">{{ provider()!.profile.businessName }}</a>
             <span class="material-icons-outlined separator">chevron_right</span>
             <span class="crumb crumb-current">{{ service()!.title }}</span>
           </nav>
@@ -165,7 +173,7 @@
                     </div>
                   </div>
                   <p class="mini-desc">{{ provider()!.profile.bio }}</p>
-                  <a [routerLink]="['/providers', provider()!.user._id]" class="view-provider-link">
+                  <a [routerLink]="['/providers', provider()!.profile._id]" class="view-provider-link">
                     View Full Profile
                     <span class="material-icons-outlined">arrow_forward</span>
                   </a>

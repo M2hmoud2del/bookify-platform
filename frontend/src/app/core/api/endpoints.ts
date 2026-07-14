@@ -4,12 +4,20 @@ export const API_ENDPOINTS = {
     login: '/auth/login',
     me: '/auth/me',
   },
+  providerProfile: {
+    me: '/provider/profile',
+  },
   providers: {
     root: '/providers',
-    profile: '/providers/profile',
+    byId: (providerId: string) => `/providers/${providerId}`,
+  },
+  providerServices: {
+    byProvider: (providerId: string) => `/providers/${providerId}/services`,
   },
   services: {
     root: '/services',
+    byId: (serviceId: string) => `/services/${serviceId}`,
+    status: (serviceId: string) => `/services/${serviceId}/status`,
   },
   appointments: {
     root: '/appointments',

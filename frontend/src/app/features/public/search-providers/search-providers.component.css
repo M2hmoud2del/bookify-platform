@@ -82,3 +82,6 @@
       justify-content: center;
       margin-top: var(--space-8);
     }
+
+.state-message { color: #64748b; font-size: 0.875rem; margin: 1rem 0; }
+.error-message { color: #dc2626; font-size: 0.875rem; margin: 1rem 0; }

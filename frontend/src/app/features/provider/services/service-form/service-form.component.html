@@ -9,6 +9,13 @@
         </div>
       </div>
 
+      @if (loading()) {
+        <p class="state-message">Loading service...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
       <form class="service-form" (ngSubmit)="onSubmit()">
         <app-card title="Service Details">
           <div class="form-grid">
@@ -84,7 +91,7 @@
 
         <div class="form-actions">
           <app-button variant="ghost" (onClick)="goBack()">Cancel</app-button>
-          <app-button variant="primary" type="submit">
+          <app-button variant="primary" type="submit" [loading]="saving()" [disabled]="loading() || saving()">
             {{ isEditMode() ? 'Save Changes' : 'Create Service' }}
           </app-button>
         </div>

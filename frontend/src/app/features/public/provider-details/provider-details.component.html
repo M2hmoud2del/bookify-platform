@@ -1,6 +1,14 @@
 <app-public-navbar />
 
-    @if (provider()) {
+    @if (loading()) {
+      <div class="container not-found-wrap">
+        <p class="state-message">Loading provider...</p>
+      </div>
+    } @else if (error()) {
+      <div class="container not-found-wrap">
+        <p class="error-message">{{ error() }}</p>
+      </div>
+    } @else if (provider()) {
       <div class="provider-page">
         <div class="container">
           <!-- Breadcrumb -->
@@ -58,7 +66,7 @@
               <div id="services-section">
                 <app-service-list
                   [services]="provider()!.services"
-                  [providerId]="provider()!.user._id"
+                  [providerId]="provider()!.profile._id"
                   (book)="onBookService($event)"
                 />
               </div>
