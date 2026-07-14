@@ -1,13 +1,16 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { AppointmentView } from '../../../core/models/appointment.model';
+import { ReviewView } from '../../../core/models/review.model';
 import { StatCardComponent } from '../../../shared/components/stat-card/stat-card.component';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { BadgeComponent } from '../../../shared/components/badge/badge.component';
-import { MOCK_PROVIDER_APPOINTMENTS, MOCK_PROVIDER_REVIEWS, PopulatedAppointment, PopulatedReview } from '../shared/provider.models';
+import { ReviewsApi } from '../../customer/reviews/reviews.api';
+import { DashboardApi } from './dashboard.api';
 
 @Component({
   selector: 'app-provider-dashboard',
@@ -26,6 +29,11 @@ import { MOCK_PROVIDER_APPOINTMENTS, MOCK_PROVIDER_REVIEWS, PopulatedAppointment
 })
 export class ProviderDashboardComponent {
   authService = inject(AuthService);
+  private dashboardApi = inject(DashboardApi);
+  private reviewsApi = inject(ReviewsApi);
+
+  loading = signal(false);
+  error = signal<string | null>(null);
 
   userFirstName = () => this.authService.user()?.name ?? 'Provider';
 
@@ -35,21 +43,54 @@ export class ProviderDashboardComponent {
   };
 
   stats = signal({
-    todayAppointments: 5,
-    monthlyRevenue: 3250,
-    rating: 4.9,
-    totalCustomers: 48,
+    todayAppointments: 0,
+    monthlyRevenue: 0,
+    rating: 0,
+    totalCustomers: 0,
   });
 
   weekStats = signal({
-    completed: 18,
-    upcoming: 7,
-    cancelled: 2,
+    completed: 0,
+    upcoming: 0,
+    cancelled: 0,
   });
 
-  todayAppointments = signal<PopulatedAppointment[]>(MOCK_PROVIDER_APPOINTMENTS.filter(a => a.localDate === '2026-07-12'));
+  todayAppointments = signal<AppointmentView[]>([]);
 
-  recentReviews = signal<PopulatedReview[]>(MOCK_PROVIDER_REVIEWS.slice(0, 2));
+  recentReviews = signal<ReviewView[]>([]);
+
+  constructor() {
+    void this.loadDashboard();
+  }
+
+  async loadDashboard(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      const dashboard = await this.dashboardApi.getProviderDashboard();
+      this.stats.set({
+        todayAppointments: dashboard.todayAppointments,
+        monthlyRevenue: dashboard.monthlyRevenue,
+        rating: dashboard.averageRating,
+        totalCustomers: dashboard.totalCustomers,
+      });
+      this.weekStats.set({
+        completed: dashboard.completedAppointments,
+        upcoming: dashboard.upcomingAppointments,
+        cancelled: dashboard.cancelledAppointments,
+      });
+      this.todayAppointments.set(dashboard.todayAppointmentList);
+      this.recentReviews.set(dashboard.recentReviews.slice(0, 2));
+      await this.loadRecentReviewsFallback();
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to load dashboard.'));
+      this.todayAppointments.set([]);
+      this.recentReviews.set([]);
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   formatTime(time: string): string {
     if (!time) return '';
@@ -71,5 +112,28 @@ export class ProviderDashboardComponent {
       default:
         return 'gray';
     }
+  }
+
+  private async loadRecentReviewsFallback(): Promise<void> {
+    if (this.recentReviews().length > 0) {
+      return;
+    }
+
+    const providerId = this.authService.user()?._id;
+    if (!providerId) {
+      return;
+    }
+
+    try {
+      const result = await this.reviewsApi.getProviderReviews(providerId);
+      this.recentReviews.set(result.reviews.slice(0, 2));
+    } catch {
+      this.recentReviews.set([]);
+    }
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }

@@ -48,9 +48,15 @@ export const API_ENDPOINTS = {
   },
   reviews: {
     root: '/reviews',
+    create: '/reviews',
+    provider: (providerId: string) => `/reviews/provider/${providerId}`,
+    my: '/reviews/my',
+    byId: (reviewId: string) => `/reviews/${reviewId}`,
   },
   dashboard: {
     root: '/dashboard',
+    provider: '/dashboard/provider',
+    admin: '/dashboard/admin',
   },
   notifications: {
     root: '/notifications',
