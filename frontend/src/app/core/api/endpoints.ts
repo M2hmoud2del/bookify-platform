@@ -19,6 +19,17 @@ export const API_ENDPOINTS = {
     byId: (serviceId: string) => `/services/${serviceId}`,
     status: (serviceId: string) => `/services/${serviceId}/status`,
   },
+  uploads: {
+    providerProfileImage: '/uploads/provider/profile-image',
+    serviceImages: (serviceId: string) => `/uploads/services/${serviceId}/images`,
+  },
+  workingHours: {
+    my: '/working-hours/my',
+    provider: (providerId: string) => `/working-hours/provider/${providerId}`,
+  },
+  availability: {
+    check: '/availability',
+  },
   appointments: {
     root: '/appointments',
   },

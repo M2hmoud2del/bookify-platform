@@ -1,17 +1,21 @@
 import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { BookingCalendarComponent } from '../shared/booking-calendar.component';
 import { TimeSlotSelectorComponent } from '../shared/time-slot-selector.component';
-import { MOCK_TIME_SLOTS, TimeSlot } from '../shared/customer.models';
-import { MOCK_PROVIDERS } from '../../public/shared/public.models';
+import { TimeSlot } from '../shared/customer.models';
 import { Service } from '../../../core/models/user.model';
+import { mapAvailabilitySlotsToTimeSlots } from '../../../core/mappers/availability.mapper';
+import { ProviderProfileApi } from '../../provider/profile/provider-profile.api';
+import { ProviderServicesApi } from '../../provider/services/provider-services.api';
+import { AvailabilityApi } from './availability.api';
 
 interface BookingProvider {
   id: string;
+  userId: string;
   business_name: string;
   business_type: string;
   rating: number;
@@ -44,13 +48,18 @@ interface BookingService {
 })
 export class BookingComponent {
   private router = inject(Router);
-  private route = inject(ActivatedRoute);
+  private providerProfileApi = inject(ProviderProfileApi);
+  private providerServicesApi = inject(ProviderServicesApi);
+  private availabilityApi = inject(AvailabilityApi);
 
   currentStep = signal(1);
   selectedProvider = signal<BookingProvider | null>(null);
   selectedService = signal<BookingService | null>(null);
   selectedDate = signal<Date | null>(null);
   selectedTime = signal<string | null>(null);
+  loading = signal(false);
+  loadingSlots = signal(false);
+  error = signal<string | null>(null);
 
   steps = [
     { num: 1, label: 'Provider' },
@@ -59,25 +68,9 @@ export class BookingComponent {
     { num: 4, label: 'Confirm' },
   ];
 
-  providers = signal<BookingProvider[]>(
-    MOCK_PROVIDERS.map(p => ({
-      id: p.user._id,
-      business_name: p.profile.businessName,
-      business_type: p.profile.category ?? 'General',
-      rating: p.profile.ratingAverage,
-      avatar: p.user.avatar ?? null,
-      services: p.services,
-    }))
-  );
-
+  providers = signal<BookingProvider[]>([]);
   services = signal<BookingService[]>([]);
-
-  availableDates = signal<string[]>([
-    '2026-07-13', '2026-07-14', '2026-07-15', '2026-07-16',
-    '2026-07-17', '2026-07-18', '2026-07-20', '2026-07-21',
-    '2026-07-22', '2026-07-23', '2026-07-24',
-  ]);
-
+  availableDates = signal<string[]>([]);
   timeSlots = signal<TimeSlot[]>([]);
 
   formattedDate = computed(() => {
@@ -95,8 +88,44 @@ export class BookingComponent {
     return `${displayHour}:${m} ${period}`;
   });
 
+  constructor() {
+    void this.loadProviders();
+  }
+
+  async loadProviders(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      const providers = await this.providerProfileApi.getProviders();
+      const mappedProviders = await Promise.all(
+        providers.map(async (provider) => {
+          const services = await this.providerServicesApi.getProviderServices(provider.profile._id);
+          return {
+            id: provider.profile._id,
+            userId: provider.user._id,
+            business_name: provider.profile.businessName,
+            business_type: provider.profile.category ?? 'General',
+            rating: provider.profile.ratingAverage,
+            avatar: provider.user.avatar ?? provider.profile.profileImage.url ?? null,
+            services,
+          };
+        })
+      );
+      this.providers.set(mappedProviders);
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to load providers.'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
   selectProvider(provider: BookingProvider): void {
     this.selectedProvider.set(provider);
+    this.selectedService.set(null);
+    this.selectedDate.set(null);
+    this.selectedTime.set(null);
+    this.timeSlots.set([]);
     this.services.set(
       provider.services.map(s => ({
         id: s._id,
@@ -110,12 +139,38 @@ export class BookingComponent {
 
   selectService(service: BookingService): void {
     this.selectedService.set(service);
+    this.selectedDate.set(null);
+    this.selectedTime.set(null);
+    this.timeSlots.set([]);
   }
 
-  onDateChange(date: Date): void {
+  async onDateChange(date: Date): Promise<void> {
     this.selectedDate.set(date);
-    this.timeSlots.set(MOCK_TIME_SLOTS);
     this.selectedTime.set(null);
+    await this.loadAvailability();
+  }
+
+  async loadAvailability(): Promise<void> {
+    const provider = this.selectedProvider();
+    const service = this.selectedService();
+    const date = this.selectedDate();
+
+    if (!provider || !service || !date) {
+      return;
+    }
+
+    this.loadingSlots.set(true);
+    this.error.set(null);
+
+    try {
+      const slots = await this.availabilityApi.getAvailability(provider.userId, service.id, this.toDateString(date));
+      this.timeSlots.set(mapAvailabilitySlotsToTimeSlots(slots));
+    } catch (err) {
+      this.timeSlots.set([]);
+      this.error.set(this.errorMessage(err, 'Unable to load available times.'));
+    } finally {
+      this.loadingSlots.set(false);
+    }
   }
 
   onTimeChange(time: string): void {
@@ -132,5 +187,17 @@ export class BookingComponent {
 
   confirmBooking(): void {
     this.router.navigate(['/customer/checkout/success']);
+  }
+
+  private toDateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }

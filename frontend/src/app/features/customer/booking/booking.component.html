@@ -4,6 +4,13 @@
         <p class="page-subtitle">Select a provider, service, and time that works for you</p>
       </div>
 
+      @if (loading()) {
+        <p class="state-message">Loading providers...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
       <!-- Step indicator -->
       <div class="steps-bar">
         @for (step of steps; track step.num; let last = $last) {
@@ -117,11 +124,15 @@
             </div>
 
             <div class="slots-section">
+              @if (loadingSlots()) {
+                <p class="state-message">Loading available times...</p>
+              } @else {
               <app-time-slot-selector
                 [slots]="timeSlots()"
                 [selectedTime]="selectedTime()"
                 (timeChange)="onTimeChange($event)"
               />
+              }
             </div>
           </div>
           <div class="step-actions">

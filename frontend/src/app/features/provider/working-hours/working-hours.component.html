@@ -4,11 +4,18 @@
           <h1 class="page-title">Working Hours & Availability</h1>
           <p class="page-subtitle">Set when customers can book appointments</p>
         </div>
-        <app-button variant="primary" (onClick)="save()">
+        <app-button variant="primary" [loading]="saving()" [disabled]="loading() || saving()" (onClick)="save()">
           <span class="material-icons-outlined">save</span>
           Save Changes
         </app-button>
       </div>
+
+      @if (loading()) {
+        <p class="state-message">Loading working hours...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
 
       <!-- Working Hours -->
       <app-card title="Weekly Working Hours">

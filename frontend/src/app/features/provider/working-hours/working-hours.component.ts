@@ -1,11 +1,12 @@
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { WorkingHoursTableComponent } from '../shared/working-hours-table.component';
 import { AvailabilityCalendarComponent } from '../shared/availability-calendar.component';
-import { MOCK_WORKING_HOURS, WorkingHour } from '../shared/provider.models';
+import { WorkingHour } from '../../../core/models/user.model';
+import { WorkingHoursApi } from './working-hours.api';
 
 @Component({
   selector: 'app-working-hours',
@@ -22,14 +23,31 @@ import { MOCK_WORKING_HOURS, WorkingHour } from '../shared/provider.models';
   styleUrl: './working-hours.component.css',
 })
 export class WorkingHoursComponent {
-  workingDays = signal<WorkingHour[]>([...MOCK_WORKING_HOURS]);
-  blockedDates = signal<string[]>(['2026-07-19', '2026-07-26']);
-  appointmentCounts = signal<Record<string, number>>({
-    '2026-07-12': 3,
-    '2026-07-13': 1,
-    '2026-07-14': 2,
-    '2026-07-15': 1,
-  });
+  private workingHoursApi = inject(WorkingHoursApi);
+
+  workingDays = signal<WorkingHour[]>([]);
+  blockedDates = signal<string[]>([]);
+  appointmentCounts = signal<Record<string, number>>({});
+  loading = signal(false);
+  saving = signal(false);
+  error = signal<string | null>(null);
+
+  constructor() {
+    void this.loadWorkingHours();
+  }
+
+  async loadWorkingHours(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      this.workingDays.set(await this.workingHoursApi.getMyWorkingHours());
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to load working hours.'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   onDaysChange(days: WorkingHour[]): void {
     this.workingDays.set(days);
@@ -68,7 +86,21 @@ export class WorkingHoursComponent {
     return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   }
 
-  save(): void {
-    console.log('Saving working hours:', this.workingDays(), 'Blocked:', this.blockedDates());
+  async save(): Promise<void> {
+    this.saving.set(true);
+    this.error.set(null);
+
+    try {
+      this.workingDays.set(await this.workingHoursApi.updateMyWorkingHours(this.workingDays()));
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to save working hours.'));
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }
