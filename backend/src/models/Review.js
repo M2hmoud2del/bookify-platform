@@ -33,6 +33,12 @@ const reviewSchema = new mongoose.Schema(
     comment: {
       type: String,
       trim: true
+    },
+    moderationStatus: {
+      type: String,
+      enum: ["visible", "hidden", "flagged"],
+      default: "visible",
+      index: true
     }
   },
   {

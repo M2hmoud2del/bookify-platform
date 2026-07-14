@@ -86,6 +86,11 @@ const providerProfileSchema = new mongoose.Schema(
       type: Boolean,
       default: false
     },
+    isActive: {
+      type: Boolean,
+      default: true,
+      index: true
+    },
     deletedAt: {
       type: Date,
       default: null

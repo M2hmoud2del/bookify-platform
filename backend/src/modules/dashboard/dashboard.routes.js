@@ -13,4 +13,11 @@ router.get(
   dashboardController.getProviderDashboard
 );
 
+router.get(
+  "/admin",
+  authMiddleware,
+  authorizeMiddleware("admin"),
+  dashboardController.getAdminDashboard
+);
+
 export default router;

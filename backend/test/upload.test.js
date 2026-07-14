@@ -31,7 +31,7 @@ const createUploadTestApp = (uploadMiddleware) => {
 
 test("rejects unauthenticated provider profile image upload", async () => {
   const response = await request(app)
-    .patch("/api/uploads/provider/profile-image")
+    .patch("/api/v1/uploads/provider/profile-image")
     .attach("image", Buffer.from("fake image"), {
       filename: "profile.png",
       contentType: "image/png"
