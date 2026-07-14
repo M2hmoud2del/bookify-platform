@@ -338,7 +338,11 @@ test("customer can cancel own appointment", async () => {
     { _id: customerId, role: "customer" },
     appointmentId,
     "Need to reschedule",
-    { repository: createRepository() }
+    {
+      repository: createRepository(),
+      notifications: { sendCancellationNotification: async () => {} },
+      logger: { warn: () => {} }
+    }
   );
 
   assert.equal(result.data.appointment.status, "cancelled");
@@ -392,4 +396,47 @@ test("invalid ObjectId returns validation error", async () => {
       ),
     /Invalid appointment id/
   );
+});
+
+test("appointment cancellation triggers cancellation notification", async () => {
+  const calls = [];
+
+  const result = await cancelAppointment(
+    { _id: customerId, role: "customer" },
+    appointmentId,
+    "Need to reschedule",
+    {
+      repository: createRepository(),
+      notifications: {
+        sendCancellationNotification: async (id, cancelledBy) => calls.push({ id, cancelledBy })
+      },
+      logger: { warn: () => {} }
+    }
+  );
+
+  assert.equal(result.data.appointment.status, "cancelled");
+  assert.deepEqual(calls, [{ id: appointmentId, cancelledBy: customerId }]);
+});
+
+test("failed cancellation notification does not fail cancellation", async () => {
+  const warnings = [];
+
+  const result = await cancelAppointment(
+    { _id: customerId, role: "customer" },
+    appointmentId,
+    "Need to reschedule",
+    {
+      repository: createRepository(),
+      notifications: {
+        sendCancellationNotification: async () => {
+          throw new Error("smtp down");
+        }
+      },
+      logger: { warn: (message, metadata) => warnings.push({ message, metadata }) }
+    }
+  );
+
+  assert.equal(result.data.appointment.status, "cancelled");
+  assert.equal(warnings.length, 1);
+  assert.equal(warnings[0].metadata.flow, "appointment_cancelled");
 });

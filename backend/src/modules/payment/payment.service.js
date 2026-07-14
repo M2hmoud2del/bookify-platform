@@ -1,4 +1,11 @@
 import { getStripeClient } from "../../integrations/stripe/stripe.client.js";
+import {
+  sendBookingConfirmation,
+  sendNewBookingAlert,
+  sendPaymentFailedNotification,
+  sendPaymentSuccessNotification,
+  sendRefundIssuedNotification
+} from "../notification/index.js";
 import { createPaymentError } from "./payment.errors.js";
 import {
   confirmAppointmentPayment,
@@ -12,6 +19,40 @@ import {
 } from "./payment.repository.js";
 
 const DEFAULT_CURRENCY = "egp";
+
+const defaultRepository = {
+  confirmAppointmentPayment,
+  findAppointmentForCheckout,
+  findPaymentByStripePaymentIntentId,
+  findPaymentByStripeSessionId,
+  findPaymentsForUser,
+  markAppointmentPaymentRefunded,
+  updatePayment,
+  upsertPendingPayment
+};
+
+const defaultNotifications = {
+  sendBookingConfirmation,
+  sendNewBookingAlert,
+  sendPaymentFailedNotification,
+  sendPaymentSuccessNotification,
+  sendRefundIssuedNotification
+};
+
+const getRepository = (dependencies = {}) => dependencies.repository || defaultRepository;
+const getNotifications = (dependencies = {}) => dependencies.notifications || defaultNotifications;
+const getLogger = (dependencies = {}) => dependencies.logger || console;
+
+const runNotificationTask = async (flow, task, dependencies = {}) => {
+  try {
+    await task();
+  } catch (error) {
+    getLogger(dependencies).warn?.("Bookify notification failed", {
+      flow,
+      message: error.message
+    });
+  }
+};
 
 const buildDefaultUrl = (path) => {
   const clientUrl = process.env.CLIENT_URL || "http://localhost:4200";
@@ -76,8 +117,9 @@ const buildCheckoutSessionPayload = ({ appointment, payment, successUrl, cancelU
   };
 };
 
-export const createCheckoutSession = async (customerId, payload) => {
-  const appointment = await findAppointmentForCheckout(payload.appointmentId);
+export const createCheckoutSession = async (customerId, payload, dependencies = {}) => {
+  const repository = getRepository(dependencies);
+  const appointment = await repository.findAppointmentForCheckout(payload.appointmentId);
 
   if (!appointment) {
     throw createPaymentError("Appointment not found", 404);
@@ -90,7 +132,7 @@ export const createCheckoutSession = async (customerId, payload) => {
   assertCustomerOwnsAppointment(appointment, customerId);
   assertAppointmentCanBePaid(appointment);
 
-  const payment = await upsertPendingPayment({
+  const payment = await repository.upsertPendingPayment({
     appointment: appointment._id,
     customer: getRawId(appointment.customer),
     provider: getRawId(appointment.provider),
@@ -99,7 +141,7 @@ export const createCheckoutSession = async (customerId, payload) => {
     status: "pending"
   });
 
-  const stripe = getStripeClient();
+  const stripe = dependencies.stripe || getStripeClient();
   const session = await stripe.checkout.sessions.create(
     buildCheckoutSessionPayload({
       appointment,
@@ -109,7 +151,7 @@ export const createCheckoutSession = async (customerId, payload) => {
     })
   );
 
-  const updatedPayment = await updatePayment(payment._id, {
+  const updatedPayment = await repository.updatePayment(payment._id, {
     stripeSessionId: session.id,
     status: "pending"
   });
@@ -125,8 +167,9 @@ export const createCheckoutSession = async (customerId, payload) => {
   };
 };
 
-export const getMyPayments = async (user) => {
-  const payments = await findPaymentsForUser(user);
+export const getMyPayments = async (user, dependencies = {}) => {
+  const repository = getRepository(dependencies);
+  const payments = await repository.findPaymentsForUser(user);
 
   return {
     success: true,
@@ -135,82 +178,135 @@ export const getMyPayments = async (user) => {
   };
 };
 
-const getPaymentFromSession = async (session) => {
-  return findPaymentByStripeSessionId(session.id);
+const getPaymentFromSession = async (session, repository) => {
+  return repository.findPaymentByStripeSessionId(session.id);
 };
 
-const markCheckoutSessionPaid = async (session) => {
-  const payment = await getPaymentFromSession(session);
+const notifyPaymentSuccess = async (appointmentId, dependencies = {}) => {
+  const notifications = getNotifications(dependencies);
+
+  await runNotificationTask(
+    "payment_success",
+    () => notifications.sendPaymentSuccessNotification(appointmentId),
+    dependencies
+  );
+  await runNotificationTask(
+    "booking_confirmation",
+    () => notifications.sendBookingConfirmation(appointmentId),
+    dependencies
+  );
+  await runNotificationTask(
+    "new_booking_alert",
+    () => notifications.sendNewBookingAlert(appointmentId),
+    dependencies
+  );
+};
+
+const notifyPaymentFailed = async (appointmentId, dependencies = {}) => {
+  const notifications = getNotifications(dependencies);
+
+  await runNotificationTask(
+    "payment_failed",
+    () => notifications.sendPaymentFailedNotification(appointmentId),
+    dependencies
+  );
+};
+
+const notifyRefundIssued = async (paymentId, dependencies = {}) => {
+  const notifications = getNotifications(dependencies);
+
+  await runNotificationTask(
+    "refund_issued",
+    () => notifications.sendRefundIssuedNotification(paymentId),
+    dependencies
+  );
+};
+
+const markCheckoutSessionPaid = async (session, dependencies = {}) => {
+  const repository = getRepository(dependencies);
+  const payment = await getPaymentFromSession(session, repository);
 
   if (!payment) {
     return null;
   }
 
-  const updatedPayment = await updatePayment(payment._id, {
+  const updatedPayment = await repository.updatePayment(payment._id, {
     stripePaymentIntentId: session.payment_intent,
     status: "paid"
   });
 
-  const appointment = await confirmAppointmentPayment(payment.appointment);
+  const appointment = await repository.confirmAppointmentPayment(payment.appointment);
+  const appointmentId = appointment?._id || payment.appointment;
+
+  await notifyPaymentSuccess(appointmentId, dependencies);
 
   return { payment: updatedPayment, appointment };
 };
 
-const markCheckoutSessionFailed = async (session) => {
-  const payment = await getPaymentFromSession(session);
+const markCheckoutSessionFailed = async (session, dependencies = {}) => {
+  const repository = getRepository(dependencies);
+  const payment = await getPaymentFromSession(session, repository);
 
   if (!payment) {
     return null;
   }
 
-  const updatedPayment = await updatePayment(payment._id, {
+  const updatedPayment = await repository.updatePayment(payment._id, {
     stripePaymentIntentId: session.payment_intent || payment.stripePaymentIntentId,
     status: "failed"
   });
 
+  await notifyPaymentFailed(payment.appointment, dependencies);
+
   return { payment: updatedPayment };
 };
 
-const markPaymentIntentFailed = async (paymentIntent) => {
-  const payment = await findPaymentByStripePaymentIntentId(paymentIntent.id);
+const markPaymentIntentFailed = async (paymentIntent, dependencies = {}) => {
+  const repository = getRepository(dependencies);
+  const payment = await repository.findPaymentByStripePaymentIntentId(paymentIntent.id);
 
   if (!payment) {
     return null;
   }
 
-  const updatedPayment = await updatePayment(payment._id, {
+  const updatedPayment = await repository.updatePayment(payment._id, {
     status: "failed"
   });
+
+  await notifyPaymentFailed(payment.appointment, dependencies);
 
   return { payment: updatedPayment };
 };
 
-const markChargeRefunded = async (charge) => {
+const markChargeRefunded = async (charge, dependencies = {}) => {
   if (!charge.payment_intent) {
     return null;
   }
 
-  const payment = await findPaymentByStripePaymentIntentId(charge.payment_intent);
+  const repository = getRepository(dependencies);
+  const payment = await repository.findPaymentByStripePaymentIntentId(charge.payment_intent);
 
   if (!payment) {
     return null;
   }
 
-  const updatedPayment = await updatePayment(payment._id, {
+  const updatedPayment = await repository.updatePayment(payment._id, {
     status: "refunded"
   });
 
-  const appointment = await markAppointmentPaymentRefunded(payment.appointment);
+  const appointment = await repository.markAppointmentPaymentRefunded(payment.appointment);
+
+  await notifyRefundIssued(updatedPayment?._id || payment._id, dependencies);
 
   return { payment: updatedPayment, appointment };
 };
 
-export const handleStripeWebhook = async ({ body, signature }) => {
+export const handleStripeWebhook = async ({ body, signature }, dependencies = {}) => {
   if (!process.env.STRIPE_WEBHOOK_SECRET) {
     throw createPaymentError("STRIPE_WEBHOOK_SECRET is not configured", 500);
   }
 
-  const stripe = getStripeClient();
+  const stripe = dependencies.stripe || getStripeClient();
   let event;
 
   try {
@@ -226,22 +322,22 @@ export const handleStripeWebhook = async ({ body, signature }) => {
   let result = null;
 
   if (event.type === "checkout.session.completed") {
-    result = await markCheckoutSessionPaid(event.data.object);
+    result = await markCheckoutSessionPaid(event.data.object, dependencies);
   }
 
   if (
     event.type === "checkout.session.async_payment_failed" ||
     event.type === "checkout.session.expired"
   ) {
-    result = await markCheckoutSessionFailed(event.data.object);
+    result = await markCheckoutSessionFailed(event.data.object, dependencies);
   }
 
   if (event.type === "payment_intent.payment_failed") {
-    result = await markPaymentIntentFailed(event.data.object);
+    result = await markPaymentIntentFailed(event.data.object, dependencies);
   }
 
   if (event.type === "charge.refunded") {
-    result = await markChargeRefunded(event.data.object);
+    result = await markChargeRefunded(event.data.object, dependencies);
   }
 
   return {
