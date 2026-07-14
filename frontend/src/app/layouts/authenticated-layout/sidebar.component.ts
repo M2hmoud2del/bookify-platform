@@ -28,6 +28,7 @@ export class SidebarComponent {
   role = input<UserRole>('customer');
 
   isCollapsed = signal(false);
+  settingsPath = computed(() => '/' + this.role() + '/settings');
 
   userDisplayName = computed(() => {
     const user = this.authService.user();

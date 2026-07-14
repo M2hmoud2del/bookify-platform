@@ -9,14 +9,14 @@
 
         <nav class="navbar-nav">
           <a routerLink="/providers" class="nav-link">Find Providers</a>
-          <a routerLink="/#features" class="nav-link">Features</a>
-          <a routerLink="/#how-it-works" class="nav-link">How It Works</a>
-          <a routerLink="/#pricing" class="nav-link">Pricing</a>
+          <a routerLink="/" fragment="features" class="nav-link">Features</a>
+          <a routerLink="/" fragment="how-it-works" class="nav-link">How It Works</a>
+          <a routerLink="/" fragment="pricing" class="nav-link">Pricing</a>
         </nav>
 
         <div class="navbar-actions">
           @if (authService.isAuthenticated()) {
-            <app-button variant="outline" size="sm" routerLink="/customer/dashboard">
+            <app-button variant="outline" size="sm" [routerLink]="authService.redirectPathForRole(authService.user()?.role)">
               Dashboard
             </app-button>
           } @else {
@@ -38,13 +38,13 @@
         <div class="mobile-menu">
           <nav class="mobile-nav">
             <a routerLink="/providers" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Find Providers</a>
-            <a routerLink="/#features" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Features</a>
-            <a routerLink="/#how-it-works" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">How It Works</a>
-            <a routerLink="/#pricing" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Pricing</a>
+            <a routerLink="/" fragment="features" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Features</a>
+            <a routerLink="/" fragment="how-it-works" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">How It Works</a>
+            <a routerLink="/" fragment="pricing" class="mobile-nav-link" (click)="mobileMenuOpen.set(false)">Pricing</a>
           </nav>
           <div class="mobile-actions">
             @if (authService.isAuthenticated()) {
-              <app-button variant="primary" [fullWidth]="true" routerLink="/customer/dashboard">
+              <app-button variant="primary" [fullWidth]="true" [routerLink]="authService.redirectPathForRole(authService.user()?.role)">
                 Go to Dashboard
               </app-button>
             } @else {

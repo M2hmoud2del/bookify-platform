@@ -66,6 +66,11 @@ export const CUSTOMER_ROUTES: Routes = [
         path: 'profile/edit',
         loadComponent: () => import('../../features/customer/profile/edit-profile.component').then(m => m.CustomerEditProfileComponent),
       },
+      {
+        path: 'settings',
+        redirectTo: 'profile',
+        pathMatch: 'full',
+      },
     ],
   },
 ];

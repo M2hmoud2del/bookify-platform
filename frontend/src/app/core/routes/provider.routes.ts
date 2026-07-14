@@ -67,6 +67,11 @@ export const PROVIDER_ROUTES: Routes = [
         loadComponent: () => import('../../features/provider/profile/profile.component').then(m => m.ProviderProfileComponent),
       },
       {
+        path: 'settings',
+        redirectTo: 'profile',
+        pathMatch: 'full',
+      },
+      {
         path: 'upload-images',
         loadComponent: () => import('../../features/provider/profile/upload-images.component').then(m => m.UploadImagesComponent),
       },
