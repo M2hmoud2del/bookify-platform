@@ -3,22 +3,32 @@
         <div class="failed-icon">
           <span class="material-icons-outlined">error</span>
         </div>
-        <h1 class="failed-title">Payment Failed</h1>
+        <h1 class="failed-title">Payment Not Completed</h1>
         <p class="failed-message">
-          We couldn't process your payment. Please try again or use a different payment method.
+          We could not complete your payment. Your appointment remains unconfirmed until Stripe payment succeeds.
         </p>
+
+        @if (error()) {
+          <p class="error-message">{{ error() }}</p>
+        }
 
         <div class="error-details">
           <p class="error-text">
             <span class="material-icons-outlined">info</span>
-            Your booking has not been confirmed. No charges were made.
+            No paid status is set from the frontend. You can retry checkout for this appointment.
           </p>
         </div>
 
         <div class="actions">
-          <app-button variant="primary" routerLink="/customer/book">
-            Try Again
-          </app-button>
+          @if (appointmentId) {
+            <app-button variant="primary" [loading]="retrying()" [disabled]="retrying()" (onClick)="retryPayment()">
+              Retry Payment
+            </app-button>
+          } @else {
+            <app-button variant="primary" routerLink="/customer/book">
+              Try Again
+            </app-button>
+          }
           <app-button variant="outline" routerLink="/customer/dashboard">
             Back to Dashboard
           </app-button>

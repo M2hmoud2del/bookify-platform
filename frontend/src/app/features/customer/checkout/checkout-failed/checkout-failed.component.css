@@ -87,3 +87,5 @@
         justify-content: center;
       }
     }
+
+    .error-message { color: var(--danger-500); margin: 0 0 var(--space-4); }

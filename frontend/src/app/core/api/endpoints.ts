@@ -32,9 +32,19 @@ export const API_ENDPOINTS = {
   },
   appointments: {
     root: '/appointments',
+    create: '/appointments',
+    my: '/appointments/my',
+    provider: '/appointments/provider',
+    byId: (id: string) => `/appointments/${id}`,
+    cancel: (id: string) => `/appointments/${id}/cancel`,
+    reject: (id: string) => `/appointments/${id}/reject`,
+    complete: (id: string) => `/appointments/${id}/complete`,
+    accept: (id: string) => `/appointments/${id}/accept`,
   },
   payments: {
     root: '/payments',
+    createCheckoutSession: '/payments/create-checkout-session',
+    my: '/payments/my',
   },
   reviews: {
     root: '/reviews',

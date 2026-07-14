@@ -151,7 +151,7 @@ export interface Review {
 }
 
 // ── Payment (matches backend Mongoose Payment schema) ──
-export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
+export type PaymentStatus = 'unpaid' | 'pending' | 'paid' | 'failed' | 'refunded';
 
 export interface Payment {
   _id: string;

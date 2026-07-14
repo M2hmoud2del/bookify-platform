@@ -1,4 +1,10 @@
 <div class="detail-page">
+      @if (loading()) {
+        <p class="state-message">Loading appointment...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
       @if (appointment()) {
         <div class="page-header">
           <a routerLink="/provider/appointments" class="back-link">
@@ -116,19 +122,19 @@
 
             <div class="actions-card">
               @if (canConfirm()) {
-                <app-button variant="primary" [fullWidth]="true" (onClick)="confirmAppointment()">
+                <app-button variant="primary" [fullWidth]="true" [loading]="actionLoading()" [disabled]="actionLoading()" (onClick)="confirmAppointment()">
                   <span class="material-icons-outlined">check_circle</span>
-                  Confirm Appointment
+                  Accept Appointment
                 </app-button>
               }
               @if (canMarkComplete()) {
-                <app-button variant="primary" [fullWidth]="true" (onClick)="markComplete()">
+                <app-button variant="primary" [fullWidth]="true" [loading]="actionLoading()" [disabled]="actionLoading()" (onClick)="markComplete()">
                   <span class="material-icons-outlined">task_alt</span>
                   Mark as Completed
                 </app-button>
               }
               @if (canCancel()) {
-                <app-button variant="danger" [fullWidth]="true" (onClick)="showCancel.set(true)">
+                <app-button variant="danger" [fullWidth]="true" [disabled]="actionLoading()" (onClick)="showCancel.set(true)">
                   <span class="material-icons-outlined">cancel</span>
                   Cancel Appointment
                 </app-button>
@@ -158,6 +164,7 @@
       icon="warning"
       confirmText="Yes, Cancel"
       confirmVariant="danger"
+      [loading]="actionLoading()"
       (confirm)="confirmCancel()"
       (cancel)="showCancel.set(false)"
     />

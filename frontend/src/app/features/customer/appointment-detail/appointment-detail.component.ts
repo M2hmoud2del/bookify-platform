@@ -7,7 +7,9 @@ import { StatusBadgeComponent } from '../../../shared/components/status-badge/st
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AppointmentTimelineComponent } from '../shared/appointment-timeline.component';
-import { getAppointmentById, getTimelineForAppointment } from '../shared/customer.models';
+import { getTimelineForAppointment } from '../shared/customer.models';
+import { AppointmentView } from '../../../core/models/appointment.model';
+import { AppointmentsApi } from '../appointments/appointments.api';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -27,20 +29,43 @@ import { getAppointmentById, getTimelineForAppointment } from '../shared/custome
 })
 export class AppointmentDetailComponent {
   private route = inject(ActivatedRoute);
+  private appointmentsApi = inject(AppointmentsApi);
   router = inject(Router);
 
   showCancel = signal(false);
   showReschedule = signal(false);
-
-  appointment = computed(() => {
-    const id = this.route.snapshot.paramMap.get('id');
-    return id ? getAppointmentById(id) : undefined;
-  });
+  appointment = signal<AppointmentView | null>(null);
+  loading = signal(false);
+  cancelling = signal(false);
+  error = signal<string | null>(null);
 
   timeline = computed(() => {
     const apt = this.appointment();
     return apt ? getTimelineForAppointment(apt) : [];
   });
+
+  constructor() {
+    void this.loadAppointment();
+  }
+
+  async loadAppointment(): Promise<void> {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (!id) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      this.appointment.set(await this.appointmentsApi.getAppointmentById(id));
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to load appointment.'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   canReschedule(): boolean {
     const s = this.appointment()?.status;
@@ -78,8 +103,28 @@ export class AppointmentDetailComponent {
     return `${displayHour}:${m} ${period}`;
   }
 
-  confirmCancel(): void {
-    this.showCancel.set(false);
-    this.router.navigate(['/customer/appointments']);
+  async confirmCancel(): Promise<void> {
+    const appointment = this.appointment();
+
+    if (!appointment) {
+      return;
+    }
+
+    this.cancelling.set(true);
+    this.error.set(null);
+
+    try {
+      this.appointment.set(await this.appointmentsApi.cancelAppointment(appointment._id));
+      this.showCancel.set(false);
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to cancel appointment.'));
+    } finally {
+      this.cancelling.set(false);
+    }
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }

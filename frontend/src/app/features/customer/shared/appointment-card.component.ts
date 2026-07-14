@@ -4,7 +4,7 @@ import { RouterLink } from '@angular/router';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
 import { ButtonComponent } from '../../../shared/components/button/button.component';
-import { PopulatedAppointment } from '../shared/customer.models';
+import { AppointmentView } from '../../../core/models/appointment.model';
 
 @Component({
   selector: 'app-appointment-card',
@@ -14,7 +14,7 @@ import { PopulatedAppointment } from '../shared/customer.models';
   styleUrl: './appointment-card.component.css',
 })
 export class AppointmentCardComponent {
-  appointment = input.required<PopulatedAppointment>();
+  appointment = input.required<AppointmentView>();
   cancel = output<string>();
   reschedule = output<string>();
 

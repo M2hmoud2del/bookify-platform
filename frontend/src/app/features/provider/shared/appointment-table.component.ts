@@ -1,10 +1,9 @@
-import { Component, input, output, signal, computed } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { StatusBadgeComponent } from '../../../shared/components/status-badge/status-badge.component';
-import { ButtonComponent } from '../../../shared/components/button/button.component';
-import { PopulatedAppointment } from '../shared/provider.models';
+import { AppointmentView } from '../../../core/models/appointment.model';
 
 @Component({
   selector: 'app-appointment-table',
@@ -14,7 +13,7 @@ import { PopulatedAppointment } from '../shared/provider.models';
   styleUrl: './appointment-table.component.css',
 })
 export class AppointmentTableComponent {
-  appointments = input.required<PopulatedAppointment[]>();
+  appointments = input.required<AppointmentView[]>();
   confirm = output<string>();
   cancel = output<string>();
 
@@ -36,5 +35,9 @@ export class AppointmentTableComponent {
 
   canCancel(status: string): boolean {
     return status === 'confirmed' || status === 'pending_payment';
+  }
+
+  cancelTitle(status: string): string {
+    return status === 'pending_payment' ? 'Reject' : 'Cancel';
   }
 }

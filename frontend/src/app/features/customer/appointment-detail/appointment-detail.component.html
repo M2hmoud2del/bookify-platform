@@ -1,4 +1,10 @@
 <div class="detail-page">
+      @if (loading()) {
+        <p class="state-message">Loading appointment...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
       @if (appointment()) {
         <div class="page-header">
           <a routerLink="/customer/appointments" class="back-link">
@@ -150,6 +156,7 @@
       icon="warning"
       confirmText="Yes, Cancel"
       confirmVariant="danger"
+      [loading]="cancelling()"
       (confirm)="confirmCancel()"
       (cancel)="showCancel.set(false)"
     />

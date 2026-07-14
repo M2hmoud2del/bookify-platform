@@ -70,3 +70,6 @@
     }
 
     :host-context(.dark) .tab-count { background: var(--gray-700); color: var(--gray-300); }
+
+    .state-message { color: var(--text-secondary); margin: 0; }
+    .error-message { color: var(--danger-500); margin: 0; }
