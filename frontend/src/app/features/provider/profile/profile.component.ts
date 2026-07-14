@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,7 +7,7 @@ import { ButtonComponent } from '../../../shared/components/button/button.compon
 import { CardComponent } from '../../../shared/components/card/card.component';
 import { InputComponent } from '../../../shared/components/input/input.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
-import { MOCK_PROVIDER_PROFILE } from '../shared/provider.models';
+import { ProviderProfileApi } from './provider-profile.api';
 
 @Component({
   selector: 'app-provider-profile',
@@ -18,24 +18,69 @@ import { MOCK_PROVIDER_PROFILE } from '../shared/provider.models';
 })
 export class ProviderProfileComponent {
   private router = inject(Router);
+  private providerProfileApi = inject(ProviderProfileApi);
   authService = inject(AuthService);
 
+  loading = signal(false);
   saving = signal(false);
+  error = signal<string | null>(null);
+  profileImageUrl = signal<string | undefined>(undefined);
 
   business = {
-    businessName: MOCK_PROVIDER_PROFILE.businessName,
-    bio: MOCK_PROVIDER_PROFILE.bio ?? '',
-    category: MOCK_PROVIDER_PROFILE.category ?? '',
-    address: MOCK_PROVIDER_PROFILE.address ?? '',
-    city: MOCK_PROVIDER_PROFILE.city ?? '',
-    timezone: MOCK_PROVIDER_PROFILE.timezone,
+    businessName: '',
+    bio: '',
+    category: '',
+    address: '',
+    city: '',
+    timezone: 'UTC',
   };
 
-  onSave(): void {
+  avatarName = computed(() => this.business.businessName || this.authService.user()?.name || 'Business');
+
+  constructor() {
+    void this.loadProfile();
+  }
+
+  async loadProfile(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      const profile = await this.providerProfileApi.getMyProviderProfile();
+
+      this.business = {
+        businessName: profile.businessName,
+        bio: profile.bio ?? '',
+        category: profile.category ?? '',
+        address: profile.address ?? '',
+        city: profile.city ?? '',
+        timezone: profile.timezone || 'UTC',
+      };
+      this.profileImageUrl.set(profile.profileImage?.url || undefined);
+    } catch (err) {
+      this.error.set(this.errorMessage(err));
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async onSave(): Promise<void> {
     this.saving.set(true);
-    setTimeout(() => {
-      this.saving.set(false);
+    this.error.set(null);
+
+    try {
+      const profile = await this.providerProfileApi.updateMyProviderProfile(this.business);
+      this.profileImageUrl.set(profile.profileImage?.url || undefined);
       this.router.navigate(['/provider/dashboard']);
-    }, 800);
+    } catch (err) {
+      this.error.set(this.errorMessage(err));
+    } finally {
+      this.saving.set(false);
+    }
+  }
+
+  private errorMessage(err: unknown): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : 'Unable to save provider profile.');
   }
 }

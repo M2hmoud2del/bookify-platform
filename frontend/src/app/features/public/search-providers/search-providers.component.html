@@ -31,6 +31,13 @@
         />
 
         <!-- Results count -->
+        @if (loading()) {
+          <p class="state-message">Loading providers...</p>
+        }
+        @if (error()) {
+          <p class="error-message">{{ error() }}</p>
+        }
+
         <div class="results-bar">
           <p class="results-count">
             {{ filteredProviders().length }}
@@ -47,7 +54,7 @@
         <!-- Results grid -->
         @if (filteredProviders().length > 0) {
           <div class="providers-grid">
-            @for (provider of pagedProviders(); track provider.user._id) {
+            @for (provider of pagedProviders(); track provider.profile._id) {
               <app-provider-card [provider]="provider" />
             }
           </div>

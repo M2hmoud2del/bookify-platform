@@ -1,4 +1,4 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PublicNavbarComponent } from '../../../layouts/public-layout/public-navbar.component';
@@ -9,7 +9,9 @@ import { PaginationComponent } from '../../../shared/components/pagination/pagin
 import { ProviderCardComponent } from '../shared/provider-card.component';
 import { CategoryFiltersComponent } from '../shared/category-filters.component';
 import { SearchFiltersComponent } from '../shared/search-filters.component';
-import { MOCK_PROVIDERS, PublicProvider } from '../shared/public.models';
+import { PublicProvider } from '../shared/public.models';
+import { ProviderProfileApi } from '../../provider/profile/provider-profile.api';
+import { ProviderServicesApi } from '../../provider/services/provider-services.api';
 
 @Component({
   selector: 'app-search-providers',
@@ -30,12 +32,18 @@ import { MOCK_PROVIDERS, PublicProvider } from '../shared/public.models';
   styleUrl: './search-providers.component.css',
 })
 export class SearchProvidersComponent {
+  private providerProfileApi = inject(ProviderProfileApi);
+  private providerServicesApi = inject(ProviderServicesApi);
+
   activeCategory = signal('all');
   searchQuery = signal('');
   minRating = signal(0);
   maxPrice = signal<number | null>(null);
   sortBy = signal('rating');
   currentPage = signal(1);
+  loading = signal(false);
+  error = signal<string | null>(null);
+  providers = signal<PublicProvider[]>([]);
   pageSize = 6;
 
   hasActiveFilters = computed(() => {
@@ -48,7 +56,7 @@ export class SearchProvidersComponent {
   });
 
   filteredProviders = computed<PublicProvider[]>(() => {
-    let result = [...MOCK_PROVIDERS];
+    let result = [...this.providers()];
 
     const cat = this.activeCategory();
     if (cat !== 'all') {
@@ -80,9 +88,9 @@ export class SearchProvidersComponent {
     const sort = this.sortBy();
     switch (sort) {
       case 'rating':     result.sort((a, b) => b.profile.ratingAverage - a.profile.ratingAverage); break;
-      case 'reviews':     result.sort((a, b) => b.profile.ratingCount - a.profile.ratingCount); break;
-      case 'price_low':   result.sort((a, b) => Math.min(...a.services.map(s => s.price)) - Math.min(...b.services.map(s => s.price))); break;
-      case 'price_high':  result.sort((a, b) => Math.max(...b.services.map(s => s.price)) - Math.max(...a.services.map(s => s.price))); break;
+      case 'reviews':    result.sort((a, b) => b.profile.ratingCount - a.profile.ratingCount); break;
+      case 'price_low':  result.sort((a, b) => this.lowestPrice(a) - this.lowestPrice(b)); break;
+      case 'price_high': result.sort((a, b) => this.highestPrice(b) - this.highestPrice(a)); break;
     }
 
     return result;
@@ -94,6 +102,30 @@ export class SearchProvidersComponent {
     const start = (this.currentPage() - 1) * this.pageSize;
     return this.filteredProviders().slice(start, start + this.pageSize);
   });
+
+  constructor() {
+    void this.loadProviders();
+  }
+
+  async loadProviders(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      const providers = await this.providerProfileApi.getProviders();
+      const withServices = await Promise.all(
+        providers.map(async (provider) => ({
+          ...provider,
+          services: await this.providerServicesApi.getProviderServices(provider.profile._id),
+        }))
+      );
+      this.providers.set(withServices as PublicProvider[]);
+    } catch (err) {
+      this.error.set(this.errorMessage(err));
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   onCategoryChange(cat: string): void {
     this.activeCategory.set(cat);
@@ -132,5 +164,18 @@ export class SearchProvidersComponent {
     this.maxPrice.set(null);
     this.sortBy.set('rating');
     this.currentPage.set(1);
+  }
+
+  private lowestPrice(provider: PublicProvider): number {
+    return provider.services.length ? Math.min(...provider.services.map(s => s.price)) : Number.MAX_SAFE_INTEGER;
+  }
+
+  private highestPrice(provider: PublicProvider): number {
+    return provider.services.length ? Math.max(...provider.services.map(s => s.price)) : 0;
+  }
+
+  private errorMessage(err: unknown): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : 'Unable to load providers.');
   }
 }

@@ -28,6 +28,6 @@ export class ProviderCardComponent {
   onFavorite(event: Event): void {
     event.preventDefault();
     event.stopPropagation();
-    this.favoriteChange.emit(this.provider().user._id);
+    this.favoriteChange.emit(this.provider().profile._id);
   }
 }
