@@ -2,7 +2,7 @@ import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
-import { PopulatedReview } from '../shared/provider.models';
+import { ReviewView } from '../../../core/models/review.model';
 
 @Component({
   selector: 'app-review-list',
@@ -12,5 +12,5 @@ import { PopulatedReview } from '../shared/provider.models';
   styleUrl: './review-list.component.css',
 })
 export class ReviewListComponent {
-  reviews = input.required<PopulatedReview[]>();
+  reviews = input.required<ReviewView[]>();
 }

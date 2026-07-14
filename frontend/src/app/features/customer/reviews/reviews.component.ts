@@ -1,12 +1,12 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ModalComponent } from '../../../shared/components/modal/modal.component';
+import { ReviewView } from '../../../core/models/review.model';
 import { ReviewCardComponent } from '../shared/review-card.component';
 import { ReviewFormComponent } from '../shared/review-form.component';
-import { MOCK_REVIEWS, PopulatedReview } from '../shared/customer.models';
+import { ReviewsApi } from './reviews.api';
 
 @Component({
   selector: 'app-customer-reviews',
@@ -14,7 +14,6 @@ import { MOCK_REVIEWS, PopulatedReview } from '../shared/customer.models';
   imports: [
     CommonModule,
     RouterLink,
-    ButtonComponent,
     EmptyStateComponent,
     ModalComponent,
     ReviewCardComponent,
@@ -24,11 +23,15 @@ import { MOCK_REVIEWS, PopulatedReview } from '../shared/customer.models';
   styleUrl: './reviews.component.css',
 })
 export class CustomerReviewsComponent {
-  reviews = signal<PopulatedReview[]>(MOCK_REVIEWS);
+  private reviewsApi = inject(ReviewsApi);
+
+  reviews = signal<ReviewView[]>([]);
+  loading = signal(false);
+  error = signal<string | null>(null);
   showEditModal = signal(false);
   showDeleteModal = signal(false);
-  editingReview = signal<PopulatedReview | null>(null);
-  deletingReview = signal<PopulatedReview | null>(null);
+  editingReview = signal<ReviewView | null>(null);
+  deletingReview = signal<ReviewView | null>(null);
   submitting = signal(false);
 
   averageRating = computed(() => {
@@ -37,9 +40,27 @@ export class CustomerReviewsComponent {
     return (r.reduce((sum, x) => sum + x.rating, 0) / r.length).toFixed(1);
   });
 
-  pendingReviews = computed(() => 2);
+  pendingReviews = computed(() => 0);
 
-  openEditModal(review: PopulatedReview): void {
+  constructor() {
+    void this.loadReviews();
+  }
+
+  async loadReviews(): Promise<void> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      this.reviews.set(await this.reviewsApi.getMyReviews());
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to load your reviews.'));
+      this.reviews.set([]);
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  openEditModal(review: ReviewView): void {
     this.editingReview.set(review);
     this.showEditModal.set(true);
   }
@@ -49,21 +70,13 @@ export class CustomerReviewsComponent {
     this.editingReview.set(null);
   }
 
-  onSubmitEdit(data: { rating: number; comment: string }): void {
-    this.submitting.set(true);
-    const editing = this.editingReview();
-    if (editing) {
-      this.reviews.update(list =>
-        list.map(r => r._id === editing._id ? { ...r, rating: data.rating, comment: data.comment } : r)
-      );
-    }
-    setTimeout(() => {
-      this.submitting.set(false);
-      this.closeEditModal();
-    }, 500);
+  onSubmitEdit(_data: { rating: number; comment: string }): void {
+    this.error.set('Review editing is not available from the current backend API yet.');
+    this.submitting.set(false);
+    this.closeEditModal();
   }
 
-  openDeleteModal(review: PopulatedReview): void {
+  openDeleteModal(review: ReviewView): void {
     this.deletingReview.set(review);
     this.showDeleteModal.set(true);
   }
@@ -74,10 +87,12 @@ export class CustomerReviewsComponent {
   }
 
   confirmDelete(): void {
-    const deleting = this.deletingReview();
-    if (deleting) {
-      this.reviews.update(list => list.filter(r => r._id !== deleting._id));
-    }
+    this.error.set('Review deletion is not available from the current backend API yet.');
     this.closeDeleteModal();
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }

@@ -339,3 +339,21 @@
       font-size: var(--font-size-xs);
       color: var(--text-secondary);
     }
+
+    .state-message,
+    .error-message {
+      margin: 0;
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+    }
+
+    .state-message {
+      color: var(--text-secondary);
+      background: var(--gray-50);
+    }
+
+    .error-message {
+      color: var(--error-700);
+      background: var(--error-50);
+    }

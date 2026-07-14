@@ -10,6 +10,14 @@
         </app-button>
       </div>
 
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
+      @if (loading()) {
+        <p class="state-message">Loading dashboard...</p>
+      }
+
       <!-- Stats Cards -->
       <div class="stats-grid">
         <app-stat-card

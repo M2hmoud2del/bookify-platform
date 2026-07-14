@@ -1,9 +1,8 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { PublicNavbarComponent } from '../../../layouts/public-layout/public-navbar.component';
 import { FooterComponent } from '../../../layouts/public-layout/footer.component';
-import { ButtonComponent } from '../../../shared/components/button/button.component';
 import { AvatarComponent } from '../../../shared/components/avatar/avatar.component';
 import { RatingComponent } from '../../../shared/components/rating/rating.component';
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
@@ -13,7 +12,9 @@ import { ServiceListComponent } from '../shared/service-list.component';
 import { PublicProvider } from '../shared/public.models';
 import { ProviderProfileApi } from '../../provider/profile/provider-profile.api';
 import { ProviderServicesApi } from '../../provider/services/provider-services.api';
+import { ReviewView } from '../../../core/models/review.model';
 import { Service } from '../../../core/models/user.model';
+import { ReviewsApi } from '../../customer/reviews/reviews.api';
 
 @Component({
   selector: 'app-provider-details',
@@ -23,7 +24,6 @@ import { Service } from '../../../core/models/user.model';
     RouterLink,
     PublicNavbarComponent,
     FooterComponent,
-    ButtonComponent,
     AvatarComponent,
     RatingComponent,
     EmptyStateComponent,
@@ -38,9 +38,11 @@ export class ProviderDetailsComponent {
   private route = inject(ActivatedRoute);
   private providerProfileApi = inject(ProviderProfileApi);
   private providerServicesApi = inject(ProviderServicesApi);
+  private reviewsApi = inject(ReviewsApi);
   router = inject(Router);
 
   provider = signal<PublicProvider | undefined>(undefined);
+  providerReviews = signal<ReviewView[]>([]);
   loading = signal(false);
   error = signal<string | null>(null);
   activeTab = signal<'services' | 'about' | 'reviews'>('services');
@@ -63,11 +65,24 @@ export class ProviderDetailsComponent {
 
     try {
       const provider = await this.providerProfileApi.getProviderById(id);
-      const services = await this.providerServicesApi.getProviderServices(provider.profile._id);
-      this.provider.set({ ...provider, services } as PublicProvider);
+      const [services, reviewResult] = await Promise.all([
+        this.providerServicesApi.getProviderServices(provider.profile._id),
+        this.reviewsApi.getProviderReviews(provider.user._id),
+      ]);
+      this.providerReviews.set(reviewResult.reviews);
+      this.provider.set({
+        ...provider,
+        profile: {
+          ...provider.profile,
+          ratingAverage: reviewResult.averageRating,
+          ratingCount: reviewResult.totalReviews,
+        },
+        services,
+      } as PublicProvider);
     } catch (err) {
       this.error.set(this.errorMessage(err));
       this.provider.set(undefined);
+      this.providerReviews.set([]);
     } finally {
       this.loading.set(false);
     }

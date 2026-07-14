@@ -6,6 +6,14 @@
         </div>
       </div>
 
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
+      @if (loading()) {
+        <p class="state-message">Loading reviews...</p>
+      }
+
       <!-- Stats -->
       <div class="stats-row">
         <div class="stat-card">
