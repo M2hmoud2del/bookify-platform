@@ -1,0 +1,48 @@
+<div class="about-section">
+      <h2 class="section-title">About {{ provider().profile.businessName }}</h2>
+
+      <p class="about-text">{{ provider().profile.bio }}</p>
+
+      <div class="info-grid">
+        <div class="info-card">
+          <span class="info-icon"><span class="material-icons-outlined">location_on</span></span>
+          <div class="info-content">
+            <p class="info-label">Address</p>
+            <p class="info-value">{{ provider().profile.address }}</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <span class="info-icon"><span class="material-icons-outlined">phone</span></span>
+          <div class="info-content">
+            <p class="info-label">Phone</p>
+            <p class="info-value">{{ provider().user.phone }}</p>
+          </div>
+        </div>
+
+        <div class="info-card">
+          <span class="info-icon"><span class="material-icons-outlined">email</span></span>
+          <div class="info-content">
+            <p class="info-label">Email</p>
+            <p class="info-value">{{ provider().user.email }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="hours-section">
+        <h3 class="hours-title">
+          <span class="material-icons-outlined">schedule</span>
+          Working Hours
+        </h3>
+        <div class="hours-grid">
+          <div class="hours-days">
+            @for (day of allDays; track day) {
+              <div class="day-row">
+                <span class="day-name">{{ day }}</span>
+                <span class="day-hours">By appointment</span>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>

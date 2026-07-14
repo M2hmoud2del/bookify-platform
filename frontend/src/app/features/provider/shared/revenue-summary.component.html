@@ -1,0 +1,44 @@
+<div class="revenue-summary">
+      <div class="summary-header">
+        <div>
+          <h3 class="summary-title">Revenue Overview</h3>
+          <p class="summary-period">{{ period() }}</p>
+        </div>
+        <span class="trend-badge" [class.is-up]="trend() >= 0">
+          <span class="material-icons-outlined">{{ trend() >= 0 ? 'trending_up' : 'trending_down' }}</span>
+          {{ Math.abs(trend()) }}%
+        </span>
+      </div>
+
+      <div class="summary-stats">
+        <div class="stat-block">
+          <span class="stat-value">$ {{ totalRevenue().toLocaleString() }}</span>
+          <span class="stat-label">Total Revenue</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-block">
+          <span class="stat-value">{{ totalAppointments() }}</span>
+          <span class="stat-label">Appointments</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat-block">
+          <span class="stat-value">$ {{ averageRevenue().toFixed(0) }}</span>
+          <span class="stat-label">Avg / Month</span>
+        </div>
+      </div>
+
+      <div class="chart">
+        @for (item of data(); track item.month) {
+          <div class="chart-bar-wrap">
+            <div class="chart-bar-container">
+              <div
+                class="chart-bar"
+                [style.height.%]="getBarHeight(item.revenue)"
+                [title]="item.month + ': $' + item.revenue"
+              ></div>
+            </div>
+            <span class="chart-label">{{ item.month }}</span>
+          </div>
+        }
+      </div>
+    </div>

@@ -1,0 +1,69 @@
+<header class="navbar">
+      <div class="navbar-left">
+        <button type="button" class="menu-toggle" (click)="toggleMobileMenu.emit()">
+          <span class="material-icons-outlined">menu</span>
+        </button>
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          @for (item of breadcrumbs(); track $index) {
+            @if ($index > 0) {
+              <span class="breadcrumb-divider">
+                <span class="material-icons-outlined">chevron_right</span>
+              </span>
+            }
+            @if (item.path && $index !== (breadcrumbs().length - 1)) {
+              <a [routerLink]="item.path" class="breadcrumb-link">{{ item.label }}</a>
+            } @else {
+              <span class="breadcrumb-current">{{ item.label }}</span>
+            }
+          }
+        </nav>
+      </div>
+
+      <div class="navbar-center">
+        <app-search placeholder="Search..." class="navbar-search" />
+      </div>
+
+      <div class="navbar-right">
+        <button type="button" class="navbar-icon-btn" (click)="onNotificationsClick()">
+          <span class="material-icons-outlined">notifications</span>
+          @if (notificationCount() > 0) {
+            <span class="navbar-badge">{{ notificationCount() }}</span>
+          }
+        </button>
+
+        <div class="navbar-divider"></div>
+
+        <div class="navbar-user" (click)="toggleUserMenu()" #userMenuTrigger>
+          <app-avatar
+            [src]="authService.user()?.avatar"
+            [name]="userDisplayName()"
+            size="sm"
+          />
+          <div class="user-details">
+            <p class="user-name">{{ userDisplayName() }}</p>
+            <p class="user-role">{{ roleLabel() }}</p>
+          </div>
+          <span class="material-icons-outlined user-menu-arrow">
+            {{ userMenuOpen() ? 'expand_less' : 'expand_more' }}
+          </span>
+
+          @if (userMenuOpen()) {
+            <div class="user-menu" #userMenu>
+              <a [routerLink]="profilePath()" class="user-menu-item">
+                <span class="material-icons-outlined">person</span>
+                <span>Profile</span>
+              </a>
+              <a [routerLink]="settingsPath()" class="user-menu-item">
+                <span class="material-icons-outlined">settings</span>
+                <span>Settings</span>
+              </a>
+              <div class="user-menu-divider"></div>
+              <button type="button" class="user-menu-item user-menu-logout" (click)="onLogout()">
+                <span class="material-icons-outlined">logout</span>
+                <span>Log out</span>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>

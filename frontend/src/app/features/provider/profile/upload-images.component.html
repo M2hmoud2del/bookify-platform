@@ -1,0 +1,89 @@
+<div class="upload-page">
+      <div class="page-header">
+        <a routerLink="/provider/profile" class="back-link">
+          <span class="material-icons-outlined">arrow_back</span>
+          Back to Profile
+        </a>
+        <h1 class="page-title">Manage Images</h1>
+        <p class="page-subtitle">Manage your profile image and service images</p>
+      </div>
+
+      <!-- Profile Image -->
+      <app-card title="Profile Image">
+        <div card-header>
+          <span class="card-hint">Your profile image appears on your profile and booking page</span>
+        </div>
+        @if (profileImage()) {
+          <div class="profile-preview">
+            <img [src]="profileImage()!.url" alt="Profile" />
+            <div class="profile-actions">
+              <app-button variant="outline" size="sm">
+                <span class="material-icons-outlined">swap_horiz</span>
+                Replace
+              </app-button>
+              <app-button variant="ghost" size="sm" (onClick)="removeProfileImage()">
+                <span class="material-icons-outlined">delete</span>
+                Remove
+              </app-button>
+            </div>
+          </div>
+        } @else {
+          <app-upload-area
+            title="Upload Profile Image"
+            description="Recommended size: 400x400px"
+            [multiple]="false"
+            icon="store"
+            (filesSelected)="onProfileFilesSelected($event)"
+          />
+        }
+      </app-card>
+
+      <!-- Service Images -->
+      @for (service of services(); track service._id) {
+        <app-card [title]="'Images: ' + service.title">
+          <div card-header>
+            <span class="card-hint">Images for this service (up to 8 images)</span>
+          </div>
+
+          @if (getServiceImages(service._id).length > 0) {
+            <div class="gallery-grid">
+              @for (img of getServiceImages(service._id); track img.publicId) {
+                <div class="gallery-item">
+                  <img [src]="img.url" alt="Service image" loading="lazy" />
+                  <div class="gallery-overlay">
+                    <button
+                      type="button"
+                      class="remove-btn"
+                      (click)="removeServiceImage(service._id, img.publicId)"
+                      title="Remove"
+                    >
+                      <span class="material-icons-outlined">delete</span>
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+
+          @if (getServiceImages(service._id).length < 8) {
+            <div class="upload-section">
+              <app-upload-area
+                title="Add Service Images"
+                description="Click to browse or drag and drop"
+                [multiple]="true"
+                icon="add_photo_alternate"
+                (filesSelected)="onServiceFilesSelected($event, service._id)"
+              />
+            </div>
+          }
+        </app-card>
+      }
+
+      <!-- Save -->
+      <div class="save-bar">
+        <app-button variant="primary" (onClick)="save()">
+          <span class="material-icons-outlined">save</span>
+          Save All Changes
+        </app-button>
+      </div>
+    </div>

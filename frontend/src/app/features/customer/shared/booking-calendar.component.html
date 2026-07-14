@@ -1,0 +1,37 @@
+<div class="calendar">
+      <div class="calendar-header">
+        <button type="button" class="nav-btn" (click)="prevMonth()" [disabled]="!canGoPrev()">
+          <span class="material-icons-outlined">chevron_left</span>
+        </button>
+        <h3 class="calendar-title">{{ monthYearLabel() }}</h3>
+        <button type="button" class="nav-btn" (click)="nextMonth()">
+          <span class="material-icons-outlined">chevron_right</span>
+        </button>
+      </div>
+
+      <div class="calendar-weekdays">
+        @for (day of weekdays; track day) {
+          <span class="weekday">{{ day }}</span>
+        }
+      </div>
+
+      <div class="calendar-grid">
+        @for (day of calendarDays(); track day.dateObj.getTime()) {
+          <button
+            type="button"
+            class="calendar-day"
+            [class.is-other-month]="!day.isCurrentMonth"
+            [class.is-today]="day.isToday"
+            [class.is-selected]="isSelected(day)"
+            [class.is-disabled]="!day.isSelectable"
+            [disabled]="!day.isSelectable || !day.isCurrentMonth"
+            (click)="onSelectDay(day)"
+          >
+            <span class="day-number">{{ day.date }}</span>
+            @if (day.hasAvailability && day.isSelectable) {
+              <span class="availability-dot"></span>
+            }
+          </button>
+        }
+      </div>
+    </div>

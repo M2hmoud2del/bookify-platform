@@ -1,0 +1,100 @@
+:host {
+      display: inline-flex;
+    }
+
+    .avatar {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-xs);
+    }
+
+    .avatar-xs {
+      width: 24px;
+      height: 24px;
+      box-shadow: none;
+    }
+
+    .avatar-sm {
+      width: 32px;
+      height: 32px;
+      box-shadow: none;
+    }
+
+    .avatar-lg {
+      width: 48px;
+      height: 48px;
+    }
+
+    .avatar-xl {
+      width: 64px;
+      height: 64px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .avatar-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-initials {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .avatar-xs .avatar-initials {
+      font-size: 10px;
+    }
+
+    .avatar-sm .avatar-initials {
+      font-size: var(--font-size-xs);
+    }
+
+    .avatar-lg .avatar-initials {
+      font-size: var(--font-size-base);
+    }
+
+    .avatar-xl .avatar-initials {
+      font-size: var(--font-size-lg);
+    }
+
+    .avatar-status {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 25%;
+      height: 25%;
+      min-width: 8px;
+      min-height: 8px;
+      border-radius: var(--radius-full);
+      border: 2px solid var(--surface);
+    }
+
+    :host-context(.dark) .avatar-status {
+      border-color: var(--gray-800);
+    }
+
+    .status-online {
+      background: var(--success-500);
+    }
+
+    .status-busy {
+      background: var(--danger-500);
+    }
+
+    .status-away {
+      background: var(--warning-500);
+    }
+
+    .status-offline {
+      background: var(--gray-400);
+    }

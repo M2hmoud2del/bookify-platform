@@ -1,0 +1,12 @@
+.history-page { display: flex; flex-direction: column; gap: var(--space-6); }
+    .page-header { margin-bottom: var(--space-2); }
+    .page-title { font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--text-primary); margin: 0; }
+    .page-subtitle { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .history-list { display: flex; flex-direction: column; }
+    .history-item { display: flex; align-items: center; gap: var(--space-4); padding: var(--space-4); border-bottom: 1px solid var(--border); }
+    .history-date { font-size: var(--font-size-sm); color: var(--text-secondary); min-width: 100px; }
+    .history-info { flex: 1; }
+    .service-name { font-size: var(--font-size-base); font-weight: var(--font-weight-medium); color: var(--text-primary); margin: 0; }
+    .provider-name { font-size: var(--font-size-sm); color: var(--text-secondary); margin: var(--space-1) 0 0; }
+    .status { font-size: var(--font-size-xs); padding: var(--space-1) var(--space-2); border-radius: var(--radius-md); }
+    .status.completed { background: var(--success-100); color: var(--success-700); }

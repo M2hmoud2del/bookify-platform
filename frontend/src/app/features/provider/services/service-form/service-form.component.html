@@ -1,0 +1,92 @@
+<div class="service-form-page">
+      <div class="page-header">
+        <button type="button" class="back-btn" (click)="goBack()">
+          <span class="material-icons-outlined">arrow_back</span>
+        </button>
+        <div class="header-content">
+          <h1 class="page-title">{{ isEditMode() ? 'Edit Service' : 'Create Service' }}</h1>
+          <p class="page-subtitle">{{ isEditMode() ? 'Update your service details' : 'Add a new service to your offerings' }}</p>
+        </div>
+      </div>
+
+      <form class="service-form" (ngSubmit)="onSubmit()">
+        <app-card title="Service Details">
+          <div class="form-grid">
+            <app-input
+              label="Service Name"
+              placeholder="e.g., Haircut & Styling"
+              [(ngModel)]="service.title"
+              name="title"
+              [required]="true"
+            />
+
+            <app-input
+              label="Category"
+              placeholder="e.g., Hair Care"
+              [(ngModel)]="service.category"
+              name="category"
+            />
+
+            <div class="form-row">
+              <app-input
+                label="Duration (minutes)"
+                type="number"
+                placeholder="45"
+                [(ngModel)]="service.durationMinutes"
+                name="durationMinutes"
+                [required]="true"
+              />
+
+              <app-input
+                label="Price ($)"
+                type="number"
+                placeholder="65"
+                [(ngModel)]="service.price"
+                name="price"
+                [required]="true"
+              />
+            </div>
+          </div>
+        </app-card>
+
+        <app-card title="Description">
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea
+              class="form-textarea"
+              placeholder="Describe your service..."
+              [(ngModel)]="service.description"
+              name="description"
+              rows="4"
+            ></textarea>
+            <p class="form-hint">Provide a brief description of what customers can expect.</p>
+          </div>
+        </app-card>
+
+        <app-card title="Settings">
+          <div class="settings-options">
+            <div class="setting-option">
+              <div class="setting-info">
+                <p class="setting-title">Active Status</p>
+                <p class="setting-description">Make this service available for booking</p>
+              </div>
+              <button
+                type="button"
+                class="toggle-btn"
+                [ngClass]="{ 'is-active': service.isActive }"
+                (click)="service.isActive = !service.isActive"
+              >
+                <span class="toggle-slider"></span>
+              </button>
+            </div>
+          </div>
+        </app-card>
+
+        <div class="form-actions">
+          <app-button variant="ghost" (onClick)="goBack()">Cancel</app-button>
+          <app-button variant="primary" type="submit">
+            {{ isEditMode() ? 'Save Changes' : 'Create Service' }}
+          </app-button>
+        </div>
+      </form>
+    </div>

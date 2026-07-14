@@ -1,0 +1,52 @@
+<div class="reviews-page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Reviews</h1>
+          <p class="page-subtitle">View customer reviews and feedback</p>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <span class="stat-value">{{ averageRating() }}</span>
+          <span class="stat-label">Average Rating</span>
+          <app-rating [value]="averageRatingNum()" [readonly]="true" [showValue]="false" />
+        </div>
+        <div class="stat-card">
+          <span class="stat-value">{{ totalReviews() }}</span>
+          <span class="stat-label">Total Reviews</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value">{{ fiveStarCount() }}</span>
+          <span class="stat-label">5-Star Reviews</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-value">{{ oneStarCount() }}</span>
+          <span class="stat-label">1-Star Reviews</span>
+        </div>
+      </div>
+
+      <!-- Rating Distribution -->
+      <app-card title="Rating Distribution">
+        <div class="distribution">
+          @for (star of [5,4,3,2,1]; track star) {
+            <div class="dist-row">
+              <span class="dist-label">{{ star }} star</span>
+              <div class="dist-bar-wrap">
+                <div class="dist-bar" [style.width.%]="getDistPercent(star)"></div>
+              </div>
+              <span class="dist-count">{{ getDistCount(star) }}</span>
+            </div>
+          }
+        </div>
+      </app-card>
+
+      <!-- Reviews List -->
+      <app-card>
+        <div card-header>
+          <h2 class="card-title">All Reviews</h2>
+        </div>
+        <app-review-list [reviews]="reviews()" />
+      </app-card>
+    </div>

@@ -1,0 +1,54 @@
+<div class="provider-card" [routerLink]="['/providers', provider().user._id]">
+      <div class="card-cover">
+        <img [src]="provider().profile.profileImage.url" [alt]="provider().profile.businessName" loading="lazy" />
+        <div class="cover-overlay"></div>
+        @if (provider().profile.isVerified) {
+          <span class="verified-badge" title="Verified Business">
+            <span class="material-icons-outlined">verified</span>
+          </span>
+        }
+        <button
+          type="button"
+          class="favorite-btn"
+          (click)="onFavorite($event)"
+          aria-label="Add to favorites"
+        >
+          <span class="material-icons-outlined">favorite_border</span>
+        </button>
+      </div>
+
+      <div class="card-body">
+        <div class="card-header">
+          <app-avatar
+            [src]="provider().user.avatar ?? provider().profile.profileImage.url"
+            [name]="provider().profile.businessName"
+            size="md"
+          />
+          <div class="header-info">
+            <h3 class="provider-name">{{ provider().profile.businessName }}</h3>
+            <p class="provider-type">{{ provider().profile.category }}</p>
+          </div>
+        </div>
+
+        <div class="card-rating">
+          <app-rating [value]="provider().profile.ratingAverage" [readonly]="true" [showValue]="true" />
+          <span class="review-count">({{ provider().profile.ratingCount }} reviews)</span>
+        </div>
+
+        <div class="card-meta">
+          <span class="meta-item">
+            <span class="material-icons-outlined">location_on</span>
+            {{ provider().profile.city }}
+          </span>
+          <span class="meta-item">
+            <span class="material-icons-outlined">category</span>
+            {{ provider().profile.category }}
+          </span>
+        </div>
+
+        <div class="card-footer">
+          <span class="price-range">{{ priceRange() }}</span>
+          <span class="service-count">{{ provider().services.length }} services</span>
+        </div>
+      </div>
+    </div>

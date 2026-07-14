@@ -1,0 +1,180 @@
+<div class="calendar-page">
+      <div class="calendar-header">
+        <div class="header-nav">
+          <button type="button" class="nav-btn" (click)="prevMonth()">
+            <span class="material-icons-outlined">chevron_left</span>
+          </button>
+          <h1 class="current-month">{{ currentMonth() | date:'MMMM y' }}</h1>
+          <button type="button" class="nav-btn" (click)="nextMonth()">
+            <span class="material-icons-outlined">chevron_right</span>
+          </button>
+        </div>
+        <div class="view-toggle">
+          <button type="button" class="toggle-btn" [ngClass]="{ 'is-active': viewMode() === 'month' }" (click)="viewMode.set('month')">
+            Month
+          </button>
+          <button type="button" class="toggle-btn" [ngClass]="{ 'is-active': viewMode() === 'week' }" (click)="viewMode.set('week')">
+            Week
+          </button>
+          <button type="button" class="toggle-btn" [ngClass]="{ 'is-active': viewMode() === 'day' }" (click)="viewMode.set('day')">
+            Day
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-body">
+        <!-- Month View -->
+        @if (viewMode() === 'month') {
+          <div class="calendar-grid">
+            <div class="calendar-weekdays">
+              @for (day of weekdays; track day) {
+                <div class="weekday">{{ day }}</div>
+              }
+            </div>
+            <div class="calendar-dates">
+              @for (date of calendarDates(); track date.toISOString()) {
+                <div
+                  class="calendar-date"
+                  [ngClass]="{
+                    'is-today': isToday(date),
+                    'is-outside': date.getMonth() !== currentMonth().getMonth()
+                  }"
+                  (click)="selectDate(date)"
+                >
+                  <span class="date-number">{{ date.getDate() }}</span>
+                  @if (getAppointmentsForDate(date).length > 0) {
+                    <div class="date-appointments">
+                      @for (apt of getAppointmentsForDate(date).slice(0, 2); track apt._id) {
+                        <div
+                          class="appointment-indicator"
+                          [style.background]="getStatusColor(apt.status)"
+                          (click)="$event.stopPropagation(); openAppointmentDetail(apt)"
+                        >
+                          <span class="apt-time">{{ apt.startTime }}</span>
+                          <span class="apt-title">{{ apt.service.title }}</span>
+                        </div>
+                      }
+                      @if (getAppointmentsForDate(date).length > 2) {
+                        <span class="more-appointments">+{{ getAppointmentsForDate(date).length - 2 }} more</span>
+                      }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- Week View -->
+        @if (viewMode() === 'week') {
+          <div class="week-view">
+            <div class="week-header">
+              @for (day of weekDays(); track day.date) {
+                <div class="day-header" [ngClass]="{ 'is-today': isToday(day.date) }">
+                  <span class="day-name">{{ day.date | date:'EEE' }}</span>
+                  <span class="day-number">{{ day.date.getDate() }}</span>
+                </div>
+              }
+            </div>
+            <div class="week-body">
+              <div class="time-grid">
+                @for (hour of hours; track hour) {
+                  <div class="time-row">
+                    <span class="time-label">{{ hour }}</span>
+                    <div class="time-cells">
+                      @for (day of weekDays(); track day.date) {
+                        <div class="time-cell"></div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- Day View -->
+        @if (viewMode() === 'day') {
+          <div class="day-view">
+            <div class="day-header">
+              <button type="button" class="nav-btn" (click)="prevDay()">
+                <span class="material-icons-outlined">chevron_left</span>
+              </button>
+              <div class="day-info">
+                <span class="day-name">{{ selectedDate() | date:'EEEE' }}</span>
+                <span class="day-date">{{ selectedDate() | date:'MMMM d, y' }}</span>
+              </div>
+              <button type="button" class="nav-btn" (click)="nextDay()">
+                <span class="material-icons-outlined">chevron_right</span>
+              </button>
+            </div>
+            <div class="day-body">
+              <div class="time-grid">
+                @for (hour of hours; track hour) {
+                  <div class="time-row">
+                    <span class="time-label">{{ hour }}</span>
+                    <div class="time-slot" (click)="openNewAppointment(hour)"></div>
+                  </div>
+                }
+              </div>
+              @for (apt of selectedDayAppointments(); track apt._id) {
+                <div
+                  class="day-appointment"
+                  [style.top]="getAppointmentTop(apt)"
+                  [style.height]="getAppointmentHeight(apt)"
+                  [style.background]="getStatusColor(apt.status)"
+                  (click)="openAppointmentDetail(apt)"
+                >
+                  <span class="apt-time">{{ apt.startTime }} - {{ apt.endTime }}</span>
+                  <span class="apt-title">{{ apt.service.title }}</span>
+                  <span class="apt-customer">{{ apt.customer.name }}</span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Appointment Detail Modal -->
+      @if (selectedAppointment()) {
+        <app-modal
+          [isOpen]="!!selectedAppointment()"
+          [title]="selectedAppointment()?.service?.title"
+          [description]="'Appointment Details'"
+          size="md"
+          (close)="selectedAppointment.set(null)"
+        >
+          <div class="appointment-detail">
+            <div class="detail-row">
+              <span class="detail-label">Customer</span>
+              <div class="detail-value">
+                <app-avatar
+                  [src]="selectedAppointment()?.customer?.avatar ?? undefined"
+                  [name]="selectedAppointment()?.customer?.name ?? ''"
+                  size="sm"
+                />
+                <span>{{ selectedAppointment()?.customer?.name }}</span>
+              </div>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Date & Time</span>
+              <span class="detail-value">{{ selectedAppointment()?.localDate | date:'MMM d, y' }} {{ selectedAppointment()?.startTime }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Duration</span>
+              <span class="detail-value">{{ selectedAppointment()?.service?.durationMinutes }} minutes</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Status</span>
+              <app-badge [variant]="getStatusVariant(selectedAppointment()?.status)">
+                {{ selectedAppointment()?.status }}
+              </app-badge>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Price</span>
+              <span class="detail-value price">{{ selectedAppointment()?.service?.price | currency }}</span>
+            </div>
+          </div>
+        </app-modal>
+      }
+    </div>

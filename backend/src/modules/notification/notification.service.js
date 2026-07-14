@@ -150,7 +150,7 @@ export const sendBookingConfirmation = (appointmentId, dependencies = {}) =>
       appointmentId,
       recipient: "customer",
       type: "booking_confirmation",
-      subject: "Your Bookify appointment is pending payment",
+      subject: "Your Bookify appointment is confirmed",
       template: "booking-confirmation"
     },
     dependencies
@@ -180,19 +180,45 @@ export const sendAppointmentReminder = (appointmentId, dependencies = {}) =>
     dependencies
   );
 
-export const sendCancellationNotification = (appointmentId, cancelledBy, dependencies = {}) =>
-  sendAppointmentEmail(
+export const sendCancellationNotification = async (appointmentId, cancelledBy, dependencies = {}) => {
+  const repository = getRepository(dependencies);
+  const appointment = await repository.findAppointmentById(appointmentId);
+
+  if (!appointment) {
+    throw createError("Appointment not found", 404);
+  }
+
+  const cancelledById = getId(cancelledBy);
+  const cancelledByCustomer = cancelledById === getId(appointment.customer);
+  const recipient = cancelledByCustomer ? appointment.provider : appointment.customer;
+  const cancelledByName = cancelledByCustomer
+    ? appointment.customer?.name || "Customer"
+    : appointment.provider?.name || "Provider";
+
+  if (!recipient?.email) {
+    throw createError("Recipient email not found", 400);
+  }
+
+  const html = renderTemplate("cancellation", {
+    ...appointmentTemplateData(appointment),
+    cancelledBy: cancelledByName,
+    reason: appointment.cancellationReason
+  });
+
+  return sendEmailNotification(
     {
-      appointmentId,
-      recipient: "customer",
+      recipient: getId(recipient),
+      appointment: appointmentId,
       type: "appointment_cancelled",
+      toEmail: recipient.email,
       subject: "Bookify appointment cancelled",
-      template: "cancellation",
-      data: { cancelledBy }
+      html,
+      text: "Bookify appointment cancelled",
+      metadata: { appointmentId, cancelledBy: cancelledById }
     },
     dependencies
   );
-
+};
 export const sendReviewRequest = (appointmentId, dependencies = {}) =>
   sendAppointmentEmail(
     {
@@ -205,6 +231,17 @@ export const sendReviewRequest = (appointmentId, dependencies = {}) =>
     dependencies
   );
 
+export const sendPaymentSuccessNotification = (appointmentId, dependencies = {}) =>
+  sendAppointmentEmail(
+    {
+      appointmentId,
+      recipient: "customer",
+      type: "payment_success",
+      subject: "Bookify payment successful",
+      template: "payment-success"
+    },
+    dependencies
+  );
 export const sendPaymentFailedNotification = (appointmentId, dependencies = {}) =>
   sendAppointmentEmail(
     {

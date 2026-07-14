@@ -8,6 +8,7 @@ import {
   providerLocalDateTimeToUtc
 } from "../availability/availability.service.js";
 import { findWorkingHourByProviderAndDay } from "../availability/availability.repository.js";
+import { sendCancellationNotification } from "../notification/index.js";
 import {
   doTimeRangesOverlap,
   timeToMinutes,
@@ -46,6 +47,22 @@ const buildRepository = (dependencies = {}) =>
     findWorkingHourByProviderAndDay,
     updateAppointmentStatus
   };
+
+const buildNotifications = (dependencies = {}) =>
+  dependencies.notifications || { sendCancellationNotification };
+
+const getLogger = (dependencies = {}) => dependencies.logger || console;
+
+const runNotificationTask = async (flow, task, dependencies = {}) => {
+  try {
+    await task();
+  } catch (error) {
+    getLogger(dependencies).warn?.("Bookify notification failed", {
+      flow,
+      message: error.message
+    });
+  }
+};
 
 const ensureDateIsBookable = (date, timeZone, now = new Date()) => {
   if (!isValidDateString(date || "")) {
@@ -280,6 +297,13 @@ export const cancelAppointment = async (user, appointmentId, reason, dependencie
     cancelledBy: user._id,
     cancelledAt: new Date()
   });
+
+  const notifications = buildNotifications(dependencies);
+  await runNotificationTask(
+    "appointment_cancelled",
+    () => notifications.sendCancellationNotification(appointmentId, user._id),
+    dependencies
+  );
 
   return {
     success: true,

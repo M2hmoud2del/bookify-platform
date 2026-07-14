@@ -1,0 +1,227 @@
+<app-public-navbar></app-public-navbar>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="container hero-container">
+        <div class="hero-content">
+          <span class="hero-badge">
+            <span class="material-icons-outlined">auto_awesome</span>
+            Trusted by 10,000+ businesses
+          </span>
+          <h1 class="hero-title">
+            Smart Appointment
+            <span class="hero-highlight">Scheduling</span>
+            for Modern Businesses
+          </h1>
+          <p class="hero-description">
+            Manage appointments, customers, and payments all in one place.
+            Bookify helps you save time, reduce no-shows, and grow your business.
+          </p>
+          <div class="hero-actions">
+            <app-button variant="primary" size="lg" routerLink="/register">
+              Get Started Free
+            </app-button>
+            <app-button variant="outline" size="lg" routerLink="/#demo">
+              <span class="material-icons-outlined">play_circle</span>
+              Watch Demo
+            </app-button>
+          </div>
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <span class="stat-value">10K+</span>
+              <span class="stat-label">Active Users</span>
+            </div>
+            <div class="hero-stat">
+              <span class="stat-value">500K+</span>
+              <span class="stat-label">Appointments</span>
+            </div>
+            <div class="hero-stat">
+              <span class="stat-value">4.9</span>
+              <span class="stat-label">User Rating</span>
+            </div>
+          </div>
+        </div>
+        <div class="hero-image">
+          <img
+            src="https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg?auto=compress&cs=tinysrgb&w=800"
+            alt="Dashboard preview"
+            class="dashboard-mockup"
+          />
+        </div>
+      </div>
+      <div class="hero-gradient"></div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">Features</span>
+          <h2 class="section-title">Everything you need to run your business</h2>
+          <p class="section-description">
+            Powerful tools designed to streamline your appointment workflow and enhance customer experience.
+          </p>
+        </div>
+
+        <div class="features-grid">
+          @for (feature of features; track feature.title) {
+            <div class="feature-card">
+              <div class="feature-icon" [style.background]="feature.color">
+                <span class="material-icons-outlined">{{ feature.icon }}</span>
+              </div>
+              <h3 class="feature-title">{{ feature.title }}</h3>
+              <p class="feature-description">{{ feature.description }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">How It Works</span>
+          <h2 class="section-title">Get started in minutes</h2>
+          <p class="section-description">
+            Set up your booking system in three simple steps and start accepting appointments today.
+          </p>
+        </div>
+
+        <div class="steps-grid">
+          @for (step of steps; track step.number) {
+            <div class="step-card">
+              <span class="step-number">{{ step.number }}</span>
+              <h3 class="step-title">{{ step.title }}</h3>
+              <p class="step-description">{{ step.description }}</p>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials" id="testimonials">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">Testimonials</span>
+          <h2 class="section-title">Loved by businesses worldwide</h2>
+          <p class="section-description">
+            See how Bookify has transformed appointment management for businesses just like yours.
+          </p>
+        </div>
+
+        <div class="testimonials-grid">
+          @for (testimonial of testimonials; track testimonial.name) {
+            <div class="testimonial-card">
+              <div class="testimonial-rating">
+                @for (star of [1,2,3,4,5]; track star) {
+                  <span class="material-icons-outlined star-icon">star</span>
+                }
+              </div>
+              <p class="testimonial-quote">"{{ testimonial.quote }}"</p>
+              <div class="testimonial-author">
+                <img [src]="testimonial.avatar" [alt]="testimonial.name" class="author-avatar" />
+                <div class="author-info">
+                  <p class="author-name">{{ testimonial.name }}</p>
+                  <p class="author-role">{{ testimonial.role }}</p>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">Pricing</span>
+          <h2 class="section-title">Simple, transparent pricing</h2>
+          <p class="section-description">
+            Choose the plan that fits your business. All plans include a 14-day free trial.
+          </p>
+        </div>
+
+        <div class="pricing-grid">
+          @for (plan of pricingPlans; track plan.name) {
+            <div class="pricing-card" [ngClass]="{ 'is-popular': plan.popular }">
+              @if (plan.popular) {
+                <span class="popular-badge">Most Popular</span>
+              }
+              <h3 class="plan-name">{{ plan.name }}</h3>
+              <div class="plan-price">
+                <span class="currency">$</span>
+                <span class="amount">{{ plan.price }}</span>
+                <span class="period">/month</span>
+              </div>
+              <p class="plan-description">{{ plan.description }}</p>
+              <ul class="plan-features">
+                @for (feature of plan.features; track feature) {
+                  <li class="feature-item">
+                    <span class="material-icons-outlined">check_circle</span>
+                    <span>{{ feature }}</span>
+                  </li>
+                }
+              </ul>
+              <app-button
+                [variant]="plan.popular ? 'primary' : 'outline'"
+                [fullWidth]="true"
+                routerLink="/register"
+              >
+                {{ plan.price === 0 ? 'Get Started' : 'Start Free Trial' }}
+              </app-button>
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq" id="faq">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">FAQ</span>
+          <h2 class="section-title">Frequently asked questions</h2>
+        </div>
+
+        <div class="faq-list">
+          @for (item of faqItems; track item.question) {
+            <div class="faq-item" (click)="toggleFaq(item.question)">
+              <div class="faq-question">
+                <span>{{ item.question }}</span>
+                <span class="material-icons-outlined">
+                  {{ openFaq() === item.question ? 'expand_less' : 'expand_more' }}
+                </span>
+              </div>
+              @if (openFaq() === item.question) {
+                <p class="faq-answer">{{ item.answer }}</p>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+      <div class="container">
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to transform your business?</h2>
+          <p class="cta-description">
+            Join thousands of businesses already using Bookify to manage appointments efficiently.
+          </p>
+          <div class="cta-actions">
+            <app-button variant="primary" size="lg" routerLink="/register">
+              Get Started Free
+            </app-button>
+            <app-button variant="outline" size="lg">
+              Contact Sales
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <app-footer></app-footer>

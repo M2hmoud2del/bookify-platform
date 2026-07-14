@@ -1,0 +1,15 @@
+<div class="stat-card">
+      <div class="stat-header">
+        <span class="stat-icon" [style.background]="iconBackground()" [style.color]="iconColor()">
+          <span class="material-icons-outlined">{{ icon() }}</span>
+        </span>
+        <div class="stat-trend" [ngClass]="trendClass()">
+          <span class="material-icons-outlined">{{ trendIcon() }}</span>
+          <span>{{ trend() }}%</span>
+        </div>
+      </div>
+      <div class="stat-body">
+        <p class="stat-value">{{ value() }}</p>
+        <p class="stat-label">{{ label() }}</p>
+      </div>
+    </div>

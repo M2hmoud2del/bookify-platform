@@ -8,10 +8,7 @@ import { ToastContainerComponent } from './shared/components/toast/toast-contain
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, ToastContainerComponent],
-  template: `
-    <router-outlet></router-outlet>
-    <app-toast-container></app-toast-container>
-  `,
+  templateUrl: './app.component.html',
 })
 export class App implements OnInit {
   private authService = inject(AuthService);

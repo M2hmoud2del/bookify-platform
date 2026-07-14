@@ -6,6 +6,7 @@ export const notificationTypes = [
   "appointment_reminder",
   "appointment_cancelled",
   "review_request",
+  "payment_success",
   "payment_failed",
   "refund_issued",
   "email_verification",

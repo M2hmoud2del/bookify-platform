@@ -1,0 +1,66 @@
+<div class="success-page">
+      <div class="success-card">
+        <div class="success-icon">
+          <span class="material-icons-outlined">check_circle</span>
+        </div>
+        <h1 class="success-title">Booking Confirmed!</h1>
+        <p class="success-message">
+          Your appointment has been successfully booked. You will receive a confirmation email shortly.
+        </p>
+
+        <app-card class="details-card">
+          <h2 class="card-title">Booking Details</h2>
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="material-icons-outlined">business</span>
+              <div class="detail-content">
+                <span class="detail-label">Provider</span>
+                <span class="detail-value">Blossom Beauty Salon</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons-outlined">medical_services</span>
+              <div class="detail-content">
+                <span class="detail-label">Service</span>
+                <span class="detail-value">Haircut & Styling</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons-outlined">event</span>
+              <div class="detail-content">
+                <span class="detail-label">Date</span>
+                <span class="detail-value">July 15, 2026</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons-outlined">schedule</span>
+              <div class="detail-content">
+                <span class="detail-label">Time</span>
+                <span class="detail-value">10:00 AM</span>
+              </div>
+            </div>
+            <div class="detail-item">
+              <span class="material-icons-outlined">payments</span>
+              <div class="detail-content">
+                <span class="detail-label">Total</span>
+                <span class="detail-value price">$ 65.00</span>
+              </div>
+            </div>
+          </div>
+        </app-card>
+
+        <div class="info-banner">
+          <span class="material-icons-outlined">notifications</span>
+          <span>We'll send you a reminder 24 hours before your appointment.</span>
+        </div>
+
+        <div class="actions">
+          <app-button variant="primary" routerLink="/customer/appointments">
+            View Appointments
+          </app-button>
+          <app-button variant="outline" routerLink="/customer/dashboard">
+            Go to Dashboard
+          </app-button>
+        </div>
+      </div>
+    </div>

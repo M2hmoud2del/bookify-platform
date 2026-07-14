@@ -1,0 +1,20 @@
+<div class="card" [class.card-hoverable]="hoverable()" [class.card-clickable]="clickable()">
+      @if (header() || title()) {
+        <div class="card-header">
+          @if (title()) {
+            <h3 class="card-title">{{ title() }}</h3>
+          }
+          <ng-content select="[card-header]" />
+        </div>
+      }
+
+      <div class="card-body">
+        <ng-content />
+      </div>
+
+      @if (footerContent()) {
+        <div class="card-footer">
+          <ng-content select="[card-footer]" />
+        </div>
+      }
+    </div>

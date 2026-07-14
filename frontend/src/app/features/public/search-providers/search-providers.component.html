@@ -1,0 +1,76 @@
+<app-public-navbar />
+
+    <div class="search-page">
+      <div class="container">
+        <!-- Page header -->
+        <div class="page-header">
+          <div>
+            <h1 class="page-title">Find Providers</h1>
+            <p class="page-subtitle">
+              Discover and book appointments with top-rated professionals near you
+            </p>
+          </div>
+        </div>
+
+        <!-- Category bar -->
+        <app-category-filters
+          [activeCategory]="activeCategory()"
+          (categoryChange)="onCategoryChange($event)"
+        />
+
+        <!-- Search + Filters -->
+        <app-search-filters
+          [query]="searchQuery()"
+          [minRating]="minRating()"
+          [maxPrice]="maxPrice()"
+          [sortBy]="sortBy()"
+          (queryChange)="onQueryChange($event)"
+          (minRatingChange)="onMinRatingChange($event)"
+          (maxPriceChange)="onMaxPriceChange($event)"
+          (sortByChange)="onSortChange($event)"
+        />
+
+        <!-- Results count -->
+        <div class="results-bar">
+          <p class="results-count">
+            {{ filteredProviders().length }}
+            {{ filteredProviders().length === 1 ? 'provider' : 'providers' }} found
+          </p>
+          @if (hasActiveFilters()) {
+            <button type="button" class="clear-btn" (click)="clearFilters()">
+              <span class="material-icons-outlined">clear</span>
+              Clear filters
+            </button>
+          }
+        </div>
+
+        <!-- Results grid -->
+        @if (filteredProviders().length > 0) {
+          <div class="providers-grid">
+            @for (provider of pagedProviders(); track provider.user._id) {
+              <app-provider-card [provider]="provider" />
+            }
+          </div>
+
+          @if (totalPages() > 1) {
+            <div class="pagination-wrap">
+              <app-pagination
+                [currentPage]="currentPage()"
+                [totalPages]="totalPages()"
+                (pageChange)="onPageChange($event)"
+              />
+            </div>
+          }
+        } @else {
+          <app-empty-state
+            icon="search_off"
+            title="No providers found"
+            description="Try adjusting your search filters or browse all categories to find what you're looking for."
+            actionLabel="Clear all filters"
+            (action)="clearFilters()"
+          />
+        }
+      </div>
+    </div>
+
+    <app-footer />

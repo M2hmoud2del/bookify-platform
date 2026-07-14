@@ -1,0 +1,13 @@
+<app-confirm-dialog
+      [isOpen]="isOpen()"
+      [title]="title()"
+      [description]="description()"
+      [message]="message()"
+      icon="delete_forever"
+      [confirmText]="confirmText()"
+      cancelText="Cancel"
+      confirmVariant="danger"
+      [loading]="loading()"
+      (confirm)="confirm.emit()"
+      (cancel)="cancel.emit()"
+    />

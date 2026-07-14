@@ -1,0 +1,26 @@
+<div class="empty-state">
+      @if (icon()) {
+        <div class="empty-state-icon">
+          <span class="material-icons-outlined">{{ icon() }}</span>
+        </div>
+      }
+
+      @if (title()) {
+        <h3 class="empty-state-title">{{ title() }}</h3>
+      }
+
+      @if (description()) {
+        <p class="empty-state-description">{{ description() }}</p>
+      }
+
+      @if (actionLabel()) {
+        <app-button
+          [variant]="actionVariant()"
+          (onClick)="action.emit()"
+        >
+          {{ actionLabel() }}
+        </app-button>
+      }
+
+      <ng-content />
+    </div>

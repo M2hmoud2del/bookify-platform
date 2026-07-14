@@ -6,21 +6,7 @@ import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.compone
   selector: 'app-delete-dialog',
   standalone: true,
   imports: [CommonModule, ConfirmDialogComponent],
-  template: `
-    <app-confirm-dialog
-      [isOpen]="isOpen()"
-      [title]="title()"
-      [description]="description()"
-      [message]="message()"
-      icon="delete_forever"
-      [confirmText]="confirmText()"
-      cancelText="Cancel"
-      confirmVariant="danger"
-      [loading]="loading()"
-      (confirm)="confirm.emit()"
-      (cancel)="cancel.emit()"
-    />
-  `,
+  templateUrl: './delete-dialog.component.html',
 })
 export class DeleteDialogComponent {
   isOpen      = input(false);

@@ -1,0 +1,119 @@
+<app-public-navbar />
+
+    @if (provider()) {
+      <div class="provider-page">
+        <div class="container">
+          <!-- Breadcrumb -->
+          <nav class="breadcrumb">
+            <a routerLink="/" class="crumb">Home</a>
+            <span class="material-icons-outlined separator">chevron_right</span>
+            <a routerLink="/providers" class="crumb">Providers</a>
+            <span class="material-icons-outlined separator">chevron_right</span>
+            <span class="crumb crumb-current">{{ provider()!.profile.businessName }}</span>
+          </nav>
+
+          <!-- Header -->
+          <app-provider-header
+            class="header-block"
+            [provider]="provider()!"
+            (favorite)="toggleFavorite()"
+            (book)="scrollToServices()"
+          />
+
+          <!-- Tabs -->
+          <div class="tabs-bar">
+            <button
+              type="button"
+              class="tab-btn"
+              [class.is-active]="activeTab() === 'services'"
+              (click)="activeTab.set('services')"
+            >
+              <span class="material-icons-outlined">spa</span>
+              Services
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              [class.is-active]="activeTab() === 'about'"
+              (click)="activeTab.set('about')"
+            >
+              <span class="material-icons-outlined">info</span>
+              About
+            </button>
+            <button
+              type="button"
+              class="tab-btn"
+              [class.is-active]="activeTab() === 'reviews'"
+              (click)="activeTab.set('reviews')"
+            >
+              <span class="material-icons-outlined">reviews</span>
+              Reviews
+              <span class="tab-badge">{{ provider()!.reviews.length }}</span>
+            </button>
+          </div>
+
+          <!-- Tab content -->
+          <div class="tab-content">
+            @if (activeTab() === 'services') {
+              <div id="services-section">
+                <app-service-list
+                  [services]="provider()!.services"
+                  [providerId]="provider()!.user._id"
+                  (book)="onBookService($event)"
+                />
+              </div>
+            }
+
+            @if (activeTab() === 'about') {
+              <app-provider-about [provider]="provider()!" />
+            }
+
+            @if (activeTab() === 'reviews') {
+              <div class="reviews-section">
+                <div class="reviews-header">
+                  <h2 class="section-title">Customer Reviews</h2>
+                  <div class="rating-summary">
+                    <app-rating [value]="provider()!.profile.ratingAverage" [readonly]="true" [showValue]="true" />
+                    <span class="total-reviews">{{ provider()!.profile.ratingCount }} total reviews</span>
+                  </div>
+                </div>
+
+                <div class="reviews-list">
+                  @for (review of provider()!.reviews; track review._id) {
+                    <div class="review-card">
+                      <div class="review-header">
+                        <app-avatar
+                          [name]="review.customer"
+                          size="md"
+                        />
+                        <div class="review-meta">
+                          <p class="reviewer-name">{{ review.customer }}</p>
+                          <p class="review-service">{{ serviceName(review.service) }}</p>
+                        </div>
+                        <div class="review-right">
+                          <app-rating [value]="review.rating" [readonly]="true" [showValue]="false" />
+                          <span class="review-date">{{ review.createdAt | date:'mediumDate' }}</span>
+                        </div>
+                      </div>
+                      <p class="review-comment">{{ review.comment }}</p>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="container not-found-wrap">
+        <app-empty-state
+          icon="person_off"
+          title="Provider not found"
+          description="The provider you're looking for doesn't exist or has been removed."
+          actionLabel="Browse providers"
+          (action)="router.navigate(['/providers'])"
+        />
+      </div>
+    }
+
+    <app-footer />

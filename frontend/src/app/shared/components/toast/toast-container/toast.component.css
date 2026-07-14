@@ -1,0 +1,105 @@
+:host {
+      display: block;
+    }
+
+    .toast {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      min-width: 300px;
+      max-width: 420px;
+      animation: slideInRight var(--transition-normal);
+    }
+
+    :host-context(.dark) .toast {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+    }
+
+    .toast-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    .toast-icon .material-icons-outlined {
+      font-size: 1.25rem;
+    }
+
+    .toast-success .toast-icon {
+      color: var(--success-500);
+    }
+
+    .toast-error .toast-icon {
+      color: var(--danger-500);
+    }
+
+    .toast-warning .toast-icon {
+      color: var(--warning-500);
+    }
+
+    .toast-info .toast-icon {
+      color: var(--primary-500);
+    }
+
+    .toast-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .toast-title {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .toast-message {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+      margin: 0.25rem 0 0;
+    }
+
+    .toast-close {
+      padding: 0.25rem;
+      background: transparent;
+      border-radius: var(--radius-md);
+      color: var(--gray-400);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      margin: -0.25rem;
+    }
+
+    .toast-close:hover {
+      background: var(--gray-100);
+      color: var(--gray-600);
+    }
+
+    :host-context(.dark) .toast-close:hover {
+      background: var(--gray-700);
+      color: var(--gray-300);
+    }
+
+    .toast-close .material-icons-outlined {
+      font-size: 1rem;
+    }
+
+    @keyframes slideInRight {
+      from {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }

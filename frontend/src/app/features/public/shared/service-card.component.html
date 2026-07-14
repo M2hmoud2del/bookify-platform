@@ -1,0 +1,29 @@
+<div class="service-card" [routerLink]="['/providers', providerId(), 'services', service()._id]">
+      <div class="service-image">
+        <img [src]="service().images[0]?.url" [alt]="service().title" loading="lazy" />
+        <span class="duration-badge">
+          <span class="material-icons-outlined">schedule</span>
+          {{ service().durationMinutes }}min
+        </span>
+      </div>
+
+      <div class="service-body">
+        <h3 class="service-name">{{ service().title }}</h3>
+        <p class="service-desc">{{ service().description }}</p>
+
+        <div class="service-footer">
+          <span class="service-price">
+            <span class="price-label">From</span>
+            <span class="price-amount">$ {{ service().price }}</span>
+          </span>
+          <app-button
+            variant="primary"
+            size="sm"
+            (onClick)="onBook($event)"
+          >
+            <span class="material-icons-outlined">add</span>
+            Book
+          </app-button>
+        </div>
+      </div>
+    </div>

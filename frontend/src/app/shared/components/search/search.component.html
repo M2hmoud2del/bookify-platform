@@ -1,0 +1,19 @@
+<div class="search-container" [ngClass]="{ 'search-focused': isFocused() }">
+      <span class="search-icon">
+        <span class="material-icons-outlined">search</span>
+      </span>
+      <input
+        type="text"
+        class="search-input"
+        [placeholder]="placeholder()"
+        [(ngModel)]="value"
+        (focus)="isFocused.set(true)"
+        (blur)="isFocused.set(false)"
+        (input)="onInput()"
+      />
+      @if (value()) {
+        <button type="button" class="search-clear" (click)="onClear()">
+          <span class="material-icons-outlined">close</span>
+        </button>
+      }
+    </div>

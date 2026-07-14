@@ -1,0 +1,18 @@
+.confirm-body {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-6);
+    }
+
+    .confirm-message {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin: 0;
+    }
+
+    .confirm-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: var(--space-3);
+    }

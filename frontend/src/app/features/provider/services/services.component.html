@@ -1,0 +1,79 @@
+<div class="services-page">
+      <div class="page-header">
+        <div class="header-content">
+          <h1 class="page-title">Services</h1>
+          <p class="page-subtitle">Manage your service offerings and pricing.</p>
+        </div>
+        <app-button variant="primary" routerLink="/provider/services/create">
+          <span class="material-icons-outlined">add</span>
+          Add Service
+        </app-button>
+      </div>
+
+      <div class="filters-bar">
+        <app-search placeholder="Search services..." class="search-input" />
+        <div class="filter-actions">
+          <button type="button" class="filter-btn" [ngClass]="{ 'is-active': activeFilter() === 'all' }" (click)="activeFilter.set('all')">
+            All
+          </button>
+          <button type="button" class="filter-btn" [ngClass]="{ 'is-active': activeFilter() === 'active' }" (click)="activeFilter.set('active')">
+            Active
+          </button>
+          <button type="button" class="filter-btn" [ngClass]="{ 'is-active': activeFilter() === 'inactive' }" (click)="activeFilter.set('inactive')">
+            Inactive
+          </button>
+        </div>
+      </div>
+
+      <div class="services-grid">
+        @for (service of filteredServices(); track service._id) {
+          <div class="service-card">
+            <div class="service-header">
+              <div class="service-info">
+                <h3 class="service-name">{{ service.title }}</h3>
+                <p class="service-category">{{ service.category }}</p>
+              </div>
+              <app-badge [variant]="service.isActive ? 'success' : 'gray'">
+                {{ service.isActive ? 'Active' : 'Inactive' }}
+              </app-badge>
+            </div>
+
+            @if (service.description) {
+              <p class="service-description">{{ service.description }}</p>
+            }
+
+            <div class="service-meta">
+              <div class="meta-item">
+                <span class="material-icons-outlined">schedule</span>
+                <span>{{ service.durationMinutes }} min</span>
+              </div>
+              <div class="meta-item price">
+                <span class="material-icons-outlined">payments</span>
+                <span>{{ service.price | currency }}</span>
+              </div>
+            </div>
+
+            <div class="service-actions">
+              <app-button variant="ghost" size="sm" [routerLink]="['/provider/services', service._id, 'edit']">
+                <span class="material-icons-outlined">edit</span>
+                Edit
+              </app-button>
+              <button type="button" class="action-btn" (click)="toggleServiceStatus(service)">
+                <span class="material-icons-outlined">{{ service.isActive ? 'toggle_off' : 'toggle_on' }}</span>
+                {{ service.isActive ? 'Deactivate' : 'Activate' }}
+              </button>
+            </div>
+          </div>
+        } @empty {
+          <app-empty-state
+            icon="medical_services"
+            title="No services found"
+            description="Get started by creating your first service offering."
+            actionLabel="Add Service"
+            (action)="navigateToCreate()"
+          />
+        }
+      </div>
+
+      <app-pagination [currentPage]="1" [totalPages]="3" (pageChange)="onPageChange($event)" />
+    </div>

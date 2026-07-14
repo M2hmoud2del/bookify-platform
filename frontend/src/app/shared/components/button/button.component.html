@@ -1,0 +1,24 @@
+<button
+      [type]="type()"
+      [disabled]="disabled() || loading()"
+      class="btn"
+      [ngClass]="{
+        'btn-primary': variant() === 'primary',
+        'btn-secondary': variant() === 'secondary',
+        'btn-outline': variant() === 'outline',
+        'btn-ghost': variant() === 'ghost',
+        'btn-danger': variant() === 'danger',
+        'btn-sm': size() === 'sm',
+        'btn-lg': size() === 'lg',
+        'btn-loading': loading(),
+        'btn-full': fullWidth()
+      }"
+      (click)="onClick.emit($event)"
+    >
+      @if (loading()) {
+        <span class="btn-spinner"></span>
+      }
+      <span class="btn-content" [class.opacity-0]="loading()">
+        <ng-content />
+      </span>
+    </button>

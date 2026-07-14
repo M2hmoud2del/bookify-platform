@@ -1,0 +1,10 @@
+<div
+      class="spinner"
+      [ngClass]="{
+        'spinner-sm': size() === 'sm',
+        'spinner-lg': size() === 'lg'
+      }"
+    ></div>
+    @if (text()) {
+      <span class="loading-text">{{ text() }}</span>
+    }

@@ -1,0 +1,24 @@
+<div
+      class="upload-zone"
+      [class.is-dragging]="isDragging()"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave($event)"
+      (drop)="onDrop($event)"
+      (click)="fileInput.click()"
+    >
+      <input
+        #fileInput
+        type="file"
+        class="file-input"
+        [accept]="accept()"
+        [multiple]="multiple()"
+        (change)="onFileSelect($event)"
+      />
+
+      <div class="upload-icon">
+        <span class="material-icons-outlined">{{ icon() }}</span>
+      </div>
+      <h3 class="upload-title">{{ title() }}</h3>
+      <p class="upload-desc">{{ description() }}</p>
+      <p class="upload-hint">or drag and drop files here</p>
+    </div>

@@ -1,0 +1,22 @@
+<div
+      class="toast"
+      [ngClass]="{
+        'toast-success': toast().type === 'success',
+        'toast-error': toast().type === 'error',
+        'toast-warning': toast().type === 'warning',
+        'toast-info': toast().type === 'info'
+      }"
+    >
+      <span class="toast-icon">
+        <span class="material-icons-outlined">{{ icon() }}</span>
+      </span>
+      <div class="toast-content">
+        <p class="toast-title">{{ toast().title }}</p>
+        @if (toast().message) {
+          <p class="toast-message">{{ toast().message }}</p>
+        }
+      </div>
+      <button type="button" class="toast-close" (click)="dismiss.emit()">
+        <span class="material-icons-outlined">close</span>
+      </button>
+    </div>

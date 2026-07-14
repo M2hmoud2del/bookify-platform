@@ -1,0 +1,145 @@
+:host { display: block; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    :host-context(.dark) .table-wrap {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+    }
+
+    .apt-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    .apt-table th {
+      padding: var(--space-3) var(--space-4);
+      text-align: left;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+      background: var(--gray-50);
+      white-space: nowrap;
+    }
+
+    :host-context(.dark) .apt-table th {
+      background: var(--gray-900);
+      border-color: var(--gray-700);
+    }
+
+    .apt-table td {
+      padding: var(--space-3) var(--space-4);
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    :host-context(.dark) .apt-table td { border-color: var(--gray-700); }
+
+    .apt-table tbody tr:last-child td { border-bottom: none; }
+
+    .apt-table tbody tr:hover { background: var(--gray-50); }
+    :host-context(.dark) .apt-table tbody tr:hover { background: var(--gray-900); }
+
+    .customer-cell {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .customer-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .customer-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+    }
+
+    .customer-email {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+
+    .service-name {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-primary);
+    }
+
+    .date-cell {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .date-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+
+    .time-text {
+      font-size: var(--font-size-xs);
+      color: var(--text-secondary);
+    }
+
+    .duration-text, .price-text {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+    }
+
+    .price-text { font-weight: var(--font-weight-semibold); }
+
+    .actions {
+      display: flex;
+      gap: var(--space-1);
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      background: var(--gray-50);
+      border: none;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    :host-context(.dark) .action-btn { background: var(--gray-700); }
+
+    .action-btn:hover { background: var(--primary-100); color: var(--primary-600); }
+    :host-context(.dark) .action-btn:hover { background: rgba(79, 70, 229, 0.15); color: var(--primary-400); }
+
+    .action-btn.confirm:hover { background: var(--success-100); color: var(--success-600); }
+    .action-btn.cancel:hover { background: var(--danger-100); color: var(--danger-600); }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-12);
+      color: var(--text-secondary);
+    }
+
+    .empty-state .material-icons-outlined {
+      font-size: 2.5rem;
+      color: var(--gray-300);
+    }
+
+    @media (max-width: 768px) {
+      .actions-col { display: none; }
+    }

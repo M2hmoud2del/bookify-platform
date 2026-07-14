@@ -1,0 +1,114 @@
+:host { display: block; }
+
+    .filters-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: var(--space-5);
+    }
+
+    :host-context(.dark) .filters-bar {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+    }
+
+    .filters-main {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-4);
+    }
+
+    .search-field { flex: 1; }
+
+    .filter-controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-4);
+    }
+
+    @media (min-width: 768px) {
+      .filter-controls {
+        grid-template-columns: auto auto 1fr;
+        align-items: end;
+      }
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+    }
+
+    .control-label {
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .rating-options, .price-options {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+    }
+
+    .rating-pill, .price-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      padding: var(--space-2) var(--space-3);
+      background: var(--gray-50);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+
+      &:hover {
+        border-color: var(--primary-300);
+        color: var(--primary-600);
+      }
+
+      &.is-active {
+        background: var(--primary-500);
+        border-color: var(--primary-500);
+        color: #fff;
+      }
+    }
+
+    :host-context(.dark) .rating-pill,
+    :host-context(.dark) .price-pill {
+      background: var(--gray-700);
+      border-color: var(--gray-600);
+
+      &:hover {
+        border-color: var(--primary-500);
+        color: var(--primary-400);
+      }
+
+      &.is-active {
+        background: var(--primary-500);
+        border-color: var(--primary-500);
+        color: #fff;
+      }
+    }
+
+    .rating-pill .material-icons-outlined {
+      font-size: 0.875rem;
+      color: var(--warning-500);
+    }
+
+    .rating-pill.is-active .material-icons-outlined {
+      color: #fff;
+    }
+
+    .sort-group {
+      min-width: 180px;
+    }
+
+    .sort-select {
+      width: 100%;
+    }

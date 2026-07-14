@@ -1,0 +1,84 @@
+:host { display: block; }
+
+    .container {
+      max-width: var(--max-content-width);
+      margin: 0 auto;
+      padding: 0 var(--space-4);
+    }
+
+    .search-page {
+      padding: calc(var(--navbar-height) + var(--space-8)) 0 var(--space-12);
+      min-height: 100vh;
+    }
+
+    .page-header {
+      margin-bottom: var(--space-6);
+    }
+
+    .page-title {
+      font-size: var(--font-size-3xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0 0 var(--space-2);
+    }
+
+    .page-subtitle {
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: var(--space-6) 0 var(--space-4);
+    }
+
+    .results-count {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .clear-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      background: none;
+      border: none;
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      color: var(--primary-600);
+      cursor: pointer;
+      padding: var(--space-1) var(--space-2);
+      border-radius: var(--radius-md);
+      transition: background var(--transition-fast);
+
+      &:hover { background: var(--primary-50); }
+    }
+
+    :host-context(.dark) .clear-btn { color: var(--primary-400); }
+    :host-context(.dark) .clear-btn:hover { background: rgba(79, 70, 229, 0.1); }
+
+    .clear-btn .material-icons-outlined { font-size: 1rem; }
+
+    .providers-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-5);
+    }
+
+    @media (min-width: 640px) {
+      .providers-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (min-width: 1024px) {
+      .providers-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .pagination-wrap {
+      display: flex;
+      justify-content: center;
+      margin-top: var(--space-8);
+    }

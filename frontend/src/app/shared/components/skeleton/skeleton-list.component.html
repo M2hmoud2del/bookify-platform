@@ -1,0 +1,12 @@
+<div class="skeleton-list">
+      @for (item of items(); track $index) {
+        <div class="skeleton-list-item">
+          <app-skeleton variant="avatar" />
+          <div class="skeleton-list-content">
+            <app-skeleton variant="text" width="50%" />
+            <app-skeleton variant="text" width="30%" height="0.75rem" />
+          </div>
+          <app-skeleton variant="rectangular" width="60px" height="24px" />
+        </div>
+      }
+    </div>

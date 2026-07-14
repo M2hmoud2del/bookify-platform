@@ -1,0 +1,27 @@
+<div class="failed-page">
+      <div class="failed-card">
+        <div class="failed-icon">
+          <span class="material-icons-outlined">error</span>
+        </div>
+        <h1 class="failed-title">Payment Failed</h1>
+        <p class="failed-message">
+          We couldn't process your payment. Please try again or use a different payment method.
+        </p>
+
+        <div class="error-details">
+          <p class="error-text">
+            <span class="material-icons-outlined">info</span>
+            Your booking has not been confirmed. No charges were made.
+          </p>
+        </div>
+
+        <div class="actions">
+          <app-button variant="primary" routerLink="/customer/book">
+            Try Again
+          </app-button>
+          <app-button variant="outline" routerLink="/customer/dashboard">
+            Back to Dashboard
+          </app-button>
+        </div>
+      </div>
+    </div>

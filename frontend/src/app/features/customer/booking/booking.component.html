@@ -1,0 +1,213 @@
+<div class="booking-page">
+      <div class="page-header">
+        <h1 class="page-title">Book an Appointment</h1>
+        <p class="page-subtitle">Select a provider, service, and time that works for you</p>
+      </div>
+
+      <!-- Step indicator -->
+      <div class="steps-bar">
+        @for (step of steps; track step.num; let last = $last) {
+          <div class="step" [class.is-active]="currentStep() >= step.num" [class.is-current]="currentStep() === step.num">
+            <span class="step-num">
+              @if (currentStep() > step.num) {
+                <span class="material-icons-outlined">check</span>
+              } @else {
+                {{ step.num }}
+              }
+            </span>
+            <span class="step-label">{{ step.label }}</span>
+          </div>
+          @if (!last) {
+            <div class="step-line" [class.is-active]="currentStep() > step.num"></div>
+          }
+        }
+      </div>
+
+      <!-- Step 1: Provider -->
+      @if (currentStep() === 1) {
+        <div class="step-content">
+          <h2 class="section-title">Select a Provider</h2>
+          <div class="providers-grid">
+            @for (provider of providers(); track provider.id) {
+              <div
+                class="selectable-card"
+                [class.is-selected]="selectedProvider()?.id === provider.id"
+                (click)="selectProvider(provider)"
+              >
+                <app-avatar
+                  [src]="provider.avatar ?? undefined"
+                  [name]="provider.business_name"
+                  size="lg"
+                />
+                <div class="card-info">
+                  <h3 class="card-title">{{ provider.business_name }}</h3>
+                  <p class="card-subtitle">{{ provider.business_type }}</p>
+                  <div class="card-rating">
+                    <span class="material-icons-outlined star">star</span>
+                    <span>{{ provider.rating }}</span>
+                  </div>
+                </div>
+                @if (selectedProvider()?.id === provider.id) {
+                  <span class="check-icon"><span class="material-icons-outlined">check_circle</span></span>
+                }
+              </div>
+            }
+          </div>
+          <div class="step-actions">
+            <app-button variant="primary" [disabled]="!selectedProvider()" (onClick)="nextStep()">
+              Continue
+              <span class="material-icons-outlined">arrow_forward</span>
+            </app-button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 2: Service -->
+      @if (currentStep() === 2) {
+        <div class="step-content">
+          <h2 class="section-title">Select a Service</h2>
+          <div class="services-grid">
+            @for (service of services(); track service.id) {
+              <div
+                class="service-selectable"
+                [class.is-selected]="selectedService()?.id === service.id"
+                (click)="selectService(service)"
+              >
+                <div class="service-info">
+                  <h3 class="service-name">{{ service.name }}</h3>
+                  <p class="service-desc">{{ service.description }}</p>
+                  <div class="service-meta">
+                    <span class="meta-item">
+                      <span class="material-icons-outlined">schedule</span>
+                      {{ service.duration_minutes }} min
+                    </span>
+                    <span class="service-price">$ {{ service.price }}</span>
+                  </div>
+                </div>
+                @if (selectedService()?.id === service.id) {
+                  <span class="check-icon"><span class="material-icons-outlined">check_circle</span></span>
+                }
+              </div>
+            }
+          </div>
+          <div class="step-actions">
+            <app-button variant="outline" (onClick)="prevStep()">
+              <span class="material-icons-outlined">arrow_back</span>
+              Back
+            </app-button>
+            <app-button variant="primary" [disabled]="!selectedService()" (onClick)="nextStep()">
+              Continue
+              <span class="material-icons-outlined">arrow_forward</span>
+            </app-button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 3: Date & Time -->
+      @if (currentStep() === 3) {
+        <div class="step-content">
+          <h2 class="section-title">Select Date & Time</h2>
+          <div class="datetime-grid">
+            <div class="calendar-section">
+              <app-booking-calendar
+                [selectedDate]="selectedDate()"
+                [availableDates]="availableDates()"
+                (dateChange)="onDateChange($event)"
+              />
+            </div>
+
+            <div class="slots-section">
+              <app-time-slot-selector
+                [slots]="timeSlots()"
+                [selectedTime]="selectedTime()"
+                (timeChange)="onTimeChange($event)"
+              />
+            </div>
+          </div>
+          <div class="step-actions">
+            <app-button variant="outline" (onClick)="prevStep()">
+              <span class="material-icons-outlined">arrow_back</span>
+              Back
+            </app-button>
+            <app-button variant="primary" [disabled]="!selectedDate() || !selectedTime()" (onClick)="nextStep()">
+              Continue
+              <span class="material-icons-outlined">arrow_forward</span>
+            </app-button>
+          </div>
+        </div>
+      }
+
+      <!-- Step 4: Confirm -->
+      @if (currentStep() === 4) {
+        <div class="step-content">
+          <h2 class="section-title">Confirm Your Booking</h2>
+          <div class="confirm-grid">
+            <div class="confirm-card">
+              <div class="confirm-row">
+                <span class="material-icons-outlined confirm-icon">business</span>
+                <div class="confirm-info">
+                  <p class="confirm-label">Provider</p>
+                  <p class="confirm-value">{{ selectedProvider()?.business_name }}</p>
+                </div>
+              </div>
+              <div class="confirm-row">
+                <span class="material-icons-outlined confirm-icon">spa</span>
+                <div class="confirm-info">
+                  <p class="confirm-label">Service</p>
+                  <p class="confirm-value">{{ selectedService()?.name }}</p>
+                </div>
+              </div>
+              <div class="confirm-row">
+                <span class="material-icons-outlined confirm-icon">event</span>
+                <div class="confirm-info">
+                  <p class="confirm-label">Date</p>
+                  <p class="confirm-value">{{ formattedDate() }}</p>
+                </div>
+              </div>
+              <div class="confirm-row">
+                <span class="material-icons-outlined confirm-icon">schedule</span>
+                <div class="confirm-info">
+                  <p class="confirm-label">Time</p>
+                  <p class="confirm-value">{{ formattedTime() }}</p>
+                </div>
+              </div>
+              <div class="confirm-row">
+                <span class="material-icons-outlined confirm-icon">timer</span>
+                <div class="confirm-info">
+                  <p class="confirm-label">Duration</p>
+                  <p class="confirm-value">{{ selectedService()?.duration_minutes }} minutes</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="price-card">
+              <h3 class="price-title">Payment Summary</h3>
+              <div class="price-row">
+                <span class="price-label">Service Price</span>
+                <span class="price-value">$ {{ selectedService()?.price }}</span>
+              </div>
+              <div class="price-row">
+                <span class="price-label">Booking Fee</span>
+                <span class="price-value">Free</span>
+              </div>
+              <div class="price-divider"></div>
+              <div class="price-row price-total">
+                <span class="price-label">Total</span>
+                <span class="price-value">$ {{ selectedService()?.price }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-actions">
+            <app-button variant="outline" (onClick)="prevStep()">
+              <span class="material-icons-outlined">arrow_back</span>
+              Back
+            </app-button>
+            <app-button variant="primary" (onClick)="confirmBooking()">
+              <span class="material-icons-outlined">check_circle</span>
+              Confirm Booking
+            </app-button>
+          </div>
+        </div>
+      }
+    </div>

@@ -1,0 +1,144 @@
+<div class="edit-page">
+      <div class="page-header">
+        <a routerLink="/customer/profile" class="back-link">
+          <span class="material-icons-outlined">arrow_back</span>
+          Back to Profile
+        </a>
+        <h1 class="page-title">Edit Profile</h1>
+      </div>
+
+      <form class="edit-form" (ngSubmit)="onSubmit()" novalidate>
+        <!-- Avatar section -->
+        <div class="avatar-section">
+          <div class="avatar-preview">
+            <span class="material-icons-outlined avatar-placeholder">person</span>
+          </div>
+          <div class="avatar-actions">
+            <app-button variant="outline" size="sm" type="button">
+              <span class="material-icons-outlined">photo_camera</span>
+              Change Photo
+            </app-button>
+            <app-button variant="ghost" size="sm" type="button">
+              <span class="material-icons-outlined">delete</span>
+              Remove
+            </app-button>
+          </div>
+        </div>
+
+        <!-- Personal Info -->
+        <div class="form-section">
+          <h2 class="section-title">Personal Information</h2>
+          <div class="form-row">
+            <app-input
+              label="First Name"
+              type="text"
+              placeholder="First name"
+              [required]="true"
+              [error]="firstNameError() ?? undefined"
+              [(ngModel)]="firstName"
+              name="firstName"
+            />
+            <app-input
+              label="Last Name"
+              type="text"
+              placeholder="Last name"
+              [required]="true"
+              [error]="lastNameError() ?? undefined"
+              [(ngModel)]="lastName"
+              name="lastName"
+            />
+          </div>
+
+          <app-input
+            label="Email"
+            type="email"
+            placeholder="you@example.com"
+            [required]="true"
+            [error]="emailError() ?? undefined"
+            [(ngModel)]="email"
+            name="email"
+          />
+
+          <app-input
+            label="Phone"
+            type="tel"
+            placeholder="+1 (555) 123-4567"
+            [(ngModel)]="phone"
+            name="phone"
+          />
+        </div>
+
+        <!-- Address -->
+        <div class="form-section">
+          <h2 class="section-title">Address</h2>
+          <app-input
+            label="Street Address"
+            type="text"
+            placeholder="123 Main St"
+            [(ngModel)]="address"
+            name="address"
+          />
+          <div class="form-row">
+            <app-input
+              label="City"
+              type="text"
+              placeholder="City"
+              [(ngModel)]="city"
+              name="city"
+            />
+            <app-input
+              label="State / Province"
+              type="text"
+              placeholder="State"
+              [(ngModel)]="state"
+              name="state"
+            />
+          </div>
+          <div class="form-row">
+            <app-input
+              label="Postal Code"
+              type="text"
+              placeholder="12345"
+              [(ngModel)]="postalCode"
+              name="postalCode"
+            />
+            <app-input
+              label="Country"
+              type="text"
+              placeholder="Country"
+              [(ngModel)]="country"
+              name="country"
+            />
+          </div>
+        </div>
+
+        <!-- Bio -->
+        <div class="form-section">
+          <h2 class="section-title">About Me</h2>
+          <div class="bio-field">
+            <label class="bio-label" for="bio">Bio</label>
+            <textarea
+              id="bio"
+              class="bio-input"
+              [(ngModel)]="bio"
+              name="bio"
+              rows="3"
+              placeholder="Tell us a bit about yourself..."
+              maxlength="200"
+            ></textarea>
+            <p class="char-count">{{ bio.length }} / 200</p>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <app-button variant="outline" type="button" [routerLink]="['/customer/profile']">
+            Cancel
+          </app-button>
+          <app-button variant="primary" type="submit" [loading]="saving()">
+            <span class="material-icons-outlined">save</span>
+            Save Changes
+          </app-button>
+        </div>
+      </form>
+    </div>

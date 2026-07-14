@@ -1,0 +1,108 @@
+:host { display: block; }
+
+    .review-card {
+      padding: var(--space-5);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      transition: box-shadow var(--transition-fast);
+
+      &:hover { box-shadow: var(--shadow-sm); }
+    }
+
+    :host-context(.dark) .review-card {
+      background: var(--gray-800);
+      border-color: var(--gray-700);
+    }
+
+    .review-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      margin-bottom: var(--space-4);
+      flex-wrap: wrap;
+    }
+
+    .review-provider {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .provider-info { min-width: 0; }
+
+    .provider-name {
+      font-size: var(--font-size-base);
+      font-weight: var(--font-weight-semibold);
+      color: var(--text-primary);
+      margin: 0;
+    }
+
+    .service-name {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: var(--space-1) 0 0;
+    }
+
+    .review-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: var(--space-1);
+      flex-shrink: 0;
+    }
+
+    .review-date {
+      font-size: var(--font-size-xs);
+      color: var(--text-tertiary);
+    }
+
+    .review-comment {
+      font-size: var(--font-size-sm);
+      color: var(--text-primary);
+      line-height: 1.6;
+      margin: 0 0 var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+      border-left: 3px solid var(--primary-500);
+    }
+
+    :host-context(.dark) .review-comment {
+      background: var(--gray-900);
+    }
+
+    .review-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-3);
+    }
+
+    .rating-display {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+
+    .rating-label {
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+    }
+
+    .rating-value {
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-bold);
+      color: var(--primary-600);
+    }
+
+    :host-context(.dark) .rating-value { color: var(--primary-400); }
+
+    .review-actions {
+      display: flex;
+      gap: var(--space-1);
+    }

@@ -1,0 +1,93 @@
+<div class="profile-page">
+      <div class="page-header">
+        <a routerLink="/provider/dashboard" class="back-link">
+          <span class="material-icons-outlined">arrow_back</span>
+          Back to Dashboard
+        </a>
+        <h1 class="page-title">Business Profile</h1>
+        <p class="page-subtitle">Manage your business information and appearance</p>
+      </div>
+
+      <div class="profile-grid">
+        <!-- Profile Image -->
+        <app-card title="Business Media">
+          <div class="media-section">
+            <div class="logo-section">
+              <app-avatar name="Blossom Beauty" size="xl" />
+              <div class="logo-actions">
+                <app-button variant="outline" size="sm">
+                  <span class="material-icons-outlined">photo_camera</span>
+                  Upload Profile Image
+                </app-button>
+                <app-button variant="ghost" size="sm">
+                  <span class="material-icons-outlined">delete</span>
+                  Remove
+                </app-button>
+              </div>
+            </div>
+          </div>
+        </app-card>
+
+        <!-- Business Info -->
+        <app-card title="Business Information">
+          <form class="info-form" (ngSubmit)="onSave()">
+            <app-input
+              label="Business Name"
+              placeholder="Your business name"
+              [required]="true"
+              [(ngModel)]="business.businessName"
+              name="businessName"
+            />
+            <app-input
+              label="Category"
+              placeholder="e.g., beauty"
+              [(ngModel)]="business.category"
+              name="category"
+            />
+            <app-input
+              label="Address"
+              placeholder="Street address"
+              [(ngModel)]="business.address"
+              name="address"
+            />
+            <div class="form-row">
+              <app-input
+                label="City"
+                placeholder="City"
+                [(ngModel)]="business.city"
+                name="city"
+              />
+              <app-input
+                label="Timezone"
+                placeholder="e.g., America/New_York"
+                [(ngModel)]="business.timezone"
+                name="timezone"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Business Description</label>
+              <textarea
+                class="form-textarea"
+                placeholder="Tell customers about your business..."
+                rows="4"
+                [(ngModel)]="business.bio"
+                name="bio"
+                maxlength="500"
+              ></textarea>
+              <p class="char-count">{{ business.bio.length }} / 500</p>
+            </div>
+
+            <div class="form-actions">
+              <app-button variant="outline" type="button" [routerLink]="['/provider/dashboard']">
+                Cancel
+              </app-button>
+              <app-button variant="primary" type="submit" [loading]="saving()">
+                <span class="material-icons-outlined">save</span>
+                Save Changes
+              </app-button>
+            </div>
+          </form>
+        </app-card>
+      </div>
+    </div>

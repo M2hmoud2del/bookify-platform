@@ -1,0 +1,52 @@
+<div class="avail-calendar">
+      <div class="cal-header">
+        <button type="button" class="nav-btn" (click)="prevMonth()">
+          <span class="material-icons-outlined">chevron_left</span>
+        </button>
+        <h3 class="cal-title">{{ monthLabel() }}</h3>
+        <button type="button" class="nav-btn" (click)="nextMonth()">
+          <span class="material-icons-outlined">chevron_right</span>
+        </button>
+      </div>
+
+      <div class="legend">
+        <span class="legend-item"><span class="legend-dot has-apt"></span> Has Appointments</span>
+        <span class="legend-item"><span class="legend-dot is-open"></span> Available</span>
+        <span class="legend-item"><span class="legend-dot is-blocked"></span> Blocked</span>
+      </div>
+
+      <div class="weekdays">
+        @for (d of weekdays; track d) { <span class="wd">{{ d }}</span> }
+      </div>
+
+      <div class="days-grid">
+        @for (day of calendarDays(); track day.dateObj.getTime()) {
+          <button
+            type="button"
+            class="day-cell"
+            [class.other-month]="!day.isCurrentMonth"
+            [class.is-today]="day.isToday"
+            [class.is-past]="day.isPast"
+            [class.has-appointments]="day.appointments > 0"
+            [class.is-blocked]="!day.available && day.isCurrentMonth && !day.isPast"
+            [disabled]="!day.isCurrentMonth || day.isPast"
+            (click)="onSelect(day)"
+          >
+            <span class="day-num">{{ day.date }}</span>
+            @if (day.appointments > 0 && day.isCurrentMonth) {
+              <span class="apt-badge">{{ day.appointments }}</span>
+            }
+            @if (day.available && day.isCurrentMonth && !day.isPast && day.appointments === 0) {
+              <span class="avail-dot"></span>
+            }
+          </button>
+        }
+      </div>
+
+      @if (selectedDate()) {
+        <div class="selected-info">
+          <span class="material-icons-outlined">event</span>
+          <span>{{ selectedDateLabel() }}</span>
+        </div>
+      }
+    </div>

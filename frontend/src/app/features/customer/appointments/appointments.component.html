@@ -1,0 +1,60 @@
+<div class="appointments-page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">My Appointments</h1>
+          <p class="page-subtitle">Manage your upcoming and past appointments</p>
+        </div>
+        <app-button variant="primary" routerLink="/customer/book">
+          <span class="material-icons-outlined">add</span>
+          Book New
+        </app-button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-bar">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'upcoming'"
+          (click)="activeTab.set('upcoming')"
+        >
+          Upcoming
+          <span class="tab-count">{{ upcomingAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'past'"
+          (click)="activeTab.set('past')"
+        >
+          Past
+          <span class="tab-count">{{ pastAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'cancelled'"
+          (click)="activeTab.set('cancelled')"
+        >
+          Cancelled
+          <span class="tab-count">{{ cancelledAppointments().length }}</span>
+        </button>
+      </div>
+
+      <!-- Content -->
+      @if (filteredAppointments().length > 0) {
+        <div class="appointments-list">
+          @for (appointment of filteredAppointments(); track appointment._id) {
+            <app-appointment-card [appointment]="appointment" />
+          }
+        </div>
+      } @else {
+        <app-empty-state
+          [icon]="emptyIcon()"
+          [title]="emptyTitle()"
+          [description]="emptyDescription()"
+          actionLabel="Book an Appointment"
+          [routerLink]="['/customer/book']"
+        />
+      }
+    </div>

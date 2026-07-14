@@ -1,0 +1,73 @@
+<div class="appointments-page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Appointments</h1>
+          <p class="page-subtitle">Manage all your customer appointments</p>
+        </div>
+        <app-button variant="primary" routerLink="/provider/calendar">
+          <span class="material-icons-outlined">calendar_today</span>
+          View Calendar
+        </app-button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tabs-bar">
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'all'"
+          (click)="activeTab.set('all')"
+        >
+          All <span class="tab-count">{{ allAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'today'"
+          (click)="activeTab.set('today')"
+        >
+          Today <span class="tab-count">{{ todayAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'upcoming'"
+          (click)="activeTab.set('upcoming')"
+        >
+          Upcoming <span class="tab-count">{{ upcomingAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'completed'"
+          (click)="activeTab.set('completed')"
+        >
+          Completed <span class="tab-count">{{ completedAppointments().length }}</span>
+        </button>
+        <button
+          type="button"
+          class="tab-btn"
+          [class.is-active]="activeTab() === 'cancelled'"
+          (click)="activeTab.set('cancelled')"
+        >
+          Cancelled <span class="tab-count">{{ cancelledAppointments().length }}</span>
+        </button>
+      </div>
+
+      <!-- Table -->
+      @if (filteredAppointments().length > 0) {
+        <app-appointment-table
+          [appointments]="filteredAppointments()"
+          (confirm)="onConfirm($event)"
+          (cancel)="onCancel($event)"
+        />
+      } @else {
+        <app-empty-state
+          icon="event_busy"
+          title="No appointments"
+          [description]="emptyDescription()"
+          actionLabel="View Calendar"
+          [routerLink]="['/provider/calendar']"
+        />
+      }
+    </div>

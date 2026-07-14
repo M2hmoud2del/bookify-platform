@@ -7,61 +7,8 @@ import { ButtonComponent } from '../button/button.component';
   selector: 'app-confirm-dialog',
   standalone: true,
   imports: [CommonModule, ModalComponent, ButtonComponent],
-  template: `
-    <app-modal
-      [isOpen]="isOpen()"
-      [title]="title()"
-      [description]="description()"
-      [icon]="icon()"
-      size="sm"
-      [showFooter]="false"
-      (close)="cancel.emit()"
-    >
-      <div class="confirm-body">
-        @if (message()) {
-          <p class="confirm-message">{{ message() }}</p>
-        }
-
-        <div class="confirm-actions">
-          <app-button
-            variant="ghost"
-            [disabled]="loading()"
-            (onClick)="cancel.emit()"
-          >
-            {{ cancelText() }}
-          </app-button>
-
-          <app-button
-            [variant]="confirmVariant()"
-            [loading]="loading()"
-            (onClick)="confirm.emit()"
-          >
-            {{ confirmText() }}
-          </app-button>
-        </div>
-      </div>
-    </app-modal>
-  `,
-  styles: [`
-    .confirm-body {
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-6);
-    }
-
-    .confirm-message {
-      font-size: var(--font-size-sm);
-      color: var(--text-secondary);
-      line-height: var(--line-height-relaxed);
-      margin: 0;
-    }
-
-    .confirm-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: var(--space-3);
-    }
-  `],
+  templateUrl: './confirm-dialog.component.html',
+  styleUrl: './confirm-dialog.component.css',
 })
 export class ConfirmDialogComponent {
   isOpen    = input(false);

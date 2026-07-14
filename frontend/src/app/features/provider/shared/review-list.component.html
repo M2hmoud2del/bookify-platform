@@ -1,0 +1,28 @@
+<div class="review-list">
+      @for (review of reviews(); track review._id) {
+        <div class="review-item">
+          <div class="review-header">
+            <app-avatar
+              [src]="review.customer.avatar ?? undefined"
+              [name]="review.customer.name"
+              size="md"
+            />
+            <div class="reviewer-info">
+              <p class="reviewer-name">{{ review.customer.name }}</p>
+              <p class="review-service">{{ review.service.title }}</p>
+            </div>
+            <div class="review-right">
+              <app-rating [value]="review.rating" [readonly]="true" [showValue]="false" />
+              <span class="review-date">{{ review.createdAt | date: 'MMM d, y' }}</span>
+            </div>
+          </div>
+
+          <p class="review-comment">{{ review.comment }}</p>
+        </div>
+      } @empty {
+        <div class="empty-reviews">
+          <span class="material-icons-outlined">reviews</span>
+          <p>No reviews yet</p>
+        </div>
+      }
+    </div>

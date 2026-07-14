@@ -1,0 +1,155 @@
+<div class="detail-page">
+      @if (appointment()) {
+        <div class="page-header">
+          <a routerLink="/customer/appointments" class="back-link">
+            <span class="material-icons-outlined">arrow_back</span>
+            Back to Appointments
+          </a>
+          <h1 class="page-title">Appointment Details</h1>
+        </div>
+
+        <div class="content-grid">
+          <!-- Main -->
+          <div class="main-col">
+            <!-- Provider & Service -->
+            <div class="info-card">
+              <h2 class="card-title">Service</h2>
+              <div class="provider-row">
+                <app-avatar
+                  [src]="appointment()!.provider.avatar ?? undefined"
+                  [name]="appointment()!.provider.name"
+                  size="lg"
+                />
+                <div class="provider-info">
+                  <h3 class="service-name">{{ appointment()!.service.title }}</h3>
+                  <p class="provider-name">{{ appointment()!.provider.name }}</p>
+                  <p class="provider-type">{{ appointment()!.service.category }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Date, Time & Location -->
+            <div class="info-card">
+              <h2 class="card-title">Date & Location</h2>
+              <div class="detail-rows">
+                <div class="detail-row">
+                  <span class="material-icons-outlined detail-icon">event</span>
+                  <div>
+                    <p class="detail-label">Date</p>
+                    <p class="detail-value">{{ formattedDate() }}</p>
+                  </div>
+                </div>
+                <div class="detail-row">
+                  <span class="material-icons-outlined detail-icon">schedule</span>
+                  <div>
+                    <p class="detail-label">Time</p>
+                    <p class="detail-value">{{ formattedTime() }} - {{ formattedEndTime() }} ({{ appointment()!.service.durationMinutes }} min)</p>
+                  </div>
+                </div>
+                <div class="detail-row">
+                  <span class="material-icons-outlined detail-icon">location_on</span>
+                  <div>
+                    <p class="detail-label">Location</p>
+                    <p class="detail-value">{{ appointment()!.service.category }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="info-card">
+              <h2 class="card-title">Appointment Timeline</h2>
+              <app-appointment-timeline [events]="timeline()" />
+            </div>
+
+            <!-- Notes -->
+            @if (appointment()!.notes) {
+              <div class="info-card">
+                <h2 class="card-title">Provider Notes</h2>
+                <p class="notes-text">{{ appointment()!.notes }}</p>
+              </div>
+            }
+          </div>
+
+          <!-- Sidebar -->
+          <aside class="sidebar">
+            <!-- Status -->
+            <div class="status-card">
+              <h3 class="card-title">Status</h3>
+              <div class="status-list">
+                <div class="status-row">
+                  <span class="status-label">Appointment</span>
+                  <app-status-badge [status]="appointment()!.status" />
+                </div>
+                <div class="status-row">
+                  <span class="status-label">Payment</span>
+                  <app-status-badge [status]="appointment()!.paymentStatus" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment -->
+            <div class="payment-card">
+              <h3 class="card-title">Payment</h3>
+              <div class="payment-rows">
+                <div class="payment-row">
+                  <span class="payment-label">Service Price</span>
+                  <span class="payment-value">$ {{ appointment()!.service.price }}</span>
+                </div>
+                <div class="payment-row">
+                  <span class="payment-label">Booking Fee</span>
+                  <span class="payment-value">Free</span>
+                </div>
+                <div class="payment-divider"></div>
+                <div class="payment-row payment-total">
+                  <span class="payment-label">Total</span>
+                  <span class="payment-value">$ {{ appointment()!.service.price }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="actions-card">
+              @if (canReschedule()) {
+                <app-button variant="outline" [fullWidth]="true" (onClick)="showReschedule.set(true)">
+                  <span class="material-icons-outlined">edit_calendar</span>
+                  Reschedule
+                </app-button>
+              }
+              @if (canReview()) {
+                <app-button variant="primary" [fullWidth]="true" [routerLink]="['/customer/reviews']">
+                  <span class="material-icons-outlined">rate_review</span>
+                  Write Review
+                </app-button>
+              }
+              @if (canCancel()) {
+                <app-button variant="danger" [fullWidth]="true" (onClick)="showCancel.set(true)">
+                  <span class="material-icons-outlined">cancel</span>
+                  Cancel Appointment
+                </app-button>
+              }
+            </div>
+          </aside>
+        </div>
+      } @else {
+        <app-empty-state
+          icon="event_busy"
+          title="Appointment not found"
+          description="This appointment doesn't exist or has been removed."
+          actionLabel="View Appointments"
+          (action)="router.navigate(['/customer/appointments'])"
+        />
+      }
+    </div>
+
+    <!-- Cancel Dialog -->
+    <app-confirm-dialog
+      [isOpen]="showCancel()"
+      title="Cancel Appointment"
+      message="Are you sure you want to cancel this appointment? This action cannot be undone."
+      icon="warning"
+      confirmText="Yes, Cancel"
+      confirmVariant="danger"
+      (confirm)="confirmCancel()"
+      (cancel)="showCancel.set(false)"
+    />

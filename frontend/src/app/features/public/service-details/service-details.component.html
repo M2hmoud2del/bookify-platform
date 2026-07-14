@@ -1,0 +1,190 @@
+<app-public-navbar />
+
+    @if (service() && provider()) {
+      <div class="service-page">
+        <div class="container">
+          <!-- Breadcrumb -->
+          <nav class="breadcrumb">
+            <a routerLink="/" class="crumb">Home</a>
+            <span class="material-icons-outlined separator">chevron_right</span>
+            <a routerLink="/providers" class="crumb">Providers</a>
+            <span class="material-icons-outlined separator">chevron_right</span>
+            <a [routerLink]="['/providers', provider()!.user._id]" class="crumb">{{ provider()!.profile.businessName }}</a>
+            <span class="material-icons-outlined separator">chevron_right</span>
+            <span class="crumb crumb-current">{{ service()!.title }}</span>
+          </nav>
+
+          <div class="content-grid">
+            <!-- Main content -->
+            <div class="main-col">
+              <!-- Hero image -->
+              <div class="hero-image">
+                <img [src]="service()!.images[0]?.url" [alt]="service()!.title" />
+                <div class="hero-badges">
+                  <app-badge variant="primary">{{ service()!.category }}</app-badge>
+                  <span class="duration-badge">
+                    <span class="material-icons-outlined">schedule</span>
+                    {{ service()!.durationMinutes }} minutes
+                  </span>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="section">
+                <h1 class="service-title">{{ service()!.title }}</h1>
+                <p class="service-desc">{{ service()!.description }}</p>
+              </div>
+
+              <!-- What's included -->
+              <div class="section">
+                <h2 class="section-title">What's Included</h2>
+                <ul class="includes-list">
+                  @for (item of includedItems(); track item) {
+                    <li class="include-item">
+                      <span class="material-icons-outlined check-icon">check_circle</span>
+                      <span>{{ item }}</span>
+                    </li>
+                  }
+                </ul>
+              </div>
+
+              <!-- What to expect -->
+              <div class="section">
+                <h2 class="section-title">What to Expect</h2>
+                <div class="expect-timeline">
+                  @for (step of timelineSteps; track step.step) {
+                    <div class="timeline-item">
+                      <span class="timeline-number">{{ step.step }}</span>
+                      <div class="timeline-content">
+                        <h3 class="timeline-title">{{ step.title }}</h3>
+                        <p class="timeline-desc">{{ step.description }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+
+              <!-- Reviews for this service -->
+              <div class="section">
+                <h2 class="section-title">Reviews for this Service</h2>
+                @if (serviceReviews().length > 0) {
+                  <div class="reviews-list">
+                    @for (review of serviceReviews(); track review._id) {
+                      <div class="review-card">
+                        <div class="review-header">
+                          <app-avatar
+                            [name]="review.customer"
+                            size="md"
+                          />
+                          <div class="review-meta">
+                            <p class="reviewer-name">{{ review.customer }}</p>
+                            <span class="review-date">{{ review.createdAt | date:'mediumDate' }}</span>
+                          </div>
+                          <app-rating [value]="review.rating" [readonly]="true" [showValue]="false" />
+                        </div>
+                        <p class="review-comment">{{ review.comment }}</p>
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <p class="no-reviews">No reviews yet for this service.</p>
+                }
+              </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside class="sidebar">
+              <!-- Booking card -->
+              <div class="booking-card">
+                <div class="booking-price">
+                  <span class="price-label">Price</span>
+                  <span class="price-value">$ {{ service()!.price }}</span>
+                </div>
+
+                <div class="booking-info">
+                  <div class="info-row">
+                    <span class="material-icons-outlined">schedule</span>
+                    <div>
+                      <p class="info-label">Duration</p>
+                      <p class="info-value">{{ service()!.durationMinutes }} minutes</p>
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <span class="material-icons-outlined">category</span>
+                    <div>
+                      <p class="info-label">Category</p>
+                      <p class="info-value">{{ service()!.category }}</p>
+                    </div>
+                  </div>
+                  <div class="info-row">
+                    <span class="material-icons-outlined">payments</span>
+                    <div>
+                      <p class="info-label">Payment</p>
+                      <p class="info-value">Due at booking</p>
+                    </div>
+                  </div>
+                </div>
+
+                <app-button
+                  variant="primary"
+                  [fullWidth]="true"
+                  size="lg"
+                  (onClick)="onBook()"
+                >
+                  <span class="material-icons-outlined">calendar_today</span>
+                  Book This Service
+                </app-button>
+
+                <p class="booking-note">
+                  <span class="material-icons-outlined">verified</span>
+                  Free cancellation up to 24 hours before
+                </p>
+              </div>
+
+              <!-- Provider card -->
+              <div class="provider-mini">
+                <div class="mini-header">
+                  <h3 class="mini-title">About the Provider</h3>
+                </div>
+                <div class="mini-body">
+                  <div class="mini-provider">
+                    <app-avatar
+                      [src]="provider()!.user.avatar ?? undefined"
+                      [name]="provider()!.profile.businessName"
+                      size="md"
+                    />
+                    <div class="mini-info">
+                      <p class="mini-name">{{ provider()!.profile.businessName }}</p>
+                      <div class="mini-rating">
+                        <app-rating [value]="provider()!.profile.ratingAverage" [readonly]="true" [showValue]="true" />
+                      </div>
+                      <p class="mini-location">
+                        <span class="material-icons-outlined">location_on</span>
+                        {{ provider()!.profile.city }}
+                      </p>
+                    </div>
+                  </div>
+                  <p class="mini-desc">{{ provider()!.profile.bio }}</p>
+                  <a [routerLink]="['/providers', provider()!.user._id]" class="view-provider-link">
+                    View Full Profile
+                    <span class="material-icons-outlined">arrow_forward</span>
+                  </a>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </div>
+    } @else {
+      <div class="container not-found-wrap">
+        <app-empty-state
+          icon="search_off"
+          title="Service not found"
+          description="The service you're looking for doesn't exist or has been removed."
+          actionLabel="Browse providers"
+          (action)="router.navigate(['/providers'])"
+        />
+      </div>
+    }
+
+    <app-footer />

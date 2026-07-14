@@ -1,0 +1,25 @@
+<div class="rating" [ngClass]="{ 'rating-readonly': readonly() }">
+      @if (label()) {
+        <label class="rating-label">{{ label() }}</label>
+      }
+      <div class="rating-stars">
+        @for (star of [1, 2, 3, 4, 5]; track star) {
+          <button
+            type="button"
+            class="rating-star"
+            [ngClass]="{ 'is-filled': star <= displayValue() }"
+            (click)="onStarClick(star)"
+            (mouseenter)="onStarHover(star)"
+            (mouseleave)="onStarLeave()"
+            [disabled]="readonly()"
+          >
+            <span class="material-icons-outlined">
+              {{ star <= displayValue() ? 'star' : 'star_border' }}
+            </span>
+          </button>
+        }
+        @if (showValue()) {
+          <span class="rating-value">{{ value() }}</span>
+        }
+      </div>
+    </div>

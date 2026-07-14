@@ -1,0 +1,89 @@
+:host {
+      display: block;
+      min-height: calc(100vh - var(--navbar-height));
+      padding: var(--space-8);
+    }
+
+    .failed-page {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .failed-card {
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .failed-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 80px;
+      height: 80px;
+      background: var(--danger-100);
+      border-radius: var(--radius-full);
+      margin-bottom: var(--space-6);
+    }
+
+    :host-context(.dark) .failed-icon {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    .failed-icon .material-icons-outlined {
+      font-size: 2.5rem;
+      color: var(--danger-500);
+    }
+
+    .failed-title {
+      font-size: var(--font-size-2xl);
+      font-weight: var(--font-weight-bold);
+      color: var(--text-primary);
+      margin: 0 0 var(--space-3);
+    }
+
+    .failed-message {
+      font-size: var(--font-size-base);
+      color: var(--text-secondary);
+      margin: 0 0 var(--space-6);
+    }
+
+    .error-details {
+      padding: var(--space-4);
+      background: var(--gray-50);
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-6);
+    }
+
+    :host-context(.dark) .error-details {
+      background: var(--gray-800);
+    }
+
+    .error-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      font-size: var(--font-size-sm);
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    .error-text .material-icons-outlined {
+      font-size: 1rem;
+      color: var(--primary-500);
+    }
+
+    .actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    @media (min-width: 480px) {
+      .actions {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
