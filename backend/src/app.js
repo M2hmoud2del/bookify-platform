@@ -25,9 +25,14 @@ const app = express();
 
 app.use(helmet());
 
+const corsOrigins = (process.env.CORS_ORIGIN || process.env.CLIENT_URL || "http://localhost:4200")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || "http://localhost:4200"
+    origin: corsOrigins.length === 1 ? corsOrigins[0] : corsOrigins
   })
 );
 

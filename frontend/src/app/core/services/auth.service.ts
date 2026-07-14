@@ -191,7 +191,7 @@ export class AuthService {
     }
 
     if (role === 'admin') {
-      return '/admin/dashboard';
+      return '/';
     }
 
     return '/customer/dashboard';
