@@ -75,7 +75,7 @@
                         type="button"
                         class="action-btn cancel"
                         (click)="cancel.emit(apt._id)"
-                        title="Cancel"
+                        [title]="cancelTitle(apt.status)"
                       >
                         <span class="material-icons-outlined">close</span>
                       </button>

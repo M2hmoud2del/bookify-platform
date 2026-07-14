@@ -9,6 +9,8 @@ import { Service } from '../../../core/models/user.model';
 import { AvailabilitySlot } from '../../../core/models/availability.model';
 import { ProviderProfileApi } from '../../provider/profile/provider-profile.api';
 import { ProviderServicesApi } from '../../provider/services/provider-services.api';
+import { AppointmentsApi } from '../../customer/appointments/appointments.api';
+import { PaymentsApi } from '../../customer/payments/payments.api';
 import { AvailabilityApi } from '../../customer/booking/availability.api';
 
 @Component({
@@ -24,6 +26,8 @@ export class PublicBookingComponent {
   private providerProfileApi = inject(ProviderProfileApi);
   private providerServicesApi = inject(ProviderServicesApi);
   private availabilityApi = inject(AvailabilityApi);
+  private appointmentsApi = inject(AppointmentsApi);
+  private paymentsApi = inject(PaymentsApi);
 
   today = new Date();
   currentMonth = signal(new Date());
@@ -36,6 +40,7 @@ export class PublicBookingComponent {
   availabilitySlots = signal<AvailabilitySlot[]>([]);
   loading = signal(false);
   loadingSlots = signal(false);
+  creatingAppointment = signal(false);
   error = signal<string | null>(null);
 
   monthYear = computed(() => {
@@ -138,8 +143,48 @@ export class PublicBookingComponent {
     }
   }
 
-  confirmBooking(): void {
-    this.router.navigate(['/checkout/success']);
+  async confirmBooking(): Promise<void> {
+    const provider = this.provider();
+    const service = this.selectedService();
+    const date = this.selectedDate();
+    const startTime = this.selectedTime();
+
+    if (!provider || !service || !date || !startTime) {
+      this.error.set('Select a service, date, and time before confirming.');
+      return;
+    }
+
+    this.creatingAppointment.set(true);
+    this.error.set(null);
+
+    try {
+      const appointment = await this.appointmentsApi.createAppointment({
+        providerId: provider.user._id,
+        serviceId: service._id,
+        date: this.toDateString(date),
+        startTime,
+      });
+
+      if (appointment.status === 'pending_payment') {
+        const session = await this.paymentsApi.createCheckoutSession({
+          appointmentId: appointment._id,
+          successUrl: this.absoluteUrl(`/customer/checkout/success?appointmentId=${appointment._id}&session_id={CHECKOUT_SESSION_ID}`),
+          cancelUrl: this.absoluteUrl(`/customer/checkout/failed?appointmentId=${appointment._id}`),
+        });
+        window.location.assign(session.checkoutUrl);
+        return;
+      }
+
+      this.router.navigate(['/customer/appointments', appointment._id]);
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to create appointment.'));
+    } finally {
+      this.creatingAppointment.set(false);
+    }
+  }
+
+  private absoluteUrl(path: string): string {
+    return `${window.location.origin}${path}`;
   }
 
   private toDateString(date: Date): string {

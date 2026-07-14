@@ -3,55 +3,76 @@
         <div class="success-icon">
           <span class="material-icons-outlined">check_circle</span>
         </div>
-        <h1 class="success-title">Booking Confirmed!</h1>
-        <p class="success-message">
-          Your appointment has been successfully booked. You will receive a confirmation email shortly.
-        </p>
+        <h1 class="success-title">{{ title() }}</h1>
+        <p class="success-message">{{ message() }}</p>
 
-        <app-card class="details-card">
-          <h2 class="card-title">Booking Details</h2>
-          <div class="details-grid">
-            <div class="detail-item">
-              <span class="material-icons-outlined">business</span>
-              <div class="detail-content">
-                <span class="detail-label">Provider</span>
-                <span class="detail-value">Blossom Beauty Salon</span>
+        @if (loading()) {
+          <p class="state-message">Loading latest checkout status...</p>
+        }
+        @if (error()) {
+          <p class="error-message">{{ error() }}</p>
+        }
+
+        @if (appointment()) {
+          <app-card class="details-card">
+            <h2 class="card-title">Booking Details</h2>
+            <div class="details-grid">
+              <div class="detail-item">
+                <span class="material-icons-outlined">business</span>
+                <div class="detail-content">
+                  <span class="detail-label">Provider</span>
+                  <span class="detail-value">{{ appointment()!.provider.name }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons-outlined">medical_services</span>
+                <div class="detail-content">
+                  <span class="detail-label">Service</span>
+                  <span class="detail-value">{{ appointment()!.service.title }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons-outlined">event</span>
+                <div class="detail-content">
+                  <span class="detail-label">Date</span>
+                  <span class="detail-value">{{ formattedDate() }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons-outlined">schedule</span>
+                <div class="detail-content">
+                  <span class="detail-label">Time</span>
+                  <span class="detail-value">{{ formattedTime() }}</span>
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons-outlined">event_available</span>
+                <div class="detail-content">
+                  <span class="detail-label">Appointment Status</span>
+                  <app-status-badge [status]="appointment()!.status" />
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons-outlined">payments</span>
+                <div class="detail-content">
+                  <span class="detail-label">Payment Status</span>
+                  <app-status-badge [status]="appointment()!.paymentStatus" />
+                </div>
+              </div>
+              <div class="detail-item">
+                <span class="material-icons-outlined">payments</span>
+                <div class="detail-content">
+                  <span class="detail-label">Total</span>
+                  <span class="detail-value price">{{ amount() | currency }}</span>
+                </div>
               </div>
             </div>
-            <div class="detail-item">
-              <span class="material-icons-outlined">medical_services</span>
-              <div class="detail-content">
-                <span class="detail-label">Service</span>
-                <span class="detail-value">Haircut & Styling</span>
-              </div>
-            </div>
-            <div class="detail-item">
-              <span class="material-icons-outlined">event</span>
-              <div class="detail-content">
-                <span class="detail-label">Date</span>
-                <span class="detail-value">July 15, 2026</span>
-              </div>
-            </div>
-            <div class="detail-item">
-              <span class="material-icons-outlined">schedule</span>
-              <div class="detail-content">
-                <span class="detail-label">Time</span>
-                <span class="detail-value">10:00 AM</span>
-              </div>
-            </div>
-            <div class="detail-item">
-              <span class="material-icons-outlined">payments</span>
-              <div class="detail-content">
-                <span class="detail-label">Total</span>
-                <span class="detail-value price">$ 65.00</span>
-              </div>
-            </div>
-          </div>
-        </app-card>
+          </app-card>
+        }
 
         <div class="info-banner">
-          <span class="material-icons-outlined">notifications</span>
-          <span>We'll send you a reminder 24 hours before your appointment.</span>
+          <span class="material-icons-outlined">sync</span>
+          <span>Stripe webhook confirmation remains the source of truth for paid and confirmed statuses.</span>
         </div>
 
         <div class="actions">

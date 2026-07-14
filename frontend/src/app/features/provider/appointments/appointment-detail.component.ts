@@ -8,7 +8,9 @@ import { StatusBadgeComponent } from '../../../shared/components/status-badge/st
 import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
 import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { AppointmentTimelineComponent } from '../../customer/shared/appointment-timeline.component';
-import { getProviderAppointmentById, TimelineEvent } from '../shared/provider.models';
+import { TimelineEvent } from '../shared/provider.models';
+import { AppointmentView } from '../../../core/models/appointment.model';
+import { AppointmentsApi } from '../../customer/appointments/appointments.api';
 
 @Component({
   selector: 'app-provider-appointment-detail',
@@ -29,14 +31,14 @@ import { getProviderAppointmentById, TimelineEvent } from '../shared/provider.mo
 })
 export class ProviderAppointmentDetailComponent {
   private route = inject(ActivatedRoute);
+  private appointmentsApi = inject(AppointmentsApi);
   router = inject(Router);
 
   showCancel = signal(false);
-
-  appointment = computed(() => {
-    const id = this.route.snapshot.paramMap.get('id');
-    return id ? getProviderAppointmentById(id) : undefined;
-  });
+  appointment = signal<AppointmentView | null>(null);
+  loading = signal(false);
+  actionLoading = signal(false);
+  error = signal<string | null>(null);
 
   timeline = computed<TimelineEvent[]>(() => {
     const apt = this.appointment();
@@ -54,8 +56,8 @@ export class ProviderAppointmentDetailComponent {
       {
         status: 'confirmed',
         label: 'Confirmed',
-        description: 'You confirmed this appointment',
-        date: apt.createdAt,
+        description: 'Stripe webhook confirms paid appointments',
+        date: apt.updatedAt,
         time: '',
         icon: 'verified',
         completed: ['confirmed', 'completed'].includes(apt.status),
@@ -64,7 +66,7 @@ export class ProviderAppointmentDetailComponent {
         status: 'paid',
         label: 'Payment Received',
         description: `${apt.service.price} payment processed`,
-        date: apt.date,
+        date: apt.updatedAt,
         time: '',
         icon: 'payments',
         completed: apt.paymentStatus === 'paid',
@@ -73,16 +75,42 @@ export class ProviderAppointmentDetailComponent {
         status: 'completed',
         label: 'Service Completed',
         description: 'Appointment was completed successfully',
-        date: apt.date,
-        time: apt.startTime,
+        date: apt.completedAt || apt.updatedAt,
+        time: apt.endTime,
         icon: 'task_alt',
         completed: apt.status === 'completed',
       },
     ];
   });
 
-  platformFee = computed(() => (this.appointment()!.service.price * 0.05).toFixed(2));
-  netEarnings = computed(() => (this.appointment()!.service.price - this.appointment()!.service.price * 0.05).toFixed(2));
+  platformFee = computed(() => ((this.appointment()?.service.price ?? 0) * 0.05).toFixed(2));
+  netEarnings = computed(() => {
+    const price = this.appointment()?.service.price ?? 0;
+    return (price - price * 0.05).toFixed(2);
+  });
+
+  constructor() {
+    void this.loadAppointment();
+  }
+
+  async loadAppointment(): Promise<void> {
+    const id = this.route.snapshot.paramMap.get('id');
+
+    if (!id) {
+      return;
+    }
+
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      this.appointment.set(await this.appointmentsApi.getAppointmentById(id));
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to load appointment.'));
+    } finally {
+      this.loading.set(false);
+    }
+  }
 
   canConfirm(): boolean {
     return this.appointment()?.status === 'pending_payment';
@@ -110,20 +138,49 @@ export class ProviderAppointmentDetailComponent {
     return `${displayHour}:${m} ${period}`;
   }
 
-  confirmAppointment(): void {
-    this.router.navigate(['/provider/appointments']);
+  async confirmAppointment(): Promise<void> {
+    const appointment = this.appointment();
+    if (!appointment) return;
+    await this.runAction(() => this.appointmentsApi.acceptAppointment(appointment._id));
   }
 
-  markComplete(): void {
-    this.router.navigate(['/provider/appointments']);
+  async markComplete(): Promise<void> {
+    const appointment = this.appointment();
+    if (!appointment) return;
+    await this.runAction(() => this.appointmentsApi.completeAppointment(appointment._id));
   }
 
   contactCustomer(): void {
     this.router.navigate(['/provider/appointments']);
   }
 
-  confirmCancel(): void {
+  async confirmCancel(): Promise<void> {
+    const appointment = this.appointment();
+    if (!appointment) return;
+
+    if (appointment.status === 'pending_payment') {
+      await this.runAction(() => this.appointmentsApi.rejectAppointment(appointment._id));
+    } else {
+      await this.runAction(() => this.appointmentsApi.cancelAppointment(appointment._id));
+    }
     this.showCancel.set(false);
-    this.router.navigate(['/provider/appointments']);
+  }
+
+  private async runAction(action: () => Promise<AppointmentView>): Promise<void> {
+    this.actionLoading.set(true);
+    this.error.set(null);
+
+    try {
+      this.appointment.set(await action());
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to update appointment.'));
+    } finally {
+      this.actionLoading.set(false);
+    }
+  }
+
+  private errorMessage(err: unknown, fallback: string): string {
+    const message = (err as { message?: string })?.message;
+    return message || (err instanceof Error ? err.message : fallback);
   }
 }

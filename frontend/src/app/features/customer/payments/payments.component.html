@@ -3,19 +3,33 @@
         <h1 class="page-title">Payment History</h1>
         <p class="page-subtitle">View all your transactions</p>
       </div>
+
+      @if (loading()) {
+        <p class="state-message">Loading payments...</p>
+      }
+      @if (error()) {
+        <p class="error-message">{{ error() }}</p>
+      }
+
       <app-card>
-        <div class="payments-list">
-          <div class="payment-item">
-            <div class="payment-info">
-              <h3 class="service-name">Haircut & Styling</h3>
-              <p class="provider-name">Blossom Beauty Salon</p>
-              <p class="payment-date">Jun 28, 2026</p>
-            </div>
-            <div class="payment-amount">
-              <span class="amount">$65.00</span>
-              <span class="status completed">Paid</span>
-            </div>
+        @if (hasPayments()) {
+          <div class="payments-list">
+            @for (payment of payments(); track payment._id) {
+              <div class="payment-item">
+                <div class="payment-info">
+                  <h3 class="service-name">{{ serviceName(payment) }}</h3>
+                  <p class="provider-name">{{ providerName(payment) }}</p>
+                  <p class="payment-date">{{ paymentDate(payment) }}</p>
+                </div>
+                <div class="payment-amount">
+                  <span class="amount">{{ payment.amount | currency: payment.currency.toUpperCase() }}</span>
+                  <app-status-badge [status]="payment.status" />
+                </div>
+              </div>
+            }
           </div>
-        </div>
+        } @else {
+          <p class="state-message">No payments found.</p>
+        }
       </app-card>
     </div>
