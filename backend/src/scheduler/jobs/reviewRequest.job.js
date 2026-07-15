@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Appointment from "../../models/Appointment.js";
 import Review from "../../models/Review.js";
 import { REVIEW_REQUEST_DELAY_HOURS } from "../../config/constants.js";
@@ -11,8 +12,8 @@ export const runReviewRequestJob = async (dependencies = {}) => {
     findCandidates: () =>
       Appointment.find({
         status: "completed",
-        completedAt: { $lte: completedBefore },
-        reviewRequestSentAt: { $exists: false }
+        completedAt: mongoose.trusted({ $lte: completedBefore }),
+        reviewRequestSentAt: mongoose.trusted({ $exists: false })
       }),
     findReviewByAppointment: (appointmentId) => Review.findOne({ appointment: appointmentId }),
     markReviewRequestSent: (id) => Appointment.findByIdAndUpdate(id, { reviewRequestSentAt: now })

@@ -36,7 +36,7 @@ export function mapBackendUser(user: BackendUser): User {
 }
 
 function mapRole(role?: string): UserRole {
-  if (role === 'provider' || role === 'admin') {
+  if (role === 'provider') {
     return role;
   }
 

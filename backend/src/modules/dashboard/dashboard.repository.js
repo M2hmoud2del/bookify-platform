@@ -16,7 +16,7 @@ export const findTodayAppointments = (providerId, todayDate) => {
   return Appointment.find({
     provider: providerId,
     localDate: todayDate,
-    status: { $in: ["confirmed", "completed"] }
+    status: mongoose.trusted({ $in: ["confirmed", "completed"] })
   })
     .populate("customer", "name email phone")
     .populate("service", "title price durationMinutes category")
@@ -26,7 +26,7 @@ export const findTodayAppointments = (providerId, todayDate) => {
 export const findUpcomingAppointments = (providerId, todayDate) => {
   return Appointment.find({
     provider: providerId,
-    localDate: { $gt: todayDate },
+    localDate: mongoose.trusted({ $gt: todayDate }),
     status: "confirmed"
   })
     .populate("customer", "name email phone")
@@ -72,7 +72,7 @@ export const getMonthlyRevenue = async (providerId, year, month) => {
       $match: {
         provider: new mongoose.Types.ObjectId(String(providerId)),
         status: "paid",
-        createdAt: { $gte: startDate, $lt: endDate }
+        createdAt: mongoose.trusted({ $gte: startDate, $lt: endDate })
       }
     },
     {
@@ -126,7 +126,7 @@ export const getUniqueCustomerCount = async (providerId) => {
     {
       $match: {
         provider: new mongoose.Types.ObjectId(String(providerId)),
-        status: { $in: ["confirmed", "completed"] }
+        status: mongoose.trusted({ $in: ["confirmed", "completed"] })
       }
     },
     {

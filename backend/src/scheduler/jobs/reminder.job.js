@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Appointment from "../../models/Appointment.js";
 import { APPOINTMENT_REMINDER_HOURS } from "../../config/constants.js";
 import { providerLocalDateTimeToUtc } from "../../modules/availability/availability.service.js";
@@ -22,7 +23,7 @@ export const runReminderJob = async (dependencies = {}) => {
   const now = dependencies.now || new Date();
   const reminderHours = dependencies.reminderHours || APPOINTMENT_REMINDER_HOURS;
   const repository = dependencies.repository || {
-    findCandidates: () => Appointment.find({ status: "confirmed", reminderSentAt: { $exists: false } }),
+    findCandidates: () => Appointment.find({ status: "confirmed", reminderSentAt: mongoose.trusted({ $exists: false }) }),
     markReminderSent: (id) => Appointment.findByIdAndUpdate(id, { reminderSentAt: now })
   };
   const notificationService = dependencies.notificationService || { sendAppointmentReminder };

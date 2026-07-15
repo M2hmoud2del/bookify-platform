@@ -23,6 +23,14 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         tokenService.clearToken();
         window.dispatchEvent(new CustomEvent('bookify:auth:unauthorized'));
         router.navigate(['/login']);
+      } else if (
+        error?.status === 404 &&
+        error?.error?.message &&
+        error.error.message.includes('Provider profile not found')
+      ) {
+        if (!router.url.includes('/provider/profile')) {
+          router.navigate(['/provider/profile']);
+        }
       }
 
       return throwError(() => error);

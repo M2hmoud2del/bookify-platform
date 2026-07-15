@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Appointment from "../../models/Appointment.js";
 import { PENDING_PAYMENT_EXPIRY_MINUTES } from "../../config/constants.js";
 
@@ -10,7 +11,7 @@ export const runSlotReleaseJob = async (dependencies = {}) => {
       Appointment.find({
         status: "pending_payment",
         paymentStatus: "unpaid",
-        createdAt: { $lte: expiresBefore }
+        createdAt: mongoose.trusted({ $lte: expiresBefore })
       }),
     cancelExpired: (id) =>
       Appointment.findByIdAndUpdate(id, {

@@ -13,9 +13,4 @@ export class DashboardApi {
     const response = await firstValueFrom(this.api.get<unknown>(API_ENDPOINTS.dashboard.provider));
     return mapBackendDashboard(response);
   }
-
-  async getAdminDashboard(): Promise<DashboardMetrics> {
-    const response = await firstValueFrom(this.api.get<unknown>(API_ENDPOINTS.dashboard.admin));
-    return mapBackendDashboard(response);
-  }
 }

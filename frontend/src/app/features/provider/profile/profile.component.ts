@@ -62,7 +62,10 @@ export class ProviderProfileComponent {
       };
       this.profileImageUrl.set(profile.profileImage?.url || undefined);
     } catch (err) {
-      this.error.set(this.errorMessage(err, 'Unable to load provider profile.'));
+      const msg = this.errorMessage(err, 'Unable to load provider profile.');
+      if (!msg.toLowerCase().includes('not found')) {
+        this.error.set(msg);
+      }
     } finally {
       this.loading.set(false);
     }

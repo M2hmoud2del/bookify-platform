@@ -31,7 +31,6 @@ export class AuthService {
   isAuthenticated = computed(() => !!this.user() && !!this.session());
   isProvider = computed(() => this.user()?.role === 'provider');
   isCustomer = computed(() => this.user()?.role === 'customer');
-  isAdmin = computed(() => this.user()?.role === 'admin');
 
   constructor() {
     window.addEventListener('bookify:auth:unauthorized', () => this.clearAuthState());
@@ -62,7 +61,8 @@ export class AuthService {
     }
 
     const response = await firstValueFrom(this.api.get<MeData>(API_ENDPOINTS.auth.me));
-    const backendUser = this.extractUser(response.data);
+    const payload = ('data' in response && (response as any).data ? (response as any).data : response) as MeData;
+    const backendUser = this.extractUser(payload);
 
     if (!backendUser) {
       throw new Error('Unable to load the current user.');
@@ -84,7 +84,8 @@ export class AuthService {
         this.api.post<AuthData>(API_ENDPOINTS.auth.login, { email, password })
       );
 
-      this.applyAuthData(response.data);
+      const payload = ('data' in response && (response as any).data ? (response as any).data : response) as AuthData;
+      this.applyAuthData(payload);
       this.navigateByRole(this.user()?.role);
 
       return true;
@@ -110,7 +111,8 @@ export class AuthService {
         this.api.post<AuthData>(API_ENDPOINTS.auth.register, { email, password, name, role })
       );
 
-      this.applyAuthData(response.data);
+      const payload = ('data' in response && (response as any).data ? (response as any).data : response) as AuthData;
+      this.applyAuthData(payload);
 
       if (this.isAuthenticated()) {
         this.navigateByRole(this.user()?.role);
@@ -188,10 +190,6 @@ export class AuthService {
   redirectPathForRole(role?: UserRole): string {
     if (role === 'provider') {
       return '/provider/dashboard';
-    }
-
-    if (role === 'admin') {
-      return '/';
     }
 
     return '/customer/dashboard';

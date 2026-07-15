@@ -56,7 +56,6 @@ export const API_ENDPOINTS = {
   dashboard: {
     root: '/dashboard',
     provider: '/dashboard/provider',
-    admin: '/dashboard/admin',
   },
   notifications: {
     root: '/notifications',
