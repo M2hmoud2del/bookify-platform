@@ -39,7 +39,7 @@ const seedProviders = [
         category: "Wellness",
         price: 250,
         durationMinutes: 60,
-        images: ["https://images.unsplash.com/photo-1540555700478-4be289fbecef"]
+        images: [{ url: "https://images.unsplash.com/photo-1540555700478-4be289fbecef", publicId: "seed_1" }]
       },
       {
         title: "Stress Management Session",
@@ -47,7 +47,7 @@ const seedProviders = [
         category: "Wellness",
         price: 180,
         durationMinutes: 45,
-        images: ["https://images.unsplash.com/photo-1506126613408-eca07ce68773"]
+        images: [{ url: "https://images.unsplash.com/photo-1506126613408-eca07ce68773", publicId: "seed_2" }]
       }
     ]
   },
@@ -73,7 +73,7 @@ const seedProviders = [
         category: "Dental",
         price: 300,
         durationMinutes: 30,
-        images: ["https://images.unsplash.com/photo-1606811841689-23dfddce3e95"]
+        images: [{ url: "https://images.unsplash.com/photo-1606811841689-23dfddce3e95", publicId: "seed_3" }]
       },
       {
         title: "Teeth Cleaning",
@@ -81,7 +81,7 @@ const seedProviders = [
         category: "Dental",
         price: 450,
         durationMinutes: 45,
-        images: ["https://images.unsplash.com/photo-1588776814546-1ffcf47267a5"]
+        images: [{ url: "https://images.unsplash.com/photo-1588776814546-1ffcf47267a5", publicId: "seed_4" }]
       }
     ]
   },
@@ -107,7 +107,7 @@ const seedProviders = [
         category: "Beauty",
         price: 220,
         durationMinutes: 60,
-        images: ["https://images.unsplash.com/photo-1560066984-138dadb4c035"]
+        images: [{ url: "https://images.unsplash.com/photo-1560066984-138dadb4c035", publicId: "seed_5" }]
       },
       {
         title: "Facial Treatment",
@@ -115,7 +115,7 @@ const seedProviders = [
         category: "Beauty",
         price: 350,
         durationMinutes: 75,
-        images: ["https://images.unsplash.com/photo-1570172619644-dfd03ed5d881"]
+        images: [{ url: "https://images.unsplash.com/photo-1570172619644-dfd03ed5d881", publicId: "seed_6" }]
       }
     ]
   }
@@ -344,6 +344,7 @@ const seedBookings = async ({ providers, customers, servicesByProvider }) => {
       provider: booking.provider._id,
       service: booking.service._id,
       date: booking.date,
+      localDate: booking.date.toISOString().split("T")[0],
       startTime: booking.startTime,
       endTime: booking.endTime,
       status: booking.status,

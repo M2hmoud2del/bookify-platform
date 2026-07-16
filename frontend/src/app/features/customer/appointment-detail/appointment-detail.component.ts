@@ -10,6 +10,9 @@ import { AppointmentTimelineComponent } from '../shared/appointment-timeline.com
 import { getTimelineForAppointment } from '../shared/customer.models';
 import { AppointmentView } from '../../../core/models/appointment.model';
 import { AppointmentsApi } from '../appointments/appointments.api';
+import { ModalComponent } from '../../../shared/components/modal/modal.component';
+import { ReviewFormComponent } from '../shared/review-form.component';
+import { ReviewsApi } from '../reviews/reviews.api';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -23,6 +26,8 @@ import { AppointmentsApi } from '../appointments/appointments.api';
     EmptyStateComponent,
     ConfirmDialogComponent,
     AppointmentTimelineComponent,
+    ModalComponent,
+    ReviewFormComponent,
   ],
   templateUrl: './appointment-detail.component.html',
   styleUrl: './appointment-detail.component.css',
@@ -30,13 +35,16 @@ import { AppointmentsApi } from '../appointments/appointments.api';
 export class AppointmentDetailComponent {
   private route = inject(ActivatedRoute);
   private appointmentsApi = inject(AppointmentsApi);
+  private reviewsApi = inject(ReviewsApi);
   router = inject(Router);
 
   showCancel = signal(false);
   showReschedule = signal(false);
+  showReviewModal = signal(false);
   appointment = signal<AppointmentView | null>(null);
   loading = signal(false);
   cancelling = signal(false);
+  submittingReview = signal(false);
   error = signal<string | null>(null);
 
   timeline = computed(() => {
@@ -78,7 +86,8 @@ export class AppointmentDetailComponent {
   }
 
   canReview(): boolean {
-    return this.appointment()?.status === 'completed';
+    const s = this.appointment()?.status;
+    return s === 'completed' || s === 'confirmed';
   }
 
   formattedDate(): string {
@@ -126,5 +135,28 @@ export class AppointmentDetailComponent {
   private errorMessage(err: unknown, fallback: string): string {
     const message = (err as { message?: string })?.message;
     return message || (err instanceof Error ? err.message : fallback);
+  }
+
+  async submitReview(data: { rating: number; comment: string }): Promise<void> {
+    const apt = this.appointment();
+    if (!apt) return;
+
+    this.submittingReview.set(true);
+    this.error.set(null);
+
+    try {
+      await this.reviewsApi.createReview({
+        appointmentId: apt._id,
+        rating: data.rating,
+        comment: data.comment,
+      });
+      this.showReviewModal.set(false);
+      // reload appointment to update timeline/status if needed, or redirect
+      await this.loadAppointment();
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to submit review.'));
+    } finally {
+      this.submittingReview.set(false);
+    }
   }
 }

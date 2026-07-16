@@ -21,7 +21,7 @@
       margin-left: var(--sidebar-collapsed-width);
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       .layout-main {
         margin-left: 0;
       }
@@ -33,7 +33,7 @@
       overflow-y: auto;
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       .layout-content {
         padding: var(--space-4);
       }

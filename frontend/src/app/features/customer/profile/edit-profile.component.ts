@@ -21,17 +21,29 @@ export class CustomerEditProfileComponent {
   lastName = this.authService.user()?.name.split(' ').slice(1).join(' ') ?? 'Doe';
   email = this.authService.user()?.email ?? 'john.doe@example.com';
   phone = '+1 (555) 123-4567';
-  address = '123 Main Street';
-  city = 'New York';
-  state = 'NY';
-  postalCode = '10001';
-  country = 'United States';
-  bio = 'Love trying new services and supporting local businesses!';
+
 
   firstNameError = signal<string | null>(null);
   lastNameError = signal<string | null>(null);
   emailError = signal<string | null>(null);
   saving = signal(false);
+  uploadingAvatar = signal(false);
+
+  async onFileSelected(event: Event): Promise<void> {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    this.uploadingAvatar.set(true);
+    
+    try {
+      await this.authService.uploadAvatar(file);
+    } finally {
+      this.uploadingAvatar.set(false);
+      // Reset input so the same file can be selected again if needed
+      input.value = '';
+    }
+  }
 
   onSubmit(): void {
     let valid = true;
@@ -63,9 +75,16 @@ export class CustomerEditProfileComponent {
     if (!valid) return;
 
     this.saving.set(true);
-    setTimeout(() => {
+    
+    this.authService.updateProfile({
+      name: `${this.firstName} ${this.lastName}`.trim(),
+      phone: this.phone,
+      email: this.email
+    }).then(success => {
       this.saving.set(false);
-      this.router.navigate(['/customer/profile']);
-    }, 800);
+      if (success) {
+        this.router.navigate(['/customer/profile']);
+      }
+    });
   }
 }

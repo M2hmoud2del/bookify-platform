@@ -157,17 +157,47 @@ export class AuthService {
     this.error.set(null);
 
     try {
-      const currentUser = this.user();
+      const response = await firstValueFrom(
+        this.api.put<AuthData>(API_ENDPOINTS.auth.updateProfile, profile)
+      );
 
-      if (!currentUser) {
-        throw new Error('No user logged in');
+      const payload = ('data' in response && (response as any).data ? (response as any).data : response) as AuthData;
+      
+      const backendUser = this.extractUser(payload);
+      if (backendUser) {
+        this.user.set(mapBackendUser(backendUser));
       }
 
-      this.user.set({
-        ...currentUser,
-        ...profile,
-        updatedAt: new Date().toISOString(),
-      });
+      return true;
+    } catch (err: unknown) {
+      this.error.set(this.getErrorMessage(err));
+      return false;
+    } finally {
+      this.loading.set(false);
+    }
+  }
+
+  async uploadAvatar(file: File): Promise<boolean> {
+    this.loading.set(true);
+    this.error.set(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+
+      const response = await firstValueFrom(
+        this.api.patch<{ data: { avatar: string } } | { avatar: string }>(
+          API_ENDPOINTS.uploads.userAvatar,
+          formData
+        )
+      );
+
+      const payload = ('data' in response && (response as any).data ? (response as any).data : response) as any;
+      
+      const currentUser = this.user();
+      if (currentUser && payload.avatar) {
+        this.user.set({ ...currentUser, avatar: payload.avatar });
+      }
 
       return true;
     } catch (err: unknown) {

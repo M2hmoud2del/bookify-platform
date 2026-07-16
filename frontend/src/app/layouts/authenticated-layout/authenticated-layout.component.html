@@ -1,5 +1,5 @@
 <div class="layout" [ngClass]="{ 'sidebar-collapsed': sidebarCollapsed(), 'mobile-menu-open': mobileMenuOpen() }">
-      <app-sidebar [role]="userRole()" />
+      <app-sidebar [role]="userRole()" [isOpen]="mobileMenuOpen()" />
       <div class="layout-main">
         <app-navbar [role]="userRole()" (toggleMobileMenu)="toggleMobileMenu()" />
         <main class="layout-content">

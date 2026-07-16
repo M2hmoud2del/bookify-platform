@@ -19,6 +19,27 @@ export const createReview = (data) => {
   return Review.create(data);
 };
 
+export const findReviewById = (reviewId) => {
+  return Review.findById(reviewId)
+    .populate("customer", "name email avatar")
+    .populate("provider", "name email avatar")
+    .populate("service", "title category");
+};
+
+export const updateReview = (reviewId, data) => {
+  return Review.findByIdAndUpdate(reviewId, data, {
+    new: true,
+    runValidators: true
+  })
+    .populate("customer", "name email avatar")
+    .populate("provider", "name email avatar")
+    .populate("service", "title category");
+};
+
+export const deleteReview = (reviewId) => {
+  return Review.findByIdAndDelete(reviewId);
+};
+
 export const findReviewsByProvider = (providerId) => {
   return Review.find({ provider: providerId })
     .populate("customer", "name email avatar")

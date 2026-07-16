@@ -168,7 +168,18 @@ export class BookingComponent {
     this.error.set(null);
 
     try {
-      const slots = await this.availabilityApi.getAvailability(provider.userId, service.id, this.toDateString(date));
+      let slots = await this.availabilityApi.getAvailability(provider.userId, service.id, this.toDateString(date));
+      
+      const isToday = this.toDateString(date) === this.toDateString(new Date());
+      if (isToday) {
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        slots = slots.filter(s => {
+          const [h, m] = s.startTime.split(':').map(Number);
+          return (h * 60 + m) > currentMinutes;
+        });
+      }
+
       this.timeSlots.set(mapAvailabilitySlotsToTimeSlots(slots));
     } catch (err) {
       this.timeSlots.set([]);

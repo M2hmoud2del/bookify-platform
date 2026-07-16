@@ -4,11 +4,14 @@ import { createReviewError } from "./review.errors.js";
 import {
   calculateProviderAverageRating,
   createReview as createReviewRecord,
+  deleteReview as deleteReviewRecord,
   findAppointmentById,
   findReviewByAppointment,
+  findReviewById as findReviewByIdRecord,
   findReviewsByCustomer,
   findReviewsByProvider,
-  updateProviderRating
+  updateProviderRating,
+  updateReview as updateReviewRecord
 } from "./review.repository.js";
 
 const validateObjectId = (id, message = "Invalid id") => {
@@ -22,10 +25,13 @@ const buildRepository = (dependencies = {}) =>
     createReview: createReviewRecord,
     findAppointmentById,
     findReviewByAppointment,
+    findReviewById: findReviewByIdRecord,
     findReviewsByCustomer,
     findReviewsByProvider,
     calculateProviderAverageRating,
-    updateProviderRating
+    updateProviderRating,
+    updateReview: updateReviewRecord,
+    deleteReview: deleteReviewRecord
   };
 
 export const createReview = async (customerId, payload, dependencies = {}) => {
@@ -44,9 +50,9 @@ export const createReview = async (customerId, payload, dependencies = {}) => {
     throw createReviewError("Forbidden: You can only review your own appointments", 403);
   }
 
-  if (appointment.status !== "completed") {
-    throw createReviewError("You can only review completed appointments", 400);
-  }
+  // if (appointment.status !== "completed") {
+  //   throw createReviewError("You can only review completed appointments", 400);
+  // }
 
   const existingReview = await repository.findReviewByAppointment(appointmentId);
 
@@ -103,5 +109,63 @@ export const getMyReviews = async (customerId, dependencies = {}) => {
     success: true,
     message: "My reviews retrieved successfully",
     data: { reviews }
+  };
+};
+
+export const updateReview = async (customerId, reviewId, payload, dependencies = {}) => {
+  const repository = buildRepository(dependencies);
+  validateObjectId(reviewId, "Invalid reviewId");
+
+  const review = await repository.findReviewById(reviewId);
+
+  if (!review) {
+    throw createReviewError("Review not found", 404);
+  }
+
+  if (String(review.customer?._id || review.customer) !== String(customerId)) {
+    throw createReviewError("Forbidden: You can only edit your own reviews", 403);
+  }
+
+  const updateData = {};
+  if (payload.rating !== undefined) updateData.rating = payload.rating;
+  if (payload.comment !== undefined) updateData.comment = payload.comment;
+
+  const updatedReview = await repository.updateReview(reviewId, updateData);
+
+  const providerId = review.provider?._id || review.provider;
+  const { averageRating, totalReviews } = await repository.calculateProviderAverageRating(providerId);
+  await repository.updateProviderRating(providerId, averageRating, totalReviews);
+
+  return {
+    success: true,
+    message: "Review updated successfully",
+    data: { review: updatedReview }
+  };
+};
+
+export const deleteReview = async (customerId, reviewId, dependencies = {}) => {
+  const repository = buildRepository(dependencies);
+  validateObjectId(reviewId, "Invalid reviewId");
+
+  const review = await repository.findReviewById(reviewId);
+
+  if (!review) {
+    throw createReviewError("Review not found", 404);
+  }
+
+  if (String(review.customer?._id || review.customer) !== String(customerId)) {
+    throw createReviewError("Forbidden: You can only delete your own reviews", 403);
+  }
+
+  const providerId = review.provider?._id || review.provider;
+
+  await repository.deleteReview(reviewId);
+
+  const { averageRating, totalReviews } = await repository.calculateProviderAverageRating(providerId);
+  await repository.updateProviderRating(providerId, averageRating, totalReviews);
+
+  return {
+    success: true,
+    message: "Review deleted successfully"
   };
 };

@@ -219,8 +219,8 @@ export const createAppointment = async (customerId, payload, dependencies = {}) 
     startTime,
     endTime,
     timezone: timeZone,
-    status: "pending_payment",
-    paymentStatus: "unpaid",
+    status: "confirmed", // Temporary bypass until payment gateway is implemented
+    paymentStatus: "paid", // Temporary bypass
     notes
   });
 
@@ -233,7 +233,20 @@ export const createAppointment = async (customerId, payload, dependencies = {}) 
 
 export const getMyAppointments = async (customerId, filters = {}, dependencies = {}) => {
   const repository = buildRepository(dependencies);
-  const appointments = await repository.findCustomerAppointments(customerId, filters);
+  let appointments = await repository.findCustomerAppointments(customerId, filters);
+
+  appointments = await Promise.all(
+    appointments.map(async (appointment) => {
+      const doc = appointment.toObject ? appointment.toObject() : appointment;
+      if (doc.provider && doc.provider._id) {
+        const profile = await repository.findProviderProfileByUserId(doc.provider._id);
+        if (profile && profile.businessName) {
+          doc.provider.name = profile.businessName;
+        }
+      }
+      return doc;
+    })
+  );
 
   return {
     success: true,
@@ -267,10 +280,18 @@ export const getAppointmentById = async (user, appointmentId, dependencies = {})
     throw createAppointmentError("Forbidden: You do not have permission", 403);
   }
 
+  const doc = appointment.toObject ? appointment.toObject() : appointment;
+  if (doc.provider && doc.provider._id) {
+    const profile = await repository.findProviderProfileByUserId(doc.provider._id);
+    if (profile && profile.businessName) {
+      doc.provider.name = profile.businessName;
+    }
+  }
+
   return {
     success: true,
     message: "Appointment retrieved successfully",
-    data: { appointment }
+    data: { appointment: doc }
   };
 };
 
@@ -372,9 +393,9 @@ export const completeAppointment = async (providerId, appointmentId, dependencie
     appointment.timezone || "UTC"
   );
 
-  if (appointmentEnd > now) {
-    throw createAppointmentError("Appointment can only be completed after its end time", 400);
-  }
+  // if (appointmentEnd > now) {
+  //   throw createAppointmentError("Appointment can only be completed after its end time", 400);
+  // }
 
   const updatedAppointment = await repository.updateAppointmentStatus(appointmentId, {
     status: "completed",

@@ -70,10 +70,24 @@ export class CustomerReviewsComponent {
     this.editingReview.set(null);
   }
 
-  onSubmitEdit(_data: { rating: number; comment: string }): void {
-    this.error.set('Review editing is not available from the current backend API yet.');
-    this.submitting.set(false);
-    this.closeEditModal();
+  async onSubmitEdit(data: { rating: number; comment: string }): Promise<void> {
+    const review = this.editingReview();
+    if (!review) return;
+
+    this.submitting.set(true);
+    this.error.set(null);
+
+    try {
+      const updated = await this.reviewsApi.updateReview(review._id, data);
+      this.reviews.update((list) =>
+        list.map((r) => (r._id === updated._id ? updated : r))
+      );
+      this.closeEditModal();
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to update review.'));
+    } finally {
+      this.submitting.set(false);
+    }
   }
 
   openDeleteModal(review: ReviewView): void {
@@ -86,9 +100,20 @@ export class CustomerReviewsComponent {
     this.deletingReview.set(null);
   }
 
-  confirmDelete(): void {
-    this.error.set('Review deletion is not available from the current backend API yet.');
-    this.closeDeleteModal();
+  async confirmDelete(): Promise<void> {
+    const review = this.deletingReview();
+    if (!review) return;
+
+    this.error.set(null);
+
+    try {
+      await this.reviewsApi.deleteReview(review._id);
+      this.reviews.update((list) => list.filter((r) => r._id !== review._id));
+      this.closeDeleteModal();
+    } catch (err) {
+      this.error.set(this.errorMessage(err, 'Unable to delete review.'));
+      this.closeDeleteModal();
+    }
   }
 
   private errorMessage(err: unknown, fallback: string): string {

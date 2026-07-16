@@ -5,7 +5,7 @@ import authorizeMiddleware from "../../middleware/authorize.middleware.js";
 import requireJsonMiddleware from "../../middleware/requireJson.middleware.js";
 import validateMiddleware from "../../middleware/validate.middleware.js";
 import * as reviewController from "./review.controller.js";
-import { createReviewSchema } from "./review.validators.js";
+import { createReviewSchema, updateReviewSchema } from "./review.validators.js";
 
 const router = Router();
 
@@ -28,6 +28,22 @@ router.get(
 router.get(
   "/provider/:providerId",
   reviewController.getProviderReviews
+);
+
+router.put(
+  "/:id",
+  authMiddleware,
+  authorizeMiddleware("customer"),
+  requireJsonMiddleware,
+  validateMiddleware(updateReviewSchema),
+  reviewController.updateReview
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  authorizeMiddleware("customer"),
+  reviewController.deleteReview
 );
 
 export default router;

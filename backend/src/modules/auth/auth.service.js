@@ -59,3 +59,30 @@ export const buildAuthResponse = (user) => {
     token: generateToken(user)
   };
 };
+
+export const updateProfile = async (userId, updateData) => {
+  const { name, phone, email } = updateData;
+
+  const updatePayload = { name, phone };
+  
+  if (email) {
+    const existingUser = await User.findOne({ email });
+    if (existingUser && existingUser._id.toString() !== userId.toString()) {
+      throw createError("Email already exists", 409);
+    }
+    updatePayload.email = email;
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    updatePayload,
+    { new: true, runValidators: true }
+  );
+
+  if (!user) {
+    throw createError("User not found", 404);
+  }
+
+  const { password: _, ...userObject } = user.toObject();
+  return userObject;
+};

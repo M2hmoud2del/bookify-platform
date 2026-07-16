@@ -123,7 +123,7 @@
                 </app-button>
               }
               @if (canReview()) {
-                <app-button variant="primary" [fullWidth]="true" [routerLink]="['/customer/reviews']">
+                <app-button variant="primary" [fullWidth]="true" (onClick)="showReviewModal.set(true)">
                   <span class="material-icons-outlined">rate_review</span>
                   Write Review
                 </app-button>
@@ -160,3 +160,19 @@
       (confirm)="confirmCancel()"
       (cancel)="showCancel.set(false)"
     />
+
+    <!-- Review Modal -->
+    <app-modal
+      [isOpen]="showReviewModal()"
+      title="Write a Review"
+      size="md"
+      [showFooter]="false"
+      (close)="showReviewModal.set(false)"
+    >
+      <app-review-form
+        [isEditMode]="false"
+        [submitting]="submittingReview()"
+        (submit)="submitReview($event)"
+        (cancel)="showReviewModal.set(false)"
+      />
+    </app-modal>

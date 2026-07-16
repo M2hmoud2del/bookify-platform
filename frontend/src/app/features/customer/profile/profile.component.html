@@ -2,7 +2,7 @@
       <app-profile-header
         [displayName]="displayName()"
         [email]="authService.user()?.email ?? 'user@example.com'"
-        [avatarUrl]="null"
+        [avatarUrl]="authService.user()?.avatar ?? null"
         [totalAppointments]="totalAppointments()"
         [completedAppointments]="completedAppointments()"
         [totalReviews]="totalReviews()"

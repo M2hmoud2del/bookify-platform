@@ -8,17 +8,24 @@
       </div>
 
       <form class="edit-form" (ngSubmit)="onSubmit()" novalidate>
+        <div *ngIf="authService.error()" class="global-error">
+          <span class="material-icons-outlined">error_outline</span>
+          {{ authService.error() }}
+        </div>
+        
         <!-- Avatar section -->
         <div class="avatar-section">
           <div class="avatar-preview">
-            <span class="material-icons-outlined avatar-placeholder">person</span>
+            <img *ngIf="authService.user()?.avatar" [src]="authService.user()?.avatar" alt="Profile Photo" class="avatar-image">
+            <span *ngIf="!authService.user()?.avatar" class="material-icons-outlined avatar-placeholder">person</span>
           </div>
           <div class="avatar-actions">
-            <app-button variant="outline" size="sm" type="button">
+            <input type="file" #fileInput (change)="onFileSelected($event)" accept="image/*" style="display: none">
+            <app-button variant="outline" size="sm" type="button" (click)="fileInput.click()" [loading]="uploadingAvatar()">
               <span class="material-icons-outlined">photo_camera</span>
               Change Photo
             </app-button>
-            <app-button variant="ghost" size="sm" type="button">
+            <app-button variant="ghost" size="sm" type="button" *ngIf="authService.user()?.avatar">
               <span class="material-icons-outlined">delete</span>
               Remove
             </app-button>
@@ -68,67 +75,6 @@
           />
         </div>
 
-        <!-- Address -->
-        <div class="form-section">
-          <h2 class="section-title">Address</h2>
-          <app-input
-            label="Street Address"
-            type="text"
-            placeholder="123 Main St"
-            [(ngModel)]="address"
-            name="address"
-          />
-          <div class="form-row">
-            <app-input
-              label="City"
-              type="text"
-              placeholder="City"
-              [(ngModel)]="city"
-              name="city"
-            />
-            <app-input
-              label="State / Province"
-              type="text"
-              placeholder="State"
-              [(ngModel)]="state"
-              name="state"
-            />
-          </div>
-          <div class="form-row">
-            <app-input
-              label="Postal Code"
-              type="text"
-              placeholder="12345"
-              [(ngModel)]="postalCode"
-              name="postalCode"
-            />
-            <app-input
-              label="Country"
-              type="text"
-              placeholder="Country"
-              [(ngModel)]="country"
-              name="country"
-            />
-          </div>
-        </div>
-
-        <!-- Bio -->
-        <div class="form-section">
-          <h2 class="section-title">About Me</h2>
-          <div class="bio-field">
-            <label class="bio-label" for="bio">Bio</label>
-            <textarea
-              id="bio"
-              class="bio-input"
-              [(ngModel)]="bio"
-              name="bio"
-              rows="3"
-              placeholder="Tell us a bit about yourself..."
-              maxlength="200"
-            ></textarea>
-            <p class="char-count">{{ bio.length }} / 200</p>
-          </div>
-        </div>
 
         <!-- Actions -->
         <div class="form-actions">

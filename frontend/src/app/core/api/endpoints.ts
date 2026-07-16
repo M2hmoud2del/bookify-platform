@@ -3,6 +3,7 @@ export const API_ENDPOINTS = {
     register: '/auth/register',
     login: '/auth/login',
     me: '/auth/me',
+    updateProfile: '/auth/profile',
   },
   providerProfile: {
     me: '/provider/profile',
@@ -21,6 +22,7 @@ export const API_ENDPOINTS = {
   },
   uploads: {
     providerProfileImage: '/uploads/provider/profile-image',
+    userAvatar: '/uploads/user/avatar',
     serviceImages: (serviceId: string) => `/uploads/services/${serviceId}/images`,
   },
   workingHours: {

@@ -30,9 +30,10 @@
       border-radius: var(--radius-md);
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       .menu-toggle {
-        display: flex;
+        display: block;
+        text-align: center;
       }
     }
 

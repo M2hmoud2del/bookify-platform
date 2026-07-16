@@ -89,6 +89,9 @@ export const uploadProviderProfileImage = async (providerId, file) => {
     await saveDocument(profile);
     profileSaved = true;
 
+    const User = mongoose.model("User");
+    await User.findByIdAndUpdate(providerId, { avatar: profileImage.url });
+
     if (previousPublicId && previousPublicId !== profileImage.publicId) {
       await deleteImage(previousPublicId).catch(() => {});
     }
@@ -105,6 +108,47 @@ export const uploadProviderProfileImage = async (providerId, file) => {
     message: "Provider profile image uploaded successfully",
     data: {
       profileImage
+    }
+  };
+};
+
+export const uploadUserAvatar = async (userId, file) => {
+  if (!file) {
+    throw createUploadError("User avatar image is required", 400);
+  }
+
+  const User = mongoose.model("User");
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw createUploadError("User not found", 404);
+  }
+
+  const previousAvatarUrl = user.avatar;
+  const folder = `${cloudinaryRootFolder}/users/${userId}/avatar`;
+  const uploadedImage = await uploadImageBuffer(file.buffer, {
+    folder,
+    deliveryTransformation: profileImageTransformation
+  });
+  
+  const avatarUrl = uploadedImage.url;
+
+  try {
+    user.avatar = avatarUrl;
+    await user.save();
+    
+    // We can't easily extract publicId from plain URL for deletion, but that's fine for simple string avatar.
+    // However, if we wanted to be strict we could save publicId somewhere. Since user schema just expects a string avatar:
+  } catch (error) {
+    await deleteImage(uploadedImage.publicId).catch(() => {});
+    throw error;
+  }
+
+  return {
+    success: true,
+    message: "User avatar uploaded successfully",
+    data: {
+      avatar: avatarUrl
     }
   };
 };

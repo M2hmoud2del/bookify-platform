@@ -375,3 +375,58 @@
       font-size: var(--font-size-xs);
       opacity: 0.9;
     }
+
+    /* Modal action buttons */
+    .modal-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding-top: var(--space-4);
+      border-top: 1px solid var(--border);
+      margin-top: var(--space-2);
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-4);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: var(--font-weight-medium);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      width: 100%;
+    }
+
+    .action-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .action-complete {
+      background: var(--success-500, #22c55e);
+      color: white;
+    }
+
+    .action-complete:hover:not(:disabled) {
+      background: var(--success-600, #16a34a);
+    }
+
+    .action-cancel {
+      background: transparent;
+      color: var(--error-600, #dc2626);
+      border: 1px solid var(--error-300, #fca5a5);
+    }
+
+    .action-cancel:hover:not(:disabled) {
+      background: var(--error-50, #fef2f2);
+    }
+
+    .action-error {
+      color: var(--error-600, #dc2626);
+      font-size: var(--font-size-sm);
+      text-align: center;
+      margin-top: var(--space-2);
+    }

@@ -17,8 +17,8 @@ export const updateWorkingHoursSchema = Joi.object({
     .items(
       Joi.object({
         dayOfWeek: Joi.string().valid(...daysOfWeek).required(),
-        startTime: Joi.string().pattern(timePattern).optional(),
-        endTime: Joi.string().pattern(timePattern).optional(),
+        startTime: Joi.string().pattern(timePattern).allow(null).optional(),
+        endTime: Joi.string().pattern(timePattern).allow(null).optional(),
         isClosed: Joi.boolean().default(false),
         slotIntervalMinutes: Joi.number().valid(15, 30, 45, 60).default(30),
         breaks: Joi.array()

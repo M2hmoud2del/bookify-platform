@@ -44,6 +44,15 @@ export class ReviewsApi {
     return mapBackendReview(this.extractReview(response));
   }
 
+  async updateReview(reviewId: string, payload: { rating?: number; comment?: string }): Promise<ReviewView> {
+    const response = await firstValueFrom(this.api.put<unknown>(API_ENDPOINTS.reviews.byId(reviewId), payload));
+    return mapBackendReview(this.extractReview(response));
+  }
+
+  async deleteReview(reviewId: string): Promise<void> {
+    await firstValueFrom(this.api.delete<unknown>(API_ENDPOINTS.reviews.byId(reviewId)));
+  }
+
   private extractReview(response: unknown): BackendReview {
     const body = this.payload(response);
     const review = body.review || body;

@@ -8,6 +8,7 @@ import { ProfileImage, Service, ServiceImage } from '../../../core/models/user.m
 import { ProviderProfileApi } from './provider-profile.api';
 import { ProviderUploadApi } from './provider-upload.api';
 import { ProviderServicesApi } from '../services/provider-services.api';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-upload-images',
@@ -20,6 +21,7 @@ export class UploadImagesComponent {
   private providerProfileApi = inject(ProviderProfileApi);
   private providerUploadApi = inject(ProviderUploadApi);
   private providerServicesApi = inject(ProviderServicesApi);
+  private authService = inject(AuthService);
 
   profileImage = signal<ProfileImage | null>(null);
   services = signal<Service[]>([]);
@@ -69,6 +71,11 @@ export class UploadImagesComponent {
     try {
       const image = await this.providerUploadApi.uploadProviderProfileImage(file);
       this.profileImage.set(image);
+
+      const currentUser = this.authService.user();
+      if (currentUser && image.url) {
+        this.authService.user.set({ ...currentUser, avatar: image.url });
+      }
     } catch (err) {
       this.error.set(this.errorMessage(err, 'Unable to upload profile image.'));
     } finally {

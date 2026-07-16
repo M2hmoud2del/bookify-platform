@@ -80,7 +80,7 @@
       gap: var(--space-6);
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       .navbar-nav {
         display: none;
       }
@@ -121,7 +121,7 @@
       gap: var(--space-3);
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       .navbar-actions {
         display: none;
       }
@@ -147,9 +147,10 @@
       background: var(--gray-800);
     }
 
-    @media (max-width: 1023px) {
+    @media (max-width: 1024px) {
       .mobile-menu-btn {
-        display: flex;
+        display: block;
+        text-align: center;
       }
     }
 

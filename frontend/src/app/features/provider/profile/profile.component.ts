@@ -91,6 +91,11 @@ export class ProviderProfileComponent {
     try {
       const image = await this.providerUploadApi.uploadProviderProfileImage(file);
       this.profileImageUrl.set(image.url || undefined);
+      
+      const currentUser = this.authService.user();
+      if (currentUser && image.url) {
+        this.authService.user.set({ ...currentUser, avatar: image.url });
+      }
     } catch (err) {
       this.uploadError.set(this.errorMessage(err, 'Unable to upload provider profile image.'));
     } finally {

@@ -88,6 +88,11 @@ export const updateProfile = async (userId, profileData) => {
     await createDefaultClosedWorkingHours(userId);
   }
 
+  if (normalizedProfileData.profileImage && normalizedProfileData.profileImage.url) {
+    const User = mongoose.model("User");
+    await User.findByIdAndUpdate(userId, { avatar: normalizedProfileData.profileImage.url });
+  }
+
   return {
     success: true,
     message: "Provider profile saved successfully",

@@ -26,6 +26,7 @@ export class SidebarComponent {
   router = inject(Router);
 
   role = input<UserRole>('customer');
+  isOpen = input<boolean>(false);
 
   isCollapsed = signal(false);
   settingsPath = computed(() => '/' + this.role() + '/settings');
@@ -58,6 +59,7 @@ export class SidebarComponent {
       );
     } else {
       items.push(
+        { label: 'Find Providers', icon: 'search', path: '/providers' },
         { label: 'Book', icon: 'add_circle', path: '/customer/book' },
         { label: 'Appointments', icon: 'event_note', path: '/customer/appointments' },
         { label: 'History', icon: 'history', path: '/customer/history' },

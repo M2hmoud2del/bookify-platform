@@ -21,6 +21,13 @@ router.patch(
   uploadController.uploadProviderProfileImage
 );
 
+router.patch(
+  "/user/avatar",
+  authMiddleware,
+  uploadProviderProfileImage, // reusing the single image upload middleware
+  uploadController.uploadUserAvatar
+);
+
 router.post(
   "/services/:serviceId/images",
   authMiddleware,
